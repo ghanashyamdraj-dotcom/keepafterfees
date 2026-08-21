@@ -1438,13 +1438,35 @@ ${entries}
 }
 
 async function writeAssets(site) {
-  // Favicon: the brand mark, inline SVG so it costs one request and scales.
+  /**
+   * Search-engine ownership verification.
+   *
+   * Written by the build rather than dropped into dist/ by hand, because the
+   * build wipes dist/ on every run — a hand-placed file would survive exactly
+   * until the next deploy and then silently un-verify the site, at which point
+   * Bing quietly stops reporting and nobody notices for weeks.
+   */
+  if (site.verification?.bing) {
+    await writeFile(
+      join(dist, 'BingSiteAuth.xml'),
+      `<?xml version="1.0"?>\n<users>\n\t<user>${site.verification.bing}</user>\n</users>\n`,
+      'utf8'
+    );
+  }
+
+  // Favicon: the brand mark on the obsidian ground, inline SVG so it costs one
+  // request and stays sharp at any size. Same mark as the header — a full bar
+  // with a wedge taken out of it, which is the subject of the site.
   await writeFile(
     join(dist, 'favicon.svg'),
-    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <rect width="32" height="32" rx="7" fill="#0a7a52"/>
-  <text x="16" y="23" font-family="system-ui,-apple-system,sans-serif" font-size="20"
-        font-weight="700" fill="#fff" text-anchor="middle">$</text>
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="${site.name}">
+  <rect width="32" height="32" rx="7" fill="#0B0F17"/>
+  <g fill="#00E599">
+    <rect x="6"    y="17" width="4.5" height="8"  rx="1.2" opacity="0.45"/>
+    <rect x="13.7" y="7"  width="4.5" height="18" rx="1.2"/>
+    <rect x="21.5" y="13" width="4.5" height="12" rx="1.2" opacity="0.7"/>
+    <rect x="4"    y="26.5" width="24" height="2.2" rx="1.1"/>
+  </g>
 </svg>
 `,
     'utf8'

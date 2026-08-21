@@ -4,7 +4,7 @@
  * Regenerate with: npm run build  (or node build/gen-rates.mjs)
  *
  * Rate data version: 2026.1
- * Generated: 2026-08-21T22:11:19.990Z
+ * Generated: 2026-08-21T22:16:48.608Z
  */
 
 export const byLocale = {
@@ -4142,6 +4142,10 @@ export const site = {
         }
       ]
     }
+  },
+  "verification": {
+    "bing": "E3A5B5631070A0E3EBE612993E815B82",
+    "note": "Search-engine ownership tokens. The build writes /BingSiteAuth.xml from the value above — do NOT hand-place that file in dist/, because the build wipes dist/ on every run and the next deploy would silently un-verify the site. Google Search Console is verified by DNS TXT record instead, which lives in Cloudflare and needs nothing here; that is the better method anyway, since a Domain property covers http, https, www and bare in one go."
   },
   "analytics": {
     "provider": "none",
