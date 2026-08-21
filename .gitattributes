@@ -1,0 +1,9 @@
+# Normalise line endings. Without this, committing from Windows stores CRLF and
+# every file shows as fully rewritten the first time anyone touches it on Linux
+# — including the Cloudflare build container.
+* text=auto eol=lf
+
+# Keep these byte-exact regardless of platform.
+*.png binary
+*.jpg binary
+*.svg text eol=lf

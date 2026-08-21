@@ -1,0 +1,34 @@
+{
+  "version": "2026.1",
+  "taxYear": 2026,
+  "state": "TX",
+  "name": "Texas",
+  "slug": "texas",
+  "hasIncomeTax": false,
+  "effective": "2026-01-01",
+  "verifiedOn": "2026-08-21",
+  "confidence": "verified",
+  "sources": [
+    { "label": "Texas Constitution — Article VIII, Section 24-a (added by Proposition 4, November 2019)", "url": "https://statutes.capitol.texas.gov/Docs/CN/htm/CN.8.htm", "retrieved": "2026-08-21" },
+    { "label": "Texas Comptroller — Texas taxes", "url": "https://comptroller.texas.gov/taxes/", "retrieved": "2026-08-21" }
+  ],
+
+  "method": "none",
+  "flatRate": 0,
+  "standardDeduction": { "single": 0, "married_joint": 0, "married_separate": 0, "head_of_household": 0 },
+  "brackets": {
+    "single": [{ "upTo": null, "rate": 0 }],
+    "married_joint": [{ "upTo": null, "rate": 0 }],
+    "married_separate": [{ "upTo": null, "rate": 0 }],
+    "head_of_household": [{ "upTo": null, "rate": 0 }]
+  },
+  "surtaxes": [],
+  "payrollTaxes": [],
+  "localTaxes": [],
+  "notes": [
+    "Texas levies no individual income tax. Proposition 4, approved by 74.7% of voters in November 2019, added Article VIII, Section 24-a to the state constitution: the legislature \"may not impose a tax on the net incomes of individuals, including an individual's share of partnership and unincorporated association income.\"",
+    "Texas funds itself largely through sales tax and property tax instead — property tax rates in Texas are among the highest in the country, which offsets much of the income tax saving for homeowners.",
+    "Self-employed Texans still owe federal self-employment tax and federal income tax. Only the state layer is zero.",
+    "Businesses structured as LLCs or corporations may owe the Texas franchise tax, which is separate from individual income tax and applies above a revenue threshold."
+  ]
+}

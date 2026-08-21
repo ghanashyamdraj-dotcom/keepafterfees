@@ -1,0 +1,267 @@
+{
+  "version": "2026.2",
+  "locale": "en-US",
+  "platform": "Payment processors",
+  "currency": "USD",
+  "effective": "2026-08-21",
+  "verifiedOn": null,
+  "confidence": "partially-verified",
+  "note": "PayPal verified 2026-08-02 against PayPal's own US merchant fee page (which stated it was last updated 15 July 2026): Checkout 3.49% + $0.49, international surcharge 1.50%, currency conversion 4.00%, micropayments 4.99% + $0.09, invoicing 3.49% + $0.49 — all matched. Stripe and Square verified 2026-08-21 (the earlier geo-redirect was worked around by switching region in-page rather than by URL). Square had two real errors, now corrected: the in-person fixed fee is 15¢, not 10¢, and the plain 'Online' rate on the free plan is 3.3% + 30¢, not 2.9% — the 2.9% figure is the separate 'Online API' rate. Stripe matched on every figure checked and gained two it was missing (the 0.5% manual-entry surcharge and the $2.00 cap on invoicing). STILL UNVERIFIED: Wise, Payoneer, Stripe's Instant Payouts and Link rates, and Square's zero-chargeback-fee claim — verifiedOn stays null until those are done.",
+  "sources": [
+    {
+      "label": "PayPal — Merchant fees (US)",
+      "url": "https://www.paypal.com/us/webapps/mpp/merchant-fees",
+      "retrieved": "2026-08-02"
+    },
+    {
+      "label": "Stripe — Pricing (US)",
+      "url": "https://stripe.com/us/pricing",
+      "retrieved": "2026-08-21"
+    },
+    {
+      "label": "Square — Understanding our fees",
+      "url": "https://squareup.com/us/en/payments/our-fees",
+      "retrieved": "2026-08-21"
+    },
+    {
+      "label": "Square — Pricing plans",
+      "url": "https://squareup.com/us/en/pricing",
+      "retrieved": "2026-08-21"
+    },
+    {
+      "label": "Wise — Pricing",
+      "url": "https://wise.com/us/pricing/",
+      "retrieved": null
+    }
+  ],
+  "paypal": {
+    "label": "PayPal",
+    "products": [
+      {
+        "id": "checkout",
+        "label": "PayPal Checkout (online)",
+        "rate": 0.0349,
+        "fixed": 0.49
+      },
+      {
+        "id": "standard-card",
+        "label": "Standard card / guest checkout",
+        "rate": 0.0299,
+        "fixed": 0.49
+      },
+      {
+        "id": "invoicing",
+        "label": "PayPal Invoicing",
+        "rate": 0.0349,
+        "fixed": 0.49
+      },
+      {
+        "id": "invoicing-card",
+        "label": "Invoicing paid by card",
+        "rate": 0.0299,
+        "fixed": 0.49
+      },
+      {
+        "id": "qr-large",
+        "label": "QR code, $10.01 and above",
+        "rate": 0.0229,
+        "fixed": 0.09
+      },
+      {
+        "id": "qr-small",
+        "label": "QR code, $10.00 and under",
+        "rate": 0.0149,
+        "fixed": 0.09
+      },
+      {
+        "id": "micropayments",
+        "label": "Micropayments (opt-in)",
+        "rate": 0.0499,
+        "fixed": 0.09
+      },
+      {
+        "id": "friends-family-balance",
+        "label": "Friends & Family — bank or balance",
+        "rate": 0,
+        "fixed": 0
+      },
+      {
+        "id": "friends-family-card",
+        "label": "Friends & Family — card funded",
+        "rate": 0.0299,
+        "fixed": 0,
+        "paidBy": "sender"
+      }
+    ],
+    "crossBorderFee": {
+      "rate": 0.015,
+      "note": "International commercial transaction fee, added when the buyer's PayPal account is registered outside the US."
+    },
+    "currencyConversion": {
+      "rate": 0.04,
+      "note": "PayPal's conversion spread over the wholesale rate. Applied when you accept or withdraw in a currency other than USD."
+    },
+    "chargebackFee": 20.0,
+    "micropaymentsNote": "Micropayments pricing must be requested and applies account-wide. Setting the two schedules equal, 0.0349x + 0.49 = 0.0499x + 0.09, gives a crossover of $26.67: micropayments is cheaper below it and dearer above it. Derived from the two rate lines above, not quoted from PayPal — PayPal publishes both schedules but never the point where they cross."
+  },
+  "stripe": {
+    "label": "Stripe",
+    "products": [
+      {
+        "id": "online-domestic",
+        "label": "Online card — US card",
+        "rate": 0.029,
+        "fixed": 0.3
+      },
+      {
+        "id": "in-person",
+        "label": "In-person (Stripe Terminal)",
+        "rate": 0.027,
+        "fixed": 0.05
+      },
+      {
+        "id": "ach",
+        "label": "ACH Direct Debit",
+        "rate": 0.008,
+        "fixed": 0,
+        "cap": 5.0
+      },
+      {
+        "id": "invoicing",
+        "label": "Stripe Invoicing",
+        "rate": 0.029,
+        "fixed": 0.3,
+        "extraRate": 0.004,
+        "extraCap": 2.0,
+        "extraNote": "Invoicing adds 0.4% of the transaction total on paid invoices on the standard plan, capped at $2.00 per invoice."
+      },
+      {
+        "id": "link",
+        "label": "Link",
+        "rate": 0.029,
+        "fixed": 0.3,
+        "confidence": "needs-verification"
+      }
+    ],
+    "manualEntrySurcharge": {
+      "rate": 0.005,
+      "note": "Added for manually entered card details, on top of the 2.9% + 30¢ base."
+    },
+    "internationalCardSurcharge": {
+      "rate": 0.015,
+      "note": "Added for cards issued outside the US."
+    },
+    "currencyConversion": {
+      "rate": 0.01,
+      "note": "Added when a currency conversion is required."
+    },
+    "instantPayout": {
+      "rate": 0.01,
+      "minimum": 0.5,
+      "confidence": "needs-verification",
+      "note": "Optional fee to receive funds in minutes rather than on the standard payout schedule. Not shown on stripe.com/pricing as of 2026-08-21 — the 50¢ minimum visible there belongs to Global Payouts debit card payouts, which is a different product. Confirm before relying on this."
+    },
+    "disputeFee": 15.0,
+    "disputeFeeNote": "$15.00 for each dispute received, and $15.00 for each dispute you respond to manually — the second is refunded on disputes you win, but not on disputes you lose."
+  },
+  "square": {
+    "label": "Square",
+    "planNote": "Rates below are the Square Free plan ($0/month per location). Square Plus ($49/month per location) and Square Premium ($149/month per location) buy down the in-person rate to 2.5% and 2.4% and the Online rate to 2.9%.",
+    "products": [
+      {
+        "id": "online",
+        "label": "Square Online (website / checkout links)",
+        "rate": 0.033,
+        "fixed": 0.3
+      },
+      {
+        "id": "online-api",
+        "label": "Online via Square's payments API",
+        "rate": 0.029,
+        "fixed": 0.3,
+        "note": "Charged at 2.9% + 30¢ on every plan, including Free — this is the one Square rate a free-plan seller can reach without paying 3.3%."
+      },
+      {
+        "id": "in-person",
+        "label": "In-person (tapped, dipped, swiped)",
+        "rate": 0.026,
+        "fixed": 0.15
+      },
+      {
+        "id": "keyed",
+        "label": "Manually keyed / card on file",
+        "rate": 0.035,
+        "fixed": 0.15
+      },
+      {
+        "id": "invoices",
+        "label": "Square Invoices (card)",
+        "rate": 0.033,
+        "fixed": 0.3
+      },
+      {
+        "id": "ach-invoice",
+        "label": "ACH bank transfer via invoice",
+        "rate": 0.01,
+        "fixed": 0,
+        "minimum": 1.0,
+        "note": "1% with a $1 minimum. Square Plus and Premium add a $10 cap; the Free plan has no cap."
+      },
+      {
+        "id": "afterpay",
+        "label": "Afterpay (buy now, pay later)",
+        "rate": 0.06,
+        "fixed": 0.3
+      }
+    ],
+    "plans": [
+      { "id": "free", "label": "Square Free", "monthlyPerLocation": 0 },
+      { "id": "plus", "label": "Square Plus", "monthlyPerLocation": 49 },
+      { "id": "premium", "label": "Square Premium", "monthlyPerLocation": 149 }
+    ],
+    "chargebackFee": 0,
+    "chargebackFeeConfidence": "needs-verification",
+    "note": "Square does not charge a chargeback fee on disputes. That claim was NOT re-confirmed in the 2026-08-21 pass — it does not appear on either fee page checked."
+  },
+  "wise": {
+    "label": "Wise Business",
+    "products": [
+      {
+        "id": "usd-receive",
+        "label": "Receive USD to Wise account",
+        "rate": 0,
+        "fixed": 0
+      },
+      {
+        "id": "convert",
+        "label": "Currency conversion",
+        "rate": 0.0043,
+        "fixed": 0.3,
+        "note": "Variable by corridor — 0.43% is a mid-range USD/EUR figure. Check the live quote."
+      }
+    ]
+  },
+  "payoneer": {
+    "label": "Payoneer",
+    "products": [
+      {
+        "id": "marketplace-usd",
+        "label": "Receive from marketplace (USD)",
+        "rate": 0,
+        "fixed": 0
+      },
+      {
+        "id": "card-payment",
+        "label": "Receive card payment from client",
+        "rate": 0.0349,
+        "fixed": 0
+      },
+      {
+        "id": "convert",
+        "label": "Currency conversion",
+        "rate": 0.005,
+        "fixed": 0
+      }
+    ]
+  }
+}

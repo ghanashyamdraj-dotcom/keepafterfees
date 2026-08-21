@@ -1,0 +1,22 @@
+{
+  "name": "afterfees",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "AfterFees — free calculators that show online sellers and freelancers what they actually keep after fees.",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "node build/build.mjs",
+    "dev": "node build/dev.mjs",
+    "pretest": "node build/gen-rates.mjs",
+    "test": "node --test \"test/*.test.js\"",
+    "verify:rates": "node build/verify-rates.mjs",
+    "audit": "node build/audit.mjs",
+    "serve": "npx --yes serve dist -l 4321",
+    "check": "npm run verify:rates && npm run build && npm test && npm run audit"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}

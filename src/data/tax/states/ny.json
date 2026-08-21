@@ -1,0 +1,140 @@
+{
+  "version": "2026.2",
+  "taxYear": 2026,
+  "incomeTaxScheduleYear": 2025,
+  "state": "NY",
+  "name": "New York",
+  "slug": "new-york",
+  "hasIncomeTax": true,
+  "effective": "2026-01-01",
+  "verifiedOn": "2026-08-21",
+  "confidence": "verified",
+  "sources": [
+    { "label": "New York State — 2025 Instructions for Form IT-201 (state, NYC rate schedules and standard deduction table)", "url": "https://www.tax.ny.gov/forms/html-instructions/2025/it/it201i-2025.htm#nys-tax-rate-schedule", "retrieved": "2026-08-21" },
+    { "label": "New York State Department of Taxation and Finance — Income tax rates and tables", "url": "https://www.tax.ny.gov/pit/file/tax-tables/", "retrieved": "2026-08-21" },
+    { "label": "NY Paid Family Leave — 2026 updates", "url": "https://paidfamilyleave.ny.gov/2026", "retrieved": "2026-08-21" }
+  ],
+  "verificationNote": "Checked line by line against the 2025 Form IT-201 instructions on 2026-08-21. The state brackets (all four filing statuses), the standard deduction table and the New York City resident rate schedule all matched exactly and were left untouched — New York's brackets are statutory rather than inflation-indexed, which is why they had not drifted. One real correction: Paid Family Leave is 0.432% for 2026, not the 0.388% carried here from 2025, and the annual cap moved from $354.53 to $411.91. As with California, New York had not published 2026 income tax schedules as of 21 August 2026 (the department's own index lists 2025 as the latest), so the income tax figures are the 2025 ones, flagged by incomeTaxScheduleYear. The old source URL in this file, tax_tables.htm, now only serves a redirect notice and has been replaced.",
+
+  "method": "progressive",
+  "standardDeduction": {
+    "single": 8000,
+    "married_joint": 16050,
+    "married_separate": 8000,
+    "head_of_household": 11200
+  },
+  "personalExemptionCredit": {
+    "single": 0,
+    "married_joint": 0,
+    "married_separate": 0,
+    "head_of_household": 0,
+    "perDependent": 1000,
+    "mode": "deduction",
+    "note": "New York allows a $1,000 dependent exemption as a deduction. There is no personal exemption for the filer."
+  },
+  "brackets": {
+    "single": [
+      { "upTo": 8500, "rate": 0.04 },
+      { "upTo": 11700, "rate": 0.045 },
+      { "upTo": 13900, "rate": 0.0525 },
+      { "upTo": 80650, "rate": 0.055 },
+      { "upTo": 215400, "rate": 0.06 },
+      { "upTo": 1077550, "rate": 0.0685 },
+      { "upTo": 5000000, "rate": 0.0965 },
+      { "upTo": 25000000, "rate": 0.103 },
+      { "upTo": null, "rate": 0.109 }
+    ],
+    "married_joint": [
+      { "upTo": 17150, "rate": 0.04 },
+      { "upTo": 23600, "rate": 0.045 },
+      { "upTo": 27900, "rate": 0.0525 },
+      { "upTo": 161550, "rate": 0.055 },
+      { "upTo": 323200, "rate": 0.06 },
+      { "upTo": 2155350, "rate": 0.0685 },
+      { "upTo": 5000000, "rate": 0.0965 },
+      { "upTo": 25000000, "rate": 0.103 },
+      { "upTo": null, "rate": 0.109 }
+    ],
+    "married_separate": [
+      { "upTo": 8500, "rate": 0.04 },
+      { "upTo": 11700, "rate": 0.045 },
+      { "upTo": 13900, "rate": 0.0525 },
+      { "upTo": 80650, "rate": 0.055 },
+      { "upTo": 215400, "rate": 0.06 },
+      { "upTo": 1077550, "rate": 0.0685 },
+      { "upTo": 5000000, "rate": 0.0965 },
+      { "upTo": 25000000, "rate": 0.103 },
+      { "upTo": null, "rate": 0.109 }
+    ],
+    "head_of_household": [
+      { "upTo": 12800, "rate": 0.04 },
+      { "upTo": 17650, "rate": 0.045 },
+      { "upTo": 20900, "rate": 0.0525 },
+      { "upTo": 107650, "rate": 0.055 },
+      { "upTo": 269300, "rate": 0.06 },
+      { "upTo": 1616450, "rate": 0.0685 },
+      { "upTo": 5000000, "rate": 0.0965 },
+      { "upTo": 25000000, "rate": 0.103 },
+      { "upTo": null, "rate": 0.109 }
+    ]
+  },
+  "surtaxes": [],
+  "payrollTaxes": [
+    {
+      "id": "sdi",
+      "label": "NY State Disability Insurance",
+      "rate": 0.005,
+      "weeklyCap": 0.6,
+      "appliesTo": "wages",
+      "note": "0.5% of wages, capped at $0.60 per week — a maximum of $31.20 per year."
+    },
+    {
+      "id": "pfl",
+      "label": "NY Paid Family Leave",
+      "rate": 0.00432,
+      "wageCap": 95348.76,
+      "annualCap": 411.91,
+      "appliesTo": "wages",
+      "note": "0.432% of wages for 2026, up from 0.388% in 2025, capped at $411.91 a year. The cap is the New York State Average Weekly Wage of $1,833.63 annualised over 52 weeks. Both the rate and the wage are reset every year — re-check each January."
+    }
+  ],
+  "localTaxes": [
+    {
+      "id": "nyc",
+      "label": "New York City resident income tax",
+      "method": "progressive",
+      "optional": true,
+      "brackets": {
+        "single": [
+          { "upTo": 12000, "rate": 0.03078 },
+          { "upTo": 25000, "rate": 0.03762 },
+          { "upTo": 50000, "rate": 0.03819 },
+          { "upTo": null, "rate": 0.03876 }
+        ],
+        "married_joint": [
+          { "upTo": 21600, "rate": 0.03078 },
+          { "upTo": 45000, "rate": 0.03762 },
+          { "upTo": 90000, "rate": 0.03819 },
+          { "upTo": null, "rate": 0.03876 }
+        ],
+        "married_separate": [
+          { "upTo": 12000, "rate": 0.03078 },
+          { "upTo": 25000, "rate": 0.03762 },
+          { "upTo": 50000, "rate": 0.03819 },
+          { "upTo": null, "rate": 0.03876 }
+        ],
+        "head_of_household": [
+          { "upTo": 14400, "rate": 0.03078 },
+          { "upTo": 30000, "rate": 0.03762 },
+          { "upTo": 60000, "rate": 0.03819 },
+          { "upTo": null, "rate": 0.03876 }
+        ]
+      },
+      "note": "Charged on New York City residents only. Yonkers residents pay a separate surcharge of 16.75% of net state tax."
+    }
+  ],
+  "notes": [
+    "New York applies a supplemental tax recapture that claws back the benefit of lower brackets for high earners. This site does not model the recapture and will understate tax above roughly $107,650 of New York adjusted gross income.",
+    "New York does not conform to the federal Qualified Business Income deduction."
+  ]
+}

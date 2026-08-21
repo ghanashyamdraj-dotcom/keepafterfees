@@ -1,0 +1,381 @@
+/* ===================== the tool ===================== */
+/* Above the fold on every viewport. Inputs left, receipt right on
+   desktop; the receipt comes FIRST on mobile so the number you came
+   for is what you see without scrolling. */
+
+.tool-page > .wrap:first-child { padding-top: var(--sp-6); }
+.tool-page h1 { margin-bottom: var(--sp-4); }
+
+.answer-block {
+  font-size: var(--step-1);
+  line-height: 1.55;
+  color: var(--ink-soft);
+  margin-bottom: var(--sp-5);
+  padding-left: var(--sp-4);
+  border-left: 3px solid var(--keep);
+}
+.answer-block strong { color: var(--ink); font-weight: 650; }
+
+.tool {
+  display: grid;
+  gap: var(--sp-5);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 420px);
+  align-items: start;
+  margin-bottom: var(--sp-6);
+}
+@media (max-width: 900px) {
+  .tool { grid-template-columns: 1fr; }
+  .tool-results { order: -1; }
+}
+
+/* --- inputs --- */
+
+.tool-inputs {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  padding: var(--sp-5);
+}
+
+.field-group { border: 0; padding: 0; margin: 0 0 var(--sp-5); }
+.field-group:last-of-type { margin-bottom: var(--sp-4); }
+.field-group > legend {
+  font-size: var(--step--1); font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.08em; color: var(--ink-faint);
+  padding: 0 0 var(--sp-3); width: 100%;
+  border-bottom: 1px solid var(--line); margin-bottom: var(--sp-4);
+}
+.group-note { font-size: var(--step--1); color: var(--ink-faint); margin: calc(var(--sp-3) * -1) 0 var(--sp-4); }
+
+.field-grid {
+  display: grid; gap: var(--sp-4);
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+}
+.field-wide { grid-column: 1 / -1; }
+
+.field { display: grid; gap: var(--sp-2); min-width: 0; }
+.field > label {
+  font-size: var(--step--1); font-weight: 600; color: var(--ink);
+  line-height: 1.35;
+}
+.field-help { font-size: var(--step--1); color: var(--ink-faint); line-height: 1.4; }
+
+.control { position: relative; display: flex; align-items: stretch; }
+.control input, .control select {
+  width: 100%; min-width: 0;
+  font: inherit; font-size: var(--step-0);
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  padding: var(--sp-3);
+  min-height: 44px;                      /* touch target */
+  color: var(--ink); background: var(--surface);
+  border: 1px solid var(--line-strong); border-radius: var(--radius-sm);
+  appearance: none;
+  transition: border-color .15s, box-shadow .15s;
+}
+/* Selects carry words, not figures — keep them in the prose face. */
+.control select { font-family: var(--font-sans); }
+.control select {
+  padding-right: var(--sp-6);
+  background-image: linear-gradient(45deg, transparent 50%, currentColor 50%),
+                    linear-gradient(135deg, currentColor 50%, transparent 50%);
+  background-position: calc(100% - 18px) 50%, calc(100% - 13px) 50%;
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+}
+.control input:hover, .control select:hover { border-color: var(--ink-faint); }
+.control input:focus, .control select:focus {
+  border-color: var(--keep);
+  box-shadow: 0 0 0 3px rgb(6 113 74 / 0.14);
+}
+.control.has-prefix input { padding-left: 1.9rem; }
+.control.has-suffix input { padding-right: 2.6rem; }
+
+.affix {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  color: var(--ink-faint); font-size: var(--step--1); pointer-events: none;
+  font-family: var(--font-mono);
+}
+.affix-pre  { left: var(--sp-3); }
+.affix-post { right: var(--sp-3); }
+
+.field-check { display: flex; align-items: flex-start; gap: var(--sp-3); flex-wrap: wrap; }
+.field-check input { width: 20px; height: 20px; margin: 2px 0 0; accent-color: var(--keep); flex: none; }
+.field-check label { font-size: var(--step--1); font-weight: 500; line-height: 1.4; }
+.field-check .field-help { flex-basis: 100%; padding-left: calc(20px + var(--sp-3)); }
+
+.field-radio { border: 0; padding: 0; margin: 0; display: grid; gap: var(--sp-2); }
+.field-radio legend { font-size: var(--step--1); font-weight: 600; padding: 0 0 var(--sp-2); }
+.radio-item { display: flex; align-items: center; gap: var(--sp-2); }
+.radio-item input { width: 18px; height: 18px; accent-color: var(--keep); }
+.radio-item label { font-size: var(--step--1); }
+
+.tool-actions { display: flex; gap: var(--sp-3); flex-wrap: wrap; }
+.tool-actions .btn { flex: 1 1 auto; }
+
+/* --- the receipt --- */
+
+.tool-results { position: sticky; top: 76px; }
+@media (max-width: 900px) { .tool-results { position: static; } }
+
+.result-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+  position: relative;
+}
+/* Perforated top edge — the receipt tell. Purely decorative. */
+.result-card::before {
+  content: ""; position: absolute; inset: 0 0 auto; height: 3px;
+  background: var(--rule-dash);
+  opacity: 0.55;
+}
+.result-card--empty { padding: var(--sp-6); text-align: center; color: var(--ink-faint); }
+
+.result-headline {
+  padding: var(--sp-5) var(--sp-5) var(--sp-4);
+  background: var(--grad-wash-keep);
+  border-bottom: 1px solid var(--keep-line);
+  text-align: center;
+}
+.result-headline[data-negative] { background: var(--grad-wash-take); border-bottom-color: var(--take-line); }
+
+.result-label {
+  display: block; font-size: var(--step--1); font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.09em;
+  color: var(--ink-soft); margin-bottom: var(--sp-2);
+}
+.result-value {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: var(--step-4);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+  color: var(--keep);
+  line-height: 1.05;
+  /* Reserve the line box so a changing value never shifts layout. */
+  min-height: 1.05em;
+}
+.result-headline[data-negative] .result-value { color: var(--take); }
+
+/* --- fee waterfall --------------------------------------------------
+   A single stacked bar: what you keep, then each thing taken out of the
+   gross, in the order the breakdown lists them. This is the one view
+   that answers "where did my money go" without reading a table.
+
+   Pure CSS, driven by a --pct custom property set inline per segment.
+   No chart library, no canvas, no JS — it renders identically in the
+   server HTML and after a client recalculation, and it costs nothing
+   against the LCP budget.
+
+   It is decorative-but-informative, so it carries role="img" and an
+   aria-label naming the same figures; the table below is the
+   accessible source of truth. */
+
+.waterfall {
+  display: flex;
+  width: 100%;
+  height: 10px;
+  background: var(--surface-sunk);
+  border-bottom: 1px solid var(--line);
+  overflow: hidden;
+}
+.wf-seg {
+  display: block;
+  width: var(--pct, 0%);
+  min-width: 0;
+  height: 100%;
+  transition: width .18s ease;
+}
+@media (prefers-reduced-motion: reduce) { .wf-seg { transition: none; } }
+/* A subtle sheen layered over the flat colour — light top edge fading to a
+   faint shade at the bottom, like foil on a receipt. It never touches hue,
+   so the colour coding the aria-label describes still reads at a glance. */
+.wf-seg {
+  background-image: linear-gradient(180deg, rgb(255 255 255 / 0.28), rgb(255 255 255 / 0) 45%, rgb(0 0 0 / 0.10));
+  background-color: var(--seg-color);
+}
+.wf-seg--keep { --seg-color: var(--keep); }
+.wf-seg--fee  { --seg-color: var(--take); }
+.wf-seg--tax  { --seg-color: var(--take-strong); }
+.wf-seg--cost { --seg-color: var(--line-strong); }
+
+.result-stats {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+  border-bottom: 1px solid var(--line);
+}
+.stat { padding: var(--sp-3); text-align: center; border-right: 1px solid var(--line); }
+.stat:last-child { border-right: 0; }
+.stat-label { display: block; font-size: var(--step--1); color: var(--ink-faint); }
+.stat-value {
+  display: block; font-size: var(--step-1); font-weight: 700;
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums; color: var(--ink);
+}
+
+/* --- the ledger lines --- */
+
+.breakdown { width: 100%; border-collapse: collapse; font-size: var(--step--1); }
+.breakdown th, .breakdown td {
+  padding: var(--sp-3) var(--sp-4);
+  border-bottom: 1px solid var(--line);
+  text-align: left; font-weight: 500;
+}
+.breakdown .line-value {
+  text-align: right; white-space: nowrap;
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+.breakdown th { color: var(--ink-soft); }
+.line-note { display: block; font-size: 0.86em; color: var(--ink-faint); font-weight: 400;
+  line-height: 1.4; margin-top: 2px; }
+
+.line--revenue .line-value { color: var(--ink); font-weight: 700; }
+.line--fee .line-value, .line--tax .line-value { color: var(--take); }
+.line--cost .line-value { color: var(--ink-soft); }
+.line--info { background: var(--surface-sunk); }
+.line--info .line-value { color: var(--ink-soft); font-weight: 600; }
+
+.breakdown tfoot .line--total th,
+.breakdown tfoot .line--total td {
+  border-top: 2px solid var(--ink); border-bottom: 0;
+  font-weight: 700; font-size: var(--step-0); color: var(--ink);
+  padding-top: var(--sp-4); padding-bottom: var(--sp-4);
+}
+.breakdown tfoot .line--total td { color: var(--keep-strong); }
+
+.callouts { padding: var(--sp-4); display: grid; gap: var(--sp-3); border-top: 1px solid var(--line); }
+.callout {
+  margin: 0; padding: var(--sp-3); border-radius: var(--radius-sm);
+  font-size: var(--step--1); line-height: 1.45;
+  border-left: 3px solid transparent;
+}
+.callout--warn { background: var(--warn-bg); border: 1px solid var(--warn-line); border-left-width: 3px;
+  border-left-color: var(--warn); color: var(--warn); }
+.callout--note { background: var(--surface-sunk); border: 1px solid var(--line); border-left-width: 3px;
+  border-left-color: var(--line-strong); color: var(--ink-soft); }
+
+.result-actions {
+  display: flex; flex-wrap: wrap; gap: var(--sp-2);
+  padding: var(--sp-4); border-top: 1px solid var(--line);
+  background: var(--surface-sunk);
+}
+
+/* --- comparison table (resellers, plans, states) --- */
+
+.compare-table { width: 100%; border-collapse: collapse; font-size: var(--step--1); }
+.compare-table th, .compare-table td {
+  padding: var(--sp-3); border-bottom: 1px solid var(--line); text-align: right;
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+.compare-table th:first-child, .compare-table td:first-child {
+  text-align: left; font-family: var(--font-sans);
+}
+.compare-table thead th {
+  background: var(--surface-sunk); font-weight: 700; font-family: var(--font-sans);
+  border-bottom: 2px solid var(--line-strong); position: sticky; top: 0;
+}
+.compare-table tr[data-best] { background: var(--keep-bg); }
+.compare-table tr[data-best] td { font-weight: 700; color: var(--keep-strong); }
+.compare-table .rank { color: var(--ink-faint); width: 2rem; }
+
+/* --- home / hub index --- */
+
+.hero {
+  padding: var(--sp-7) 0 var(--sp-6);
+  background-image: var(--grad-hero);
+}
+.hero h1 { max-width: 18ch; }
+.hero p { font-size: var(--step-1); color: var(--ink-soft); max-width: 52ch; }
+
+.tool-index {
+  list-style: none; padding: 0; margin: 0 0 var(--sp-6);
+  display: grid; gap: var(--sp-4);
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+}
+.tool-index a {
+  display: flex; flex-direction: column; gap: var(--sp-2);
+  height: 100%; padding: var(--sp-5);
+  background: var(--surface); border: 1px solid var(--line);
+  border-radius: var(--radius); text-decoration: none;
+  position: relative;
+  transition: border-color .15s, transform .15s, box-shadow .15s;
+}
+/* Left rule that fills in on hover — quieter than a lifting card and
+   it reads as a ledger entry being selected. */
+.tool-index a::before {
+  content: ""; position: absolute; inset: 0 auto 0 0; width: 3px;
+  background: var(--keep); border-radius: var(--radius) 0 0 var(--radius);
+  transform: scaleY(0); transform-origin: top;
+  transition: transform .18s ease;
+}
+.tool-index a:hover::before, .tool-index a:focus-visible::before { transform: scaleY(1); }
+.tool-index a:hover {
+  border-color: var(--line-strong); box-shadow: var(--shadow-md);
+  background-image: linear-gradient(180deg, var(--surface) 0%, var(--surface-sunk) 100%);
+}
+.tool-index strong { font-size: var(--step-1); color: var(--ink); letter-spacing: -0.015em; }
+.tool-index span { color: var(--ink-faint); font-size: var(--step--1); line-height: 1.5; }
+.tool-index .tag {
+  align-self: flex-start; margin-top: auto; padding: 2px var(--sp-2);
+  font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em;
+  border-radius: 3px; background: var(--surface-sunk); color: var(--ink-faint);
+}
+
+.section-heading { margin-top: var(--sp-7); }
+.section-heading + p { color: var(--ink-soft); margin-bottom: var(--sp-5); }
+
+/* --- presets ---------------------------------------------------------
+   One-tap common values. They capture the "etsy fees on $50" family of
+   queries inside the tool rather than as separate thin pages, and they
+   double as the fastest way to use the calculator. */
+
+.presets {
+  margin: var(--sp-4) 0 0;
+  padding-top: var(--sp-4);
+  border-top: 1px dashed var(--line-strong);
+}
+.presets-label {
+  display: block; margin-bottom: var(--sp-2);
+  font-size: var(--step--1); font-weight: 600; color: var(--ink-soft);
+}
+.preset-row { display: flex; flex-wrap: wrap; gap: var(--sp-2); }
+.preset {
+  appearance: none; cursor: pointer;
+  font: inherit; font-family: var(--font-mono);
+  font-size: var(--step--1); font-weight: 600;
+  padding: var(--sp-2) var(--sp-3); min-height: 36px;
+  color: var(--ink-soft);
+  background: var(--surface-raised);
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  transition: color .12s, border-color .12s, background-color .12s;
+}
+.preset:hover { color: var(--ink); border-color: var(--keep); }
+.preset[aria-pressed="true"] {
+  color: var(--brand-ink); background: var(--grad-brand); border-color: transparent;
+}
+
+/* --- value sections --------------------------------------------------
+   The bolded one-line numeric answer that sits under each "how much does
+   X take from $Y" heading. Styled as a statement, not a callout box —
+   it needs to read as the answer to the heading directly above it. */
+
+.answer-inline {
+  font-size: var(--step-1); line-height: 1.45;
+  margin: 0 0 var(--sp-4);
+  padding-left: var(--sp-4);
+  border-left: 3px solid var(--keep);
+}
+
+.value-table tbody th { font-family: var(--font-mono); font-weight: 700; }
+.value-table tbody tr[data-best] {
+  background: color-mix(in srgb, var(--keep) 9%, transparent);
+}
+.value-table tbody tr[data-best] th::after {
+  content: " ←"; color: var(--keep); font-weight: 700;
+}

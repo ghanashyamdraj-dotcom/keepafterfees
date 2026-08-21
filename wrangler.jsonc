@@ -1,0 +1,17 @@
+{
+  // Purely static output — build/build.mjs emits plain HTML/CSS/JS to dist/,
+  // and Workers Static Assets serves it directly. No Worker script, no
+  // runtime, no adapter. Workers rather than Pages because Cloudflare has
+  // moved new static deploys here; Pages is maintenance-only.
+  "name": "keepafterfees",
+  "compatibility_date": "2026-08-22",
+  "assets": {
+    "directory": "./dist",
+
+    // The build writes every page as <route>/index.html. Without this,
+    // Workers serves /etsy-fee-calculator/ but 404s /etsy-fee-calculator —
+    // and the second form is what people paste and what other sites link to.
+    "not_found_handling": "404-page",
+    "html_handling": "auto-trailing-slash"
+  }
+}

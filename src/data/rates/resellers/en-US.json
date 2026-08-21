@@ -1,0 +1,207 @@
+{
+  "version": "2026.2",
+  "locale": "en-US",
+  "platform": "Resale marketplaces",
+  "currency": "USD",
+  "effective": "2026-08-21",
+  "verifiedOn": null,
+  "confidence": "partially-verified",
+  "note": "Resale platform fee structures changed more than any other category between 2024 and 2026, and this file proves the point. VERIFIED 2026-08-21 against each platform's own fee page: Poshmark, Mercari, Depop, eBay and Etsy. Two were wrong and are now fixed. Mercari was carried here as a zero-seller-fee platform, which was true only between March 2024 and 6 January 2025 — it reinstated a 10% selling fee on that date, charged on item price plus buyer-paid shipping. eBay's base rate was 13.25% and is now 13.6%, matching the correction made in the eBay rate file on the same day. STILL UNVERIFIED, and the reason verifiedOn remains null: Vinted, StockX, Grailed and Facebook Marketplace were not re-checked in this pass.",
+  "sources": [
+    {
+      "label": "Poshmark — Fee Policy",
+      "url": "https://poshmark.com/terms#fee-policy",
+      "retrieved": "2026-08-21"
+    },
+    {
+      "label": "Mercari — Fees on Mercari",
+      "url": "https://www.mercari.com/us/help_center/article/169/",
+      "retrieved": "2026-08-21"
+    },
+    {
+      "label": "Depop — Seller fees and charges",
+      "url": "https://depophelp.zendesk.com/hc/en-gb/articles/360001791127-Seller-fees-and-charges",
+      "retrieved": "2026-08-21"
+    },
+    {
+      "label": "Vinted — Is selling on Vinted free?",
+      "url": "https://www.vinted.com/help",
+      "retrieved": null
+    },
+    {
+      "label": "StockX — Seller fees",
+      "url": "https://stockx.com/help/en_US/Article/Seller-Fees",
+      "retrieved": null
+    },
+    {
+      "label": "Grailed — Selling fees",
+      "url": "https://www.grailed.com/drycleanonly/selling-fees",
+      "retrieved": null
+    }
+  ],
+  "platforms": [
+    {
+      "id": "poshmark",
+      "label": "Poshmark",
+      "shippingModel": "buyer-pays-flat",
+      "buyerShippingFlat": 7.97,
+      "commission": {
+        "mode": "hybrid-flat-under-threshold",
+        "threshold": 15,
+        "flatUnderThreshold": 2.95,
+        "rateAtOrAbove": 0.2
+      },
+      "processingRate": 0,
+      "processingFixed": 0,
+      "listingFee": 0,
+      "note": "Poshmark's commission includes payment processing. Buyers pay a flat shipping fee for a prepaid label, so the seller's shipping cost is zero unless they discount the label."
+    },
+    {
+      "id": "mercari",
+      "label": "Mercari",
+      "shippingModel": "seller-choice",
+      "commissionIncludesShipping": true,
+      "commission": {
+        "mode": "flat-rate",
+        "rate": 0.1
+      },
+      "processingRate": 0,
+      "processingFixed": 0,
+      "listingFee": 0,
+      "note": "Mercari reinstated a 10% selling fee on 6 January 2025, charged on the item price plus buyer-paid shipping. Sellers are no longer charged a separate payment processing fee. Buyers pay a 3.6% Buyer Protection fee on top, which does not come out of the seller's proceeds. The zero-seller-fee period ran from March 2024 to January 2025 only."
+    },
+    {
+      "id": "depop",
+      "label": "Depop",
+      "shippingModel": "seller-choice",
+      "commission": {
+        "mode": "flat-rate",
+        "rate": 0
+      },
+      "processingRate": 0.033,
+      "processingFixed": 0.45,
+      "listingFee": 0,
+      "note": "Depop charges no selling fee to sellers based in the US, the UK or Australia — the charge moved to buyers, who pay a marketplace fee of up to 5% of the item price plus up to $1. Depop Payments processing (via Stripe) still comes out of the seller's proceeds and is charged on the item price plus shipping plus any applicable taxes. The US rate is 3.3% + $0.45; the UK is 2.9% + £0.30 and Australia 2.6% + A$0.30. Sellers outside those three countries still pay Depop's 10% selling fee. Boosted Listings cost a further 12% in the US and UK on new listings from 23 March 2026 — not modelled here, since boosting is opt-in per listing."
+    },
+    {
+      "id": "vinted",
+      "label": "Vinted",
+      "shippingModel": "buyer-pays",
+      "commission": {
+        "mode": "flat-rate",
+        "rate": 0
+      },
+      "processingRate": 0,
+      "processingFixed": 0,
+      "listingFee": 0,
+      "note": "Vinted charges sellers nothing. Buyers pay a Buyer Protection fee plus shipping. The seller keeps the full item price."
+    },
+    {
+      "id": "ebay",
+      "label": "eBay",
+      "shippingModel": "seller-choice",
+      "commissionIncludesShipping": true,
+      "commission": {
+        "mode": "tiered",
+        "tiers": [
+          {
+            "upTo": 7500,
+            "rate": 0.136
+          },
+          {
+            "upTo": null,
+            "rate": 0.0235
+          }
+        ]
+      },
+      "perOrderFee": {
+        "underOrEqual10": 0.3,
+        "over10": 0.4
+      },
+      "processingRate": 0,
+      "processingFixed": 0,
+      "listingFee": 0,
+      "note": "eBay's final value fee includes payment processing and is charged on the total including shipping you collect."
+    },
+    {
+      "id": "stockx",
+      "label": "StockX",
+      "shippingModel": "seller-pays",
+      "commission": {
+        "mode": "level-based",
+        "levels": [
+          {
+            "id": "level-1",
+            "label": "Level 1",
+            "rate": 0.09
+          },
+          {
+            "id": "level-2",
+            "label": "Level 2",
+            "rate": 0.085
+          },
+          {
+            "id": "level-3",
+            "label": "Level 3",
+            "rate": 0.08
+          },
+          {
+            "id": "level-4",
+            "label": "Level 4",
+            "rate": 0.075
+          },
+          {
+            "id": "level-5",
+            "label": "Level 5",
+            "rate": 0.07
+          }
+        ]
+      },
+      "processingRate": 0.03,
+      "processingFixed": 0,
+      "listingFee": 0,
+      "note": "StockX charges a transaction fee that falls as your seller level rises, plus a 3% payment processing fee. Sellers pay to ship to StockX for authentication."
+    },
+    {
+      "id": "grailed",
+      "label": "Grailed",
+      "shippingModel": "seller-choice",
+      "commission": {
+        "mode": "flat-rate",
+        "rate": 0.09
+      },
+      "processingRate": 0.0349,
+      "processingFixed": 0.49,
+      "listingFee": 0,
+      "note": "Grailed charges a 9% commission plus PayPal-equivalent payment processing."
+    },
+    {
+      "id": "etsy",
+      "label": "Etsy",
+      "shippingModel": "seller-choice",
+      "commissionIncludesShipping": true,
+      "commission": {
+        "mode": "flat-rate",
+        "rate": 0.065
+      },
+      "processingRate": 0.03,
+      "processingFixed": 0.25,
+      "listingFee": 0.2,
+      "note": "Included here for comparison against resale platforms. Etsy's transaction fee applies to shipping you charge as well as the item price."
+    },
+    {
+      "id": "facebook-marketplace",
+      "label": "Facebook Marketplace (shipped)",
+      "shippingModel": "seller-choice",
+      "commission": {
+        "mode": "flat-rate",
+        "rate": 0.05,
+        "minimumFee": 0.4
+      },
+      "processingRate": 0,
+      "processingFixed": 0,
+      "listingFee": 0,
+      "note": "Applies to checkout-enabled shipped orders only. Local pickup sales arranged off-platform carry no fee."
+    }
+  ]
+}

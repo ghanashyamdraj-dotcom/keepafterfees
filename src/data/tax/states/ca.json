@@ -1,0 +1,106 @@
+{
+  "version": "2026.2",
+  "taxYear": 2026,
+  "incomeTaxScheduleYear": 2025,
+  "state": "CA",
+  "name": "California",
+  "slug": "california",
+  "hasIncomeTax": true,
+  "effective": "2026-01-01",
+  "verifiedOn": "2026-08-21",
+  "confidence": "verified",
+  "sources": [
+    { "label": "California FTB — 2025 California Tax Rate Schedules (Form 540)", "url": "https://www.ftb.ca.gov/forms/2025/2025-540-tax-rate-schedules.pdf", "retrieved": "2026-08-21" },
+    { "label": "California FTB — Standard deduction", "url": "https://www.ftb.ca.gov/file/personal/deductions/index.html", "retrieved": "2026-08-21" },
+    { "label": "California FTB — 2025 Form 540 (exemption credit amounts)", "url": "https://www.ftb.ca.gov/forms/2025/2025-540.pdf", "retrieved": "2026-08-21" },
+    { "label": "California FTB — 2026 Instructions for Form 540-ES", "url": "https://www.ftb.ca.gov/forms/2026/2026-540-es-instructions.html", "retrieved": "2026-08-21" },
+    { "label": "California EDD — Payroll tax rates and withholding (SDI)", "url": "https://edd.ca.gov/en/payroll_taxes/rates_and_withholding/", "retrieved": "2026-08-21" }
+  ],
+  "verificationNote": "Corrected 2026-08-21. The previous version of this file carried California's 2024 brackets and 2024 exemption credits under a 2026 label, with a standard deduction that matched no published year at all. Every figure below now comes from an FTB primary document. Note the deliberate mixed vintage: California had not published indexed 2026 income tax schedules as of 21 August 2026 — FTB's own 2026 Form 540-ES instructions direct filers to the 2025 Form 540 amounts — so the brackets, standard deduction and exemption credits below are the official 2025 schedules, flagged by incomeTaxScheduleYear. The SDI rate is different: EDD has published a 2026 figure, and it is used. Re-check the brackets once FTB posts the 2026 rate schedules, normally late in the year.",
+
+  "method": "progressive",
+  "standardDeduction": {
+    "single": 5706,
+    "married_joint": 11412,
+    "married_separate": 5706,
+    "head_of_household": 11412
+  },
+  "personalExemptionCredit": {
+    "single": 153,
+    "married_joint": 306,
+    "married_separate": 153,
+    "head_of_household": 153,
+    "perDependent": 475,
+    "note": "California uses an exemption credit that reduces tax owed directly, not a deduction that reduces taxable income. 2025 amounts: $153 per personal exemption (so $306 for a joint return claiming two) and $475 per dependent. An extra $153 applies for each taxpayer who is 65 or older, and again for each who is blind — neither is modelled here."
+  },
+  "brackets": {
+    "single": [
+      { "upTo": 11079, "rate": 0.01 },
+      { "upTo": 26264, "rate": 0.02 },
+      { "upTo": 41452, "rate": 0.04 },
+      { "upTo": 57542, "rate": 0.06 },
+      { "upTo": 72724, "rate": 0.08 },
+      { "upTo": 371479, "rate": 0.093 },
+      { "upTo": 445771, "rate": 0.103 },
+      { "upTo": 742953, "rate": 0.113 },
+      { "upTo": null, "rate": 0.123 }
+    ],
+    "married_joint": [
+      { "upTo": 22158, "rate": 0.01 },
+      { "upTo": 52528, "rate": 0.02 },
+      { "upTo": 82904, "rate": 0.04 },
+      { "upTo": 115084, "rate": 0.06 },
+      { "upTo": 145448, "rate": 0.08 },
+      { "upTo": 742958, "rate": 0.093 },
+      { "upTo": 891542, "rate": 0.103 },
+      { "upTo": 1485906, "rate": 0.113 },
+      { "upTo": null, "rate": 0.123 }
+    ],
+    "married_separate": [
+      { "upTo": 11079, "rate": 0.01 },
+      { "upTo": 26264, "rate": 0.02 },
+      { "upTo": 41452, "rate": 0.04 },
+      { "upTo": 57542, "rate": 0.06 },
+      { "upTo": 72724, "rate": 0.08 },
+      { "upTo": 371479, "rate": 0.093 },
+      { "upTo": 445771, "rate": 0.103 },
+      { "upTo": 742953, "rate": 0.113 },
+      { "upTo": null, "rate": 0.123 }
+    ],
+    "head_of_household": [
+      { "upTo": 22173, "rate": 0.01 },
+      { "upTo": 52530, "rate": 0.02 },
+      { "upTo": 67716, "rate": 0.04 },
+      { "upTo": 83805, "rate": 0.06 },
+      { "upTo": 98990, "rate": 0.08 },
+      { "upTo": 505208, "rate": 0.093 },
+      { "upTo": 606251, "rate": 0.103 },
+      { "upTo": 1010417, "rate": 0.113 },
+      { "upTo": null, "rate": 0.123 }
+    ]
+  },
+  "surtaxes": [
+    {
+      "id": "mental-health",
+      "label": "Mental Health Services Tax",
+      "rate": 0.01,
+      "thresholdTaxableIncome": 1000000,
+      "note": "An extra 1% applies to taxable income above $1 million, funding the Mental Health Services Act."
+    }
+  ],
+  "payrollTaxes": [
+    {
+      "id": "sdi",
+      "label": "CA State Disability Insurance (SDI)",
+      "rate": 0.013,
+      "wageCap": null,
+      "appliesTo": "wages",
+      "note": "The 2026 SDI withholding rate is 1.3%, up from 1.2% in 2025. Senate Bill 951 removed the taxable wage ceiling effective 1 January 2024, so this applies to every dollar of wages with no cap. It does not apply to self-employment income unless you elect into Disability Insurance Elective Coverage."
+    }
+  ],
+  "localTaxes": [],
+  "notes": [
+    "California does not conform to the federal Qualified Business Income deduction — self-employed Californians pay state tax on the full amount.",
+    "California taxes capital gains as ordinary income at the same rates shown above."
+  ]
+}

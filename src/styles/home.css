@@ -1,0 +1,422 @@
+/* ============================================================
+   home.css — hero, live fee slicer, and the tool directory.
+   ------------------------------------------------------------
+   These are the three things the design critique named:
+
+     1. The hero was ~60% dead black with an aimless breadcrumb.
+        It is now a two-column layout with a working calculator on
+        the right, so the first thing on the page does the thing
+        the site is for rather than describing it.
+     2. The directory cards were text-only with a repeated "live"
+        tag that carried no information. They now have a category
+        glyph, real metadata chips, and a footer showing the
+        actual headline rate — computed from the rate JSON, never
+        typed by hand.
+     3. The grid collapsed into 7/3/1 rows. It is now one
+        responsive 3-column grid with filter pills above it.
+   ============================================================ */
+
+/* ===================== hero ===================== */
+
+.hero-section {
+  position: relative;
+  padding: var(--sp-7) 0 var(--sp-6);
+  background: var(--grad-hero);
+  overflow: hidden;
+}
+/* A single soft horizon line under the hero so it ends deliberately
+   instead of fading into the same flat ground it started on. */
+.hero-section::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--line-strong) 20%, var(--line-strong) 80%, transparent);
+}
+
+.hero-grid {
+  display: grid;
+  gap: var(--sp-7);
+  grid-template-columns: minmax(0, 1fr);
+  align-items: center;
+}
+@media (min-width: 940px) {
+  .hero-grid { grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr); gap: var(--sp-6); }
+}
+
+.hero-eyebrow {
+  display: inline-flex; align-items: center; gap: var(--sp-2);
+  padding: var(--sp-2) var(--sp-4);
+  border: 1px solid var(--keep-line);
+  background: color-mix(in srgb, var(--keep) 10%, transparent);
+  border-radius: 999px;
+  font-size: var(--step--1); font-weight: 600;
+  color: var(--keep-strong);
+  margin-bottom: var(--sp-5);
+}
+.hero-eyebrow svg { width: 14px; height: 14px; flex: none; }
+
+.hero-copy h1 {
+  font-size: var(--step-4);
+  margin: 0 0 var(--sp-4);
+  letter-spacing: -0.035em;
+  line-height: 1.05;
+}
+/* Exactly one gradient phrase per page, on the words that carry the promise. */
+.hero-copy h1 .grad {
+  background: var(--grad-text);
+  -webkit-background-clip: text; background-clip: text;
+  color: transparent;
+}
+.hero-lede {
+  font-size: var(--step-1);
+  color: var(--ink-soft);
+  max-width: 46ch;
+  margin: 0 0 var(--sp-5);
+  line-height: 1.5;
+}
+
+.hero-points {
+  list-style: none; margin: 0 0 var(--sp-6); padding: 0;
+  display: grid; gap: var(--sp-3);
+}
+.hero-points li {
+  display: flex; align-items: flex-start; gap: var(--sp-3);
+  font-size: var(--step--1); color: var(--ink-soft); margin: 0;
+}
+.hero-points svg { width: 18px; height: 18px; flex: none; margin-top: 2px; color: var(--keep); }
+.hero-points strong { color: var(--ink); font-weight: 650; display: block; }
+
+.hero-actions { display: flex; flex-wrap: wrap; gap: var(--sp-3); }
+
+/* ===================== live fee slicer ===================== */
+
+.slicer {
+  background: var(--surface);
+  background-image: var(--grad-card);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-lg);
+  padding: var(--sp-5);
+  box-shadow: var(--shadow-md);
+  position: relative;
+}
+
+.slicer-head {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: var(--sp-4); margin-bottom: var(--sp-4);
+}
+.slicer-title {
+  display: flex; align-items: center; gap: var(--sp-2);
+  font-size: var(--step-0); font-weight: 650; color: var(--ink); margin: 0;
+}
+.slicer-title svg { width: 18px; height: 18px; color: var(--keep); }
+.slicer-live {
+  display: inline-flex; align-items: center; gap: var(--sp-2);
+  font-size: 0.72rem; font-weight: 650; letter-spacing: 0.06em;
+  text-transform: uppercase; color: var(--ink-faint);
+}
+.slicer-live::before {
+  content: ""; width: 7px; height: 7px; border-radius: 50%;
+  background: var(--keep); box-shadow: 0 0 0 3px color-mix(in srgb, var(--keep) 22%, transparent);
+}
+
+.slicer-input { margin-bottom: var(--sp-4); }
+.slicer-input label {
+  display: block; font-size: var(--step--1); font-weight: 600;
+  color: var(--ink-soft); margin-bottom: var(--sp-2);
+}
+.slicer-amount {
+  display: flex; align-items: center; gap: var(--sp-2);
+  background: var(--surface-sunk);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  padding: var(--sp-2) var(--sp-4);
+  transition: border-color .15s, box-shadow .15s;
+}
+.slicer-amount:focus-within {
+  border-color: var(--keep);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--keep) 18%, transparent);
+}
+.slicer-amount .cur { color: var(--ink-faint); font-size: var(--step-2); font-family: var(--font-mono); }
+.slicer-amount input {
+  flex: 1; min-width: 0;
+  appearance: none; -moz-appearance: textfield;
+  background: none; border: 0; outline: none;
+  color: var(--ink);
+  font-family: var(--font-mono);
+  font-size: var(--step-3); font-weight: 700;
+  letter-spacing: -0.02em;
+  padding: var(--sp-2) 0;
+  font-variant-numeric: tabular-nums;
+}
+.slicer-amount input::-webkit-outer-spin-button,
+.slicer-amount input::-webkit-inner-spin-button { appearance: none; margin: 0; }
+
+.slicer-presets { display: flex; flex-wrap: wrap; gap: var(--sp-2); margin-top: var(--sp-3); }
+.slicer-preset {
+  appearance: none; cursor: pointer;
+  font: inherit; font-size: var(--step--1); font-weight: 600;
+  font-family: var(--font-mono);
+  padding: var(--sp-1) var(--sp-3);
+  min-height: 32px;
+  color: var(--ink-soft);
+  background: var(--surface-raised);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  transition: color .12s, border-color .12s, background-color .12s;
+}
+.slicer-preset:hover { color: var(--ink); border-color: var(--keep); }
+.slicer-preset[aria-pressed="true"] {
+  color: var(--brand-ink); background: var(--grad-brand); border-color: transparent;
+}
+
+.slicer-rows { display: grid; gap: var(--sp-2); }
+
+.slicer-row {
+  display: grid;
+  grid-template-columns: 30px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-3);
+  border-radius: var(--radius-sm);
+  background: var(--surface-raised);
+  border: 1px solid transparent;
+  transition: border-color .15s;
+}
+.slicer-row:hover { border-color: var(--line-strong); }
+/* The winner gets a mint edge — the one row worth looking at first. */
+.slicer-row[data-best] {
+  border-color: var(--keep-line);
+  background: color-mix(in srgb, var(--keep) 7%, var(--surface-raised));
+}
+
+.slicer-glyph {
+  width: 30px; height: 30px; border-radius: 8px;
+  display: grid; place-items: center;
+  background: var(--accent-bg); color: var(--accent-bright);
+  border: 1px solid var(--accent-line);
+}
+.slicer-glyph svg { width: 15px; height: 15px; }
+/* Platform tiles carry a monogram, not the platform's trademark — see the
+   header comment in icons.js for why. */
+.mono-letter {
+  font-family: var(--font-mono);
+  font-size: 0.8rem; font-weight: 700; line-height: 1;
+  letter-spacing: -0.03em;
+}
+.slicer-row[data-slicer-row="etsy"] .slicer-glyph { background: color-mix(in srgb, #F1641E 18%, transparent); border-color: color-mix(in srgb, #F1641E 42%, transparent); color: #FF8A4C; }
+.slicer-row[data-slicer-row="ebay"] .slicer-glyph { background: color-mix(in srgb, #3665F3 18%, transparent); border-color: color-mix(in srgb, #3665F3 42%, transparent); color: #7C9BFF; }
+.slicer-row[data-slicer-row="shopify"] .slicer-glyph { background: color-mix(in srgb, #5E8E3E 20%, transparent); border-color: color-mix(in srgb, #5E8E3E 45%, transparent); color: #95C16F; }
+.slicer-row[data-slicer-row="paypal"] .slicer-glyph { background: color-mix(in srgb, #009CDE 18%, transparent); border-color: color-mix(in srgb, #009CDE 42%, transparent); color: #5AC8F5; }
+.slicer-row[data-slicer-row="stripe"] .slicer-glyph { background: color-mix(in srgb, #635BFF 20%, transparent); border-color: color-mix(in srgb, #635BFF 45%, transparent); color: #A5A0FF; }
+
+.slicer-meta { min-width: 0; }
+.slicer-name {
+  display: flex; align-items: center; gap: var(--sp-2);
+  font-size: var(--step--1); font-weight: 650; color: var(--ink);
+  margin-bottom: 5px;
+}
+.slicer-fee { color: var(--take); font-family: var(--font-mono); font-weight: 600; }
+/* Carries a fixed cost that a per-sale percentage cannot express — currently
+   only Shopify's monthly plan. Without it the row reads as cheaper than it is. */
+.slicer-note {
+  font-size: 0.7rem; font-weight: 600; color: var(--warn);
+  background: var(--warn-bg); border: 1px solid var(--warn-line);
+  padding: 1px 5px; border-radius: 4px; white-space: nowrap;
+}
+
+/* The deduction bar. Two segments, so the eye reads "kept vs taken"
+   without having to compare two numbers. */
+.slicer-bar {
+  height: 6px; border-radius: 999px;
+  background: var(--take-bg);
+  overflow: hidden;
+  display: flex;
+}
+.slicer-bar span { display: block; height: 100%; }
+.slicer-bar .keep { background: var(--grad-keep); border-radius: 999px 0 0 999px; }
+.slicer-bar .take { background: var(--take); opacity: 0.8; }
+
+.slicer-net {
+  font-family: var(--font-mono);
+  font-size: var(--step-1); font-weight: 700;
+  color: var(--keep);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  white-space: nowrap;
+}
+.slicer-row[data-best] .slicer-net { color: var(--keep-strong); }
+
+.slicer-foot {
+  margin: var(--sp-4) 0 0;
+  padding-top: var(--sp-3);
+  border-top: 1px dashed var(--line-strong);
+  font-size: var(--step--1);
+  color: var(--ink-faint);
+}
+.slicer-foot a { color: var(--link); }
+
+/* ===================== directory ===================== */
+
+.directory { padding: var(--sp-7) 0 var(--sp-6); }
+.directory-head { margin-bottom: var(--sp-5); }
+.directory-head h2 { margin-top: 0; }
+
+.filter-pills {
+  display: flex; flex-wrap: wrap; gap: var(--sp-2);
+  margin-bottom: var(--sp-5);
+  padding: 0; list-style: none;
+}
+.filter-pill {
+  appearance: none; cursor: pointer;
+  font: inherit; font-size: var(--step--1); font-weight: 600;
+  padding: var(--sp-2) var(--sp-4);
+  min-height: 38px;
+  color: var(--ink-soft);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  transition: color .12s, border-color .12s, background-color .12s;
+}
+.filter-pill:hover { color: var(--ink); border-color: var(--line-strong); }
+.filter-pill[aria-pressed="true"] {
+  color: var(--brand-ink); background: var(--grad-brand); border-color: transparent;
+}
+.filter-pill .count { opacity: 0.65; font-family: var(--font-mono); margin-left: 4px; }
+
+/* One grid for everything. Auto-fit rather than a fixed 3, so the last row
+   never leaves a single stretched card the way the old per-group lists did. */
+.tool-grid {
+  list-style: none; margin: 0; padding: 0;
+  display: grid;
+  gap: var(--sp-4);
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
+}
+
+.tool-card { margin: 0; display: flex; }
+.tool-card[hidden] { display: none; }
+
+.tool-card > a {
+  display: flex; flex-direction: column;
+  width: 100%;
+  padding: var(--sp-5);
+  background: var(--surface);
+  background-image: var(--grad-card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  text-decoration: none;
+  color: inherit;
+  position: relative;
+  transition: border-color .16s, transform .16s, box-shadow .16s;
+}
+.tool-card > a:hover {
+  border-color: var(--keep-line);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-glow);
+}
+@media (prefers-reduced-motion: reduce) {
+  .tool-card > a:hover { transform: none; }
+}
+
+.card-top {
+  display: flex; align-items: flex-start; gap: var(--sp-3);
+  margin-bottom: var(--sp-3);
+}
+.card-glyph {
+  width: 38px; height: 38px; flex: none;
+  border-radius: 10px;
+  display: grid; place-items: center;
+  background: var(--accent-bg);
+  border: 1px solid var(--accent-line);
+  color: var(--accent-bright);
+}
+.card-glyph svg { width: 19px; height: 19px; }
+/* Category tinting, so the grid reads as grouped even when unfiltered. */
+.tool-card[data-group="marketplace"] .card-glyph {
+  background: color-mix(in srgb, var(--keep) 12%, transparent);
+  border-color: var(--keep-line); color: var(--keep-strong);
+}
+.tool-card[data-group="processor"] .card-glyph {
+  background: var(--accent-bg); border-color: var(--accent-line); color: var(--accent-bright);
+}
+.tool-card[data-group="freelance"] .card-glyph {
+  background: color-mix(in srgb, var(--warn) 14%, transparent);
+  border-color: var(--warn-line); color: var(--warn);
+}
+.tool-card[data-group="paycheck"] .card-glyph {
+  background: color-mix(in srgb, var(--take) 12%, transparent);
+  border-color: var(--take-line); color: var(--take-strong);
+}
+
+.card-title {
+  font-size: var(--step-0); font-weight: 650; color: var(--ink);
+  line-height: 1.3; margin: 0;
+}
+.card-blurb {
+  font-size: var(--step--1); color: var(--ink-faint);
+  line-height: 1.5; margin: 0 0 var(--sp-4);
+  flex: 1;
+}
+
+.card-chips { display: flex; flex-wrap: wrap; gap: var(--sp-2); margin-bottom: var(--sp-4); }
+.chip {
+  font-size: 0.72rem; font-weight: 600; letter-spacing: 0.01em;
+  padding: 3px var(--sp-2);
+  border-radius: 5px;
+  color: var(--ink-soft);
+  background: var(--surface-raised);
+  border: 1px solid var(--line);
+  white-space: nowrap;
+}
+.chip--soon { color: var(--warn); background: var(--warn-bg); border-color: var(--warn-line); }
+
+/* The card footer is the "what does this actually tell me" line the critique
+   asked for. The figure is read from the rate data at build time. */
+.card-stat {
+  margin-top: auto;
+  padding-top: var(--sp-3);
+  border-top: 1px solid var(--line);
+  display: flex; align-items: baseline; justify-content: space-between;
+  gap: var(--sp-3);
+}
+.card-stat-label {
+  font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.07em;
+  color: var(--ink-faint); font-weight: 650;
+}
+.card-stat-value {
+  font-family: var(--font-mono); font-size: var(--step--1); font-weight: 700;
+  color: var(--keep); font-variant-numeric: tabular-nums;
+}
+
+.card-bar {
+  height: 4px; border-radius: 999px; overflow: hidden;
+  background: var(--take-bg); display: flex; margin-top: var(--sp-2);
+}
+.card-bar span { display: block; height: 100%; }
+.card-bar .keep { background: var(--grad-keep); border-radius: 999px 0 0 999px; }
+.card-bar .take { background: var(--take); opacity: 0.75; }
+
+.directory-empty {
+  padding: var(--sp-6); text-align: center;
+  color: var(--ink-faint); border: 1px dashed var(--line-strong);
+  border-radius: var(--radius);
+}
+.directory-empty[hidden] { display: none; }
+
+/* ===================== trust strip ===================== */
+/* Deliberately NOT "trusted by 12,000 sellers" with stock avatars. Every
+   claim here is one this site can actually substantiate, and each links to
+   the page that proves it. */
+
+.trust-strip {
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  background: color-mix(in srgb, var(--surface) 55%, transparent);
+  padding: var(--sp-5) 0;
+}
+.trust-list {
+  list-style: none; margin: 0; padding: 0;
+  display: grid; gap: var(--sp-5);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+}
+.trust-list li { display: flex; align-items: flex-start; gap: var(--sp-3); margin: 0; }
+.trust-list svg { width: 20px; height: 20px; flex: none; color: var(--keep); margin-top: 2px; }
+.trust-list strong { display: block; color: var(--ink); font-size: var(--step--1); font-weight: 650; }
+.trust-list span { display: block; color: var(--ink-faint); font-size: var(--step--1); line-height: 1.45; }

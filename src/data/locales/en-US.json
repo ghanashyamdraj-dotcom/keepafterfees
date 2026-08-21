@@ -1,0 +1,16 @@
+{
+  "locale": "en-US",
+  "country": "United States",
+  "countryCode": "US",
+  "language": "en",
+  "currency": {
+    "code": "USD",
+    "symbol": "$",
+    "symbolPosition": "before",
+    "minorUnitDigits": 2
+  },
+  "formatting": {
+    "numberLocale": "en-US",
+    "dateFormat": "MM/DD/YYYY"
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "version": "2026.1",
+  "taxYear": 2026,
+  "state": "IL",
+  "name": "Illinois",
+  "slug": "illinois",
+  "hasIncomeTax": true,
+  "effective": "2026-01-01",
+  "verifiedOn": "2026-08-21",
+  "confidence": "verified",
+  "sources": [
+    { "label": "Illinois Department of Revenue — 2026 Booklet IL-700-T withholding tax tables", "url": "https://tax.illinois.gov/content/dam/soi/en/web/tax/forms/withholding/documents/currentyear/il-700-t.pdf", "retrieved": "2026-08-21" },
+    { "label": "Illinois Department of Revenue — Bulletin FY 2026-15, What's New for Illinois Income Taxes", "url": "https://tax.illinois.gov/research/publications/bulletins/fy-2026-15.html", "retrieved": "2026-08-21" },
+    { "label": "Illinois Department of Revenue — What is the Illinois personal exemption allowance?", "url": "https://tax.illinois.gov/questionsandanswers/answer.851.html", "retrieved": "2026-08-21" }
+  ],
+
+  "method": "flat",
+  "flatRate": 0.0495,
+  "standardDeduction": {
+    "single": 0,
+    "married_joint": 0,
+    "married_separate": 0,
+    "head_of_household": 0
+  },
+  "personalExemptionCredit": {
+    "mode": "deduction",
+    "single": 2925,
+    "married_joint": 5850,
+    "married_separate": 2925,
+    "head_of_household": 2925,
+    "perDependent": 2925,
+    "incomeLimitSingle": 250000,
+    "incomeLimitJoint": 500000,
+    "note": "Illinois allows a personal exemption as a deduction from base income: $2,925 per allowance for tax year 2026 (up from $2,850 in 2025). Booklet IL-700-T works the joint figure as 2 x $2,925 = $5,850. The exemption is unavailable above $250,000 of adjusted gross income ($500,000 filing jointly)."
+  },
+  "brackets": {
+    "single": [{ "upTo": null, "rate": 0.0495 }],
+    "married_joint": [{ "upTo": null, "rate": 0.0495 }],
+    "married_separate": [{ "upTo": null, "rate": 0.0495 }],
+    "head_of_household": [{ "upTo": null, "rate": 0.0495 }]
+  },
+  "surtaxes": [],
+  "payrollTaxes": [],
+  "localTaxes": [],
+  "notes": [
+    "Illinois has a flat 4.95% income tax written into its constitution — a 2020 ballot measure to allow graduated rates failed.",
+    "Illinois does not tax retirement income, including distributions from 401(k) plans, IRAs, and Social Security.",
+    "Illinois does not conform to the federal Qualified Business Income deduction."
+  ]
+}

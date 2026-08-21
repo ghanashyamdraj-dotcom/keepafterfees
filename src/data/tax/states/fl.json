@@ -1,0 +1,34 @@
+{
+  "version": "2026.1",
+  "taxYear": 2026,
+  "state": "FL",
+  "name": "Florida",
+  "slug": "florida",
+  "hasIncomeTax": false,
+  "effective": "2026-01-01",
+  "verifiedOn": "2026-08-21",
+  "confidence": "verified",
+  "sources": [
+    { "label": "Florida Constitution — Article VII, Section 5 (estate, inheritance and income taxes)", "url": "https://www.flsenate.gov/Laws/Constitution#A7S05", "retrieved": "2026-08-21" },
+    { "label": "Florida Department of Revenue — Taxes and fees", "url": "https://floridarevenue.com/taxes/taxesfees/Pages/default.aspx", "retrieved": "2026-08-21" },
+    { "label": "Florida Department of Revenue — Corporate income tax", "url": "https://floridarevenue.com/taxes/taxesfees/Pages/corporate.aspx", "retrieved": "2026-08-21" }
+  ],
+
+  "method": "none",
+  "flatRate": 0,
+  "standardDeduction": { "single": 0, "married_joint": 0, "married_separate": 0, "head_of_household": 0 },
+  "brackets": {
+    "single": [{ "upTo": null, "rate": 0 }],
+    "married_joint": [{ "upTo": null, "rate": 0 }],
+    "married_separate": [{ "upTo": null, "rate": 0 }],
+    "head_of_household": [{ "upTo": null, "rate": 0 }]
+  },
+  "surtaxes": [],
+  "payrollTaxes": [],
+  "localTaxes": [],
+  "notes": [
+    "Florida levies no individual income tax. Article VII, Section 5 of the state constitution caps any tax on the income of natural persons at the amount creditable against a similar federal tax — and because no such federal credit exists, that cap is zero.",
+    "Self-employed Floridians still owe federal self-employment tax and federal income tax. Only the state layer is zero.",
+    "Florida corporations pay a 5.5% corporate income tax on taxable years beginning on or after 1 January 2022, but income passed through an LLC or sole proprietorship to an individual is not taxed at the state level."
+  ]
+}

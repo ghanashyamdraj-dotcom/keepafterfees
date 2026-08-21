@@ -1,0 +1,95 @@
+{
+  "version": "2026.1",
+  "locale": "en-US",
+  "platform": "Shopify",
+  "marketplace": "Shopify (US merchant, USD)",
+  "currency": "USD",
+  "effective": "2026-01-01",
+  "verifiedOn": null,
+  "confidence": "partially-verified",
+  "sources": [
+    {
+      "label": "Shopify — Pricing (US)",
+      "url": "https://www.shopify.com/pricing?country=us&lang=en",
+      "retrieved": "2026-08-21"
+    },
+    {
+      "label": "Shopify Help — Shopify Payments rates in the United States by card type",
+      "url": "https://help.shopify.com/en/manual/payments/shopify-payments/transactions/credit-card-rates",
+      "retrieved": "2026-08-21"
+    }
+  ],
+  "verificationNote": "Checked 2026-08-21, and only partly confirmable. CONFIRMED against Shopify's US pricing page: the third-party payment gateway fees of 2% / 1% / 0.6% / 0.2% for Basic / Grow / Advanced / Plus. NOT CONFIRMED, for two separate reasons. (1) Plan prices: shopify.com/pricing renders its prices from the visitor's IP geolocation rather than from the URL, so it served INR pricing and would not show USD even with country=us&lang=en set. (2) Card rates: Shopify has stopped publishing per-plan card rates publicly — the help page now tells merchants to read their own rates from Settings > Payments in the Shopify admin instead. The plan prices and card rates below are therefore still carried over from the original seeding and should be confirmed by someone with a US IP address or a Shopify admin login before launch. That same help page does document two things not modelled here: US rates split by card type (Standard = domestic consumer Visa/Mastercard/Discover/Diners; Premium = domestic commercial/corporate/business cards and all domestic American Express), and a higher rate for manually entered card payments.",
+  "plans": [
+    {
+      "id": "basic",
+      "label": "Basic",
+      "monthlyMonthly": 39,
+      "monthlyAnnual": 29,
+      "online": {
+        "rate": 0.029,
+        "fixed": 0.3
+      },
+      "inPerson": {
+        "rate": 0.027,
+        "fixed": 0
+      },
+      "thirdPartyGatewayRate": 0.02
+    },
+    {
+      "id": "grow",
+      "label": "Grow",
+      "monthlyMonthly": 105,
+      "monthlyAnnual": 79,
+      "online": {
+        "rate": 0.027,
+        "fixed": 0.3
+      },
+      "inPerson": {
+        "rate": 0.026,
+        "fixed": 0
+      },
+      "thirdPartyGatewayRate": 0.01
+    },
+    {
+      "id": "advanced",
+      "label": "Advanced",
+      "monthlyMonthly": 399,
+      "monthlyAnnual": 299,
+      "online": {
+        "rate": 0.025,
+        "fixed": 0.3
+      },
+      "inPerson": {
+        "rate": 0.025,
+        "fixed": 0
+      },
+      "thirdPartyGatewayRate": 0.006
+    },
+    {
+      "id": "plus",
+      "label": "Plus",
+      "monthlyMonthly": 2300,
+      "monthlyAnnual": 2300,
+      "online": {
+        "rate": 0.0225,
+        "fixed": 0.3
+      },
+      "inPerson": {
+        "rate": 0.0225,
+        "fixed": 0
+      },
+      "thirdPartyGatewayRate": 0.002
+    }
+  ],
+  "internationalCardSurcharge": {
+    "rate": 0.015,
+    "note": "Added when the customer's card was issued outside the United States."
+  },
+  "currencyConversionFee": {
+    "rate": 0.015,
+    "note": "Applied by Shopify Payments when the sale currency differs from your payout currency."
+  },
+  "thirdPartyGatewayNote": "Shopify charges an additional transaction fee when you use any payment gateway other than Shopify Payments. This is on top of whatever the third-party gateway itself charges you.",
+  "chargebackFee": 15.0
+}

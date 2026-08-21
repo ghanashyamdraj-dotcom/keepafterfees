@@ -1,0 +1,169 @@
+{
+  "version": "2026.1",
+  "taxYear": 2026,
+  "jurisdiction": "US Federal",
+  "currency": "USD",
+  "effective": "2026-01-01",
+  "verifiedOn": "2026-08-02",
+  "confidence": "verified",
+  "note": "Inflation-adjusted figures for tax year 2026, filed in early 2027. Brackets, standard deduction, QBI thresholds, HSA limits and retirement limits were checked line by line against the IRS primary sources listed below on 2 August 2026. The FICA wage base and rates were confirmed against IRS Topic 751. One figure remains unconfirmed: the business standard mileage rate, which the IRS announces each December — see the note on that field. This file is the single source of truth for every tax figure on the site and must be replaced each year.",
+  "sources": [
+    { "label": "IRS Rev. Proc. 2025-32 — inflation adjustments for tax year 2026", "url": "https://www.irs.gov/pub/irs-drop/rp-25-32.pdf", "retrieved": "2026-08-02" },
+    { "label": "IRS Topic 751 — Social Security and Medicare withholding rates", "url": "https://www.irs.gov/taxtopics/tc751", "retrieved": "2026-08-02" },
+    { "label": "IRS — COLA increases for dollar limitations on benefits and contributions", "url": "https://www.irs.gov/retirement-plans/cola-increases-for-dollar-limitations-on-benefits-and-contributions", "retrieved": "2026-08-02" },
+    { "label": "IRS Rev. Proc. 2025-19 — 2026 HSA and HDHP inflation adjustments", "url": "https://www.irs.gov/pub/irs-drop/rp-25-19.pdf", "retrieved": "2026-08-02" },
+    { "label": "IRS Publication 15-T — Federal income tax withholding methods", "url": "https://www.irs.gov/pub/irs-pdf/p15t.pdf", "retrieved": null },
+    { "label": "IRS Form 1040-ES — Estimated tax for individuals", "url": "https://www.irs.gov/pub/irs-pdf/f1040es.pdf", "retrieved": null }
+  ],
+
+  "filingStatuses": [
+    { "id": "single", "label": "Single" },
+    { "id": "married_joint", "label": "Married filing jointly" },
+    { "id": "married_separate", "label": "Married filing separately" },
+    { "id": "head_of_household", "label": "Head of household" }
+  ],
+
+  "standardDeduction": {
+    "single": 16100,
+    "married_joint": 32200,
+    "married_separate": 16100,
+    "head_of_household": 24150,
+    "additionalAge65OrBlind": {
+      "single": 2050,
+      "head_of_household": 2050,
+      "married_joint": 1650,
+      "married_separate": 1650
+    },
+    "note": "The additional amount is per qualifying condition per person — someone who is both 65+ and blind gets it twice."
+  },
+
+  "brackets": {
+    "single": [
+      { "upTo": 12400, "rate": 0.1 },
+      { "upTo": 50400, "rate": 0.12 },
+      { "upTo": 105700, "rate": 0.22 },
+      { "upTo": 201775, "rate": 0.24 },
+      { "upTo": 256225, "rate": 0.32 },
+      { "upTo": 640600, "rate": 0.35 },
+      { "upTo": null, "rate": 0.37 }
+    ],
+    "married_joint": [
+      { "upTo": 24800, "rate": 0.1 },
+      { "upTo": 100800, "rate": 0.12 },
+      { "upTo": 211400, "rate": 0.22 },
+      { "upTo": 403550, "rate": 0.24 },
+      { "upTo": 512450, "rate": 0.32 },
+      { "upTo": 768700, "rate": 0.35 },
+      { "upTo": null, "rate": 0.37 }
+    ],
+    "married_separate": [
+      { "upTo": 12400, "rate": 0.1 },
+      { "upTo": 50400, "rate": 0.12 },
+      { "upTo": 105700, "rate": 0.22 },
+      { "upTo": 201775, "rate": 0.24 },
+      { "upTo": 256225, "rate": 0.32 },
+      { "upTo": 384350, "rate": 0.35 },
+      { "upTo": null, "rate": 0.37 }
+    ],
+    "head_of_household": [
+      { "upTo": 17700, "rate": 0.1 },
+      { "upTo": 67450, "rate": 0.12 },
+      { "upTo": 105700, "rate": 0.22 },
+      { "upTo": 201750, "rate": 0.24 },
+      { "upTo": 256200, "rate": 0.32 },
+      { "upTo": 640600, "rate": 0.35 },
+      { "upTo": null, "rate": 0.37 }
+    ]
+  },
+
+  "fica": {
+    "socialSecurity": {
+      "employeeRate": 0.062,
+      "employerRate": 0.062,
+      "wageBase": 184500
+    },
+    "medicare": {
+      "employeeRate": 0.0145,
+      "employerRate": 0.0145,
+      "additionalRate": 0.009,
+      "additionalThreshold": {
+        "single": 200000,
+        "married_joint": 250000,
+        "married_separate": 125000,
+        "head_of_household": 200000
+      },
+      "additionalNote": "The 0.9% Additional Medicare Tax is employee-only — employers do not match it."
+    }
+  },
+
+  "selfEmployment": {
+    "netEarningsFactor": 0.9235,
+    "socialSecurityRate": 0.124,
+    "medicareRate": 0.029,
+    "additionalMedicareRate": 0.009,
+    "deductibleShare": 0.5,
+    "filingThreshold": 400,
+    "churchEmployeeThreshold": 108.28,
+    "note": "SE tax is calculated on 92.35% of net self-employment earnings — the 7.65% adjustment mirrors the employer-side FICA that a W-2 worker's employer pays. Half of the resulting SE tax is deductible from AGI as an above-the-line deduction."
+  },
+
+  "qbi": {
+    "rate": 0.2,
+    "thresholds": {
+      "single": 201750,
+      "married_joint": 403500,
+      "married_separate": 201775,
+      "head_of_household": 201750
+    },
+    "phaseInRange": {
+      "single": 75000,
+      "married_joint": 150000,
+      "married_separate": 75000,
+      "head_of_household": 75000
+    },
+    "note": "Section 199A qualified business income deduction. Above the threshold the deduction is limited by W-2 wages and property basis, and specified service businesses phase out entirely. This site applies the simple 20% case and warns above the threshold. TRAP FOR MAINTAINERS: the §199A threshold amounts ($201,750 single / $403,500 joint, per Rev. Proc. 2025-32 §4.26) are NOT the same as the 24%/32% income tax bracket boundaries ($201,775 / $403,550, per §4.01) — they differ by $25 and $50 and are easy to transpose. This file had exactly that error before 2 August 2026."
+  },
+
+  "estimatedTax": {
+    "safeHarborPriorYear": 1.0,
+    "safeHarborPriorYearHighIncome": 1.1,
+    "highIncomeThreshold": 150000,
+    "safeHarborCurrentYear": 0.9,
+    "underpaymentThreshold": 1000,
+    "dueDates": [
+      { "quarter": 1, "period": "1 Jan – 31 Mar", "due": "2026-04-15" },
+      { "quarter": 2, "period": "1 Apr – 31 May", "due": "2026-06-15" },
+      { "quarter": 3, "period": "1 Jun – 31 Aug", "due": "2026-09-15" },
+      { "quarter": 4, "period": "1 Sep – 31 Dec", "due": "2027-01-15" }
+    ],
+    "note": "Quarterly periods are not equal calendar quarters — Q2 covers two months and Q3 covers three. Safe harbour: pay 100% of last year's total tax (110% if prior-year AGI exceeded $150,000) or 90% of this year's, and no underpayment penalty applies."
+  },
+
+  "payFrequencies": [
+    { "id": "weekly", "label": "Weekly", "perYear": 52 },
+    { "id": "biweekly", "label": "Every 2 weeks", "perYear": 26 },
+    { "id": "semimonthly", "label": "Twice a month", "perYear": 24 },
+    { "id": "monthly", "label": "Monthly", "perYear": 12 },
+    { "id": "quarterly", "label": "Quarterly", "perYear": 4 },
+    { "id": "annual", "label": "Annually", "perYear": 1 }
+  ],
+
+  "retirement": {
+    "elective401kLimit": 24500,
+    "catchUp50Plus": 8000,
+    "catchUp60to63": 11250,
+    "totalContributionLimit": 72000,
+    "iraLimit": 7500,
+    "iraCatchUp": 1100,
+    "sepIraRate": 0.25,
+    "soloK401kNote": "A solo 401(k) allows both the employee elective deferral and an employer profit-sharing contribution of up to 25% of net self-employment earnings.",
+    "hsaSelfOnly": 4400,
+    "hsaFamily": 8750,
+    "hsaCatchUp55": 1000
+  },
+
+  "mileageRate": {
+    "business": 0.7,
+    "note": "IRS standard mileage rate for business use. Confirm the 2026 figure — the rate is announced each December for the following year."
+  }
+}

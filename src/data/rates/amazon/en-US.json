@@ -1,0 +1,841 @@
+{
+  "version": "2026.2",
+  "locale": "en-US",
+  "platform": "Amazon",
+  "marketplace": "amazon.com (US)",
+  "currency": "USD",
+  "effective": "2026-01-15",
+  "verifiedOn": null,
+  "confidence": "partially-verified",
+  "verificationNote": "Checked 2026-08-21 against Amazon's public US pricing page. VERIFIED: the whole referral fee category table, the $0.30 minimum referral fee, the $1.80 per-item media closing fee, and both selling plans ($39.99/month Professional, $0.99/item Individual). One real error was found and fixed — Appliances (Compact) is a MARGINAL split, 15% on the portion up to $300 and 8% above, and was modelled here as a flat 15%. Amazon's table mixes the two shapes freely and the wording is the only tell: 'for the portion of the total sales price up to X' means marginal, while 'for products with a total sales price of X or less' means the whole sale re-rates. NOT VERIFIED, and the reason verifiedOn stays null: everything below the referral block — the size tiers, FBA fulfillment fee tables, storage fees and the other fees — lives on Seller Central help pages that redirect to an Amazon sign-in, so they cannot be reached without a seller account. Someone with a Seller Central login should confirm those directly. Two known simplifications retained: the $0.30 minimum is applied globally, though Amazon shows no minimum for Fine Art, Gift Cards, Grocery, Media, Video Games and Video Game Consoles; and Merchant Fulfilled Services (20%) is not modelled.",
+  "sources": [
+    {
+      "label": "Amazon — Selling plans and referral fees (public pricing page)",
+      "url": "https://sell.amazon.com/pricing",
+      "retrieved": "2026-08-21"
+    },
+    {
+      "label": "Amazon Seller Central — Referral fees (login required)",
+      "url": "https://sellercentral.amazon.com/help/hub/reference/GTG4BAWSY39Z98Z3",
+      "retrieved": null
+    },
+    {
+      "label": "Amazon Seller Central — FBA fulfillment fees, US (login required)",
+      "url": "https://sellercentral.amazon.com/help/hub/reference/G201112670",
+      "retrieved": null
+    },
+    {
+      "label": "Amazon Seller Central — FBA inventory storage fees (login required)",
+      "url": "https://sellercentral.amazon.com/help/hub/reference/G3EC7EYCU4MB39KP",
+      "retrieved": null
+    }
+  ],
+  "accountFees": {
+    "professionalMonthly": 39.99,
+    "individualPerItem": 0.99
+  },
+  "referral": {
+    "minimumFee": 0.3,
+    "note": "A $0.30 minimum referral fee applies per item in most categories. Media categories also carry a closing fee.",
+    "categories": [
+      {
+        "id": "default",
+        "label": "Everything else",
+        "mode": "flat",
+        "tiers": [
+          {
+            "upTo": null,
+            "rate": 0.15
+          }
+        ]
+      },
+      {
+        "id": "amazon-device-accessories",
+        "label": "Amazon Device Accessories",
+        "mode": "flat",
+        "tiers": [
+          {
+            "upTo": null,
+            "rate": 0.45
+          }
+        ]
+      },
+      {
+        "id": "appliances-compact",
+        "label": "Appliances — Compact",
+        "mode": "marginal",
+        "tiers": [
+          {
+            "upTo": 300,
+            "rate": 0.15
+          },
+          {
+            "upTo": null,
+            "rate": 0.08
+          }
+        ],
+        "note": "15% on the portion of the sales price up to $300 and 8% on any portion above it — a marginal split, not a cliff."
+      },
+      {
+        "id": "appliances-full",
+        "label": "Appliances — Full-size",
+        "mode": "flat",
+        "tiers": [
+          {
+            "upTo": null,
+            "rate": 0.08
+          }
+        ]
+      },
+      {
+        "id": "automotive",
+        "label": "Automotive & Powersports",
+        "mode": "flat",
+        "tiers": [
+          {
+            "upTo": null,
+            "rate": 0.12
+          }
+        ]
+      },
+      {
+        "id": "baby",
+        "label": "Baby Products",
+        "mode": "flat",
+        "tiers": [
+          {
+            "upTo": 10,
+            "rate": 0.08
+          },
+          {
+            "upTo": null,
+            "rate": 0.15
+          }
+        ]
+      },
+      {
+        "id": "backpacks-handbags-luggage",
+        "label": "Backpacks, Handbags & Luggage",
+        "mode": "flat",
+        "tiers": [
+          {
+            "upTo": null,
+            "rate": 0.15
+          }
+        ]
+      },
+      {
+        "id": "base-equipment-power-tools",
+        "label": "Base Equipment Power Tools",
+        "mode": "flat",
+        "tiers": [
+          {
+            "upTo": null,
+            "rate": 0.12
+          }
+        ]
+      },
+      {
+        "id": "beauty-health",
+        "label": "Beauty, Health & Personal Care",
+        "mode": "flat",
+        "tiers": [
+          {
+            "upTo": 10,
+            "rate": 0.08
+          },
+          {
+            "upTo": null,
+            "rate": 0.15
+          }
+        ]
+      },
+      {
+        "id": "books",
+        "label": "Books",
+        "mode": "flat",
+        "tiers": [
+          {
+            "upTo": null,
+            "rate": 0.15
+          }
+        ],
+        "closingFee": 1.8
+      },
+      {
+        "id": "business-industrial",
+        "label": "Business, Industrial & Scientific Supplies",
+        "mode": "flat",
+        "tiers": [
+          {
+            "upTo": null,
+            "rate": 0.12
+          }
+        ]
+      },
+      {
+        "id": "clothing",
+        "label": "Clothing & Accessories",
+        "mode": "flat",
+        "tiers": [
+          {
+            "upTo": 15,
+            "rate": 0.05
+          },
+          {
+            "upTo": 20,
+            "rate": 0.1
+          },
+          {
+            "upTo": null,
+            "rate": 0.17
+          }
+        ]
+      },
+      {
+        "id": "computers",
+        "label": "Computers",
+        "mode": "flat",
+        "tiers": [
+          {
+            "upTo": null,
+            "rate": 0.08
+          }
+        ]
+      },
+      {
+        "id": "consumer-electronics",
+        "label": "Consumer Electronics",
+        "mode": "flat",
+        "tiers": [
+          {
+            "upTo": null,
+            "rate": 0.08
+          }
+        ]
+      },
+      {
+        "id": "electronics-accessories",
+        "label": "Electronics Accessories",
+        "mode": "marginal",
+        "tiers": [
+          {
+            "upTo": 100,
+            "rate": 0.15
+          },
+          {
+            "upTo": null,
+            "rate": 0.08
+          }
+        ]
+      },
+      {
+        "id": "eyewear",
+        "label": "Eyewear",
+        "mode": "flat",
+        "tiers": [
+          {
+            "upTo": null,
+            "rate": 0.15
+          }
+        ]
+      },
+      {
+        "id": "fine-art",
+        "label": "Fine Art",
+        "mode": "marginal",
+        "tiers": [
+          {
+            "upTo": 100,
+            "rate": 0.2
+          },
+          {
+            "upTo": 1000,
+            "rate": 0.15
+          },
+          {
+            "upTo": 5000,
+            "rate": 0.1
+          },
+          {
+            "upTo": null,
+            "rate": 0.05
+          }
+        ]
+      },
+      {
+        "id": "footwear",
+        "label": "Footwear",
+        "mode": "flat",
+        "tiers": [
+          {
+            "upTo": null,
+            "rate": 0.15
+          }
+        ]
+      },
+      {
+        "id": "furniture",
+        "label": "Furniture",
+        "mode": "marginal",
+        "tiers": [
+          {
+            "upTo": 200,
+            "rate": 0.15
+          },
+          {
+            "upTo": null,
+            "rate": 0.1
+          }
+        ]
+      },
+      {
+        "id": "gift-cards",
+        "label": "Gift Cards",
+        "mode": "flat",
+        "tiers": [
+          {
+            "upTo": null,
+            "rate": 0.2
+          }
+        ]
+      },
+      {
+        "id": "grocery",
+        "label": "Grocery & Gourmet Food",
+        "mode": "flat",
+        "tiers": [
+          {
+            "upTo": 15,
+            "rate": 0.08
+          },
+          {
+            "upTo": null,
+            "rate": 0.15
+          }
+        ]
+      },
+      {
+        "id": "home-kitchen",
+        "label": "Home & Kitchen",
+        "mode": "flat",
+        "tiers": [
+          {
+            "upTo": null,
+            "rate": 0.15
+          }
+        ]
+      },
+      {
+        "id": "jewelry",
+        "label": "Jewelry",
+        "mode": "marginal",
+        "tiers": [
+          {
+            "upTo": 250,
+            "rate": 0.2
+          },
+          {
+            "upTo": null,
+            "rate": 0.05
+          }
+        ]
+      },
+      {
+        "id": "lawn-garden",
+        "label": "Lawn & Garden",
+        "mode": "flat",
+        "tiers": [
+          {
+            "upTo": null,
+            "rate": 0.15
+          }
+        ]
+      },
+      {
+        "id": "lawn-mowers",
+        "label": "Lawn Mowers & Snow Throwers",
+        "mode": "flat",
+        "tiers": [
+          {
+            "upTo": 500,
+            "rate": 0.15
+          },
+          {
+            "upTo": null,
+            "rate": 0.08
+          }
+        ]
+      },
+      {
+        "id": "mattresses",
+        "label": "Mattresses",
+        "mode": "flat",
+        "tiers": [
+          {
+            "upTo": null,
+            "rate": 0.15
+          }
+        ]
+      },
+      {
+        "id": "media-dvd",
+        "label": "DVD & Blu-ray",
+        "mode": "flat",
+        "tiers": [
+          {
+            "upTo": null,
+            "rate": 0.15
+          }
+        ],
+        "closingFee": 1.8
+      },
+      {
+        "id": "media-music",
+        "label": "Music",
+        "mode": "flat",
+        "tiers": [
+          {
+            "upTo": null,
+            "rate": 0.15
+          }
+        ],
+        "closingFee": 1.8
+      },
+      {
+        "id": "musical-instruments",
+        "label": "Musical Instruments & AV Production",
+        "mode": "flat",
+        "tiers": [
+          {
+            "upTo": null,
+            "rate": 0.15
+          }
+        ]
+      },
+      {
+        "id": "office-products",
+        "label": "Office Products",
+        "mode": "flat",
+        "tiers": [
+          {
+            "upTo": null,
+            "rate": 0.15
+          }
+        ]
+      },
+      {
+        "id": "pet-supplies",
+        "label": "Pet Supplies",
+        "mode": "flat",
+        "tiers": [
+          {
+            "upTo": null,
+            "rate": 0.15
+          }
+        ],
+        "note": "15% in general. Veterinary diets are charged 22%, which is not modelled as a separate category here."
+      },
+      {
+        "id": "software-games",
+        "label": "Software & Computer/Video Games",
+        "mode": "flat",
+        "tiers": [
+          {
+            "upTo": null,
+            "rate": 0.15
+          }
+        ]
+      },
+      {
+        "id": "sports-outdoors",
+        "label": "Sports & Outdoors",
+        "mode": "flat",
+        "tiers": [
+          {
+            "upTo": null,
+            "rate": 0.15
+          }
+        ]
+      },
+      {
+        "id": "tires",
+        "label": "Tires",
+        "mode": "flat",
+        "tiers": [
+          {
+            "upTo": null,
+            "rate": 0.1
+          }
+        ]
+      },
+      {
+        "id": "tools-home-improvement",
+        "label": "Tools & Home Improvement",
+        "mode": "flat",
+        "tiers": [
+          {
+            "upTo": null,
+            "rate": 0.15
+          }
+        ]
+      },
+      {
+        "id": "toys-games",
+        "label": "Toys & Games",
+        "mode": "flat",
+        "tiers": [
+          {
+            "upTo": null,
+            "rate": 0.15
+          }
+        ]
+      },
+      {
+        "id": "video-game-consoles",
+        "label": "Video Game Consoles",
+        "mode": "flat",
+        "tiers": [
+          {
+            "upTo": null,
+            "rate": 0.08
+          }
+        ]
+      },
+      {
+        "id": "watches",
+        "label": "Watches",
+        "mode": "marginal",
+        "tiers": [
+          {
+            "upTo": 1500,
+            "rate": 0.16
+          },
+          {
+            "upTo": null,
+            "rate": 0.03
+          }
+        ]
+      }
+    ]
+  },
+  "units": {
+    "dimension": "in",
+    "weight": "oz",
+    "volume": "cu ft"
+  },
+  "sizeTierRules": {
+    "note": "Every threshold and packaging weight resolveSizeTier() in src/lib/calc/amazon.js reads — nothing about tier decisions is hardcoded in the engine. tiers is ORDERED smallest first; the first tier an item fits wins, and the last tier's every cap is null so it always matches. reason strings are literal (not templated) because the original US copy mixes oz and lb mid-sentence in a way no single unit template reproduces.",
+    "dimensionalWeightDivisor": 139,
+    "dimensionalWeightUnitMultiplier": 16,
+    "volumeDivisor": 1728,
+    "tiers": [
+      {
+        "id": "small-standard",
+        "maxDimensions": [
+          15,
+          12,
+          0.75
+        ],
+        "maxWeight": 16,
+        "usesDimensionalWeight": false,
+        "reason": "Fits within 15 x 12 x 0.75 in and weighs 16 oz or less."
+      },
+      {
+        "id": "large-standard",
+        "maxDimensions": [
+          18,
+          14,
+          8
+        ],
+        "maxWeight": 320,
+        "packagingWeight": 4,
+        "usesDimensionalWeight": true,
+        "reason": "Fits within 18 x 14 x 8 in and weighs 20 lb or less."
+      },
+      {
+        "id": "large-bulky",
+        "maxDimensions": [
+          59,
+          33,
+          33
+        ],
+        "maxGirthPlusLength": 130,
+        "maxWeight": 800,
+        "packagingWeight": 16,
+        "usesDimensionalWeight": true,
+        "reason": "Exceeds large standard but fits within 59 x 33 x 33 in at 50 lb or less."
+      },
+      {
+        "id": "extra-large-0-50",
+        "maxDimensions": [
+          null,
+          null,
+          null
+        ],
+        "maxWeight": 800,
+        "packagingWeight": 16,
+        "usesDimensionalWeight": true,
+        "reason": "Exceeds the large bulky envelope, so it falls into an extra-large tier."
+      },
+      {
+        "id": "extra-large-50-70",
+        "maxDimensions": [
+          null,
+          null,
+          null
+        ],
+        "maxWeight": 1120,
+        "packagingWeight": 16,
+        "usesDimensionalWeight": true,
+        "reason": "Exceeds the large bulky envelope, so it falls into an extra-large tier."
+      },
+      {
+        "id": "extra-large-70-150",
+        "maxDimensions": [
+          null,
+          null,
+          null
+        ],
+        "maxWeight": 2400,
+        "packagingWeight": 16,
+        "usesDimensionalWeight": true,
+        "reason": "Exceeds the large bulky envelope, so it falls into an extra-large tier."
+      },
+      {
+        "id": "extra-large-150-plus",
+        "maxDimensions": [
+          null,
+          null,
+          null
+        ],
+        "maxWeight": null,
+        "packagingWeight": 16,
+        "usesDimensionalWeight": true,
+        "reason": "Exceeds the large bulky envelope, so it falls into an extra-large tier."
+      }
+    ]
+  },
+  "sizeTiers": [
+    {
+      "id": "small-standard",
+      "label": "Small standard"
+    },
+    {
+      "id": "large-standard",
+      "label": "Large standard"
+    },
+    {
+      "id": "large-bulky",
+      "label": "Large bulky"
+    },
+    {
+      "id": "extra-large-0-50",
+      "label": "Extra-large (0–50 lb)"
+    },
+    {
+      "id": "extra-large-50-70",
+      "label": "Extra-large (50–70 lb)"
+    },
+    {
+      "id": "extra-large-70-150",
+      "label": "Extra-large (70–150 lb)"
+    },
+    {
+      "id": "extra-large-150-plus",
+      "label": "Extra-large (150+ lb)"
+    }
+  ],
+  "fulfillment": {
+    "unit": "oz",
+    "note": "Non-apparel, non-dangerous-goods US rate card. Apparel and dangerous goods carry surcharges applied separately.",
+    "apparelSurcharge": 0.4,
+    "dangerousGoodsSurcharge": 0.11,
+    "tiers": {
+      "small-standard": {
+        "brackets": [
+          {
+            "upTo": 2,
+            "value": 3.06
+          },
+          {
+            "upTo": 4,
+            "value": 3.15
+          },
+          {
+            "upTo": 6,
+            "value": 3.24
+          },
+          {
+            "upTo": 8,
+            "value": 3.33
+          },
+          {
+            "upTo": 10,
+            "value": 3.43
+          },
+          {
+            "upTo": 12,
+            "value": 3.53
+          },
+          {
+            "upTo": 14,
+            "value": 3.6
+          },
+          {
+            "upTo": 16,
+            "value": 3.65
+          }
+        ],
+        "overage": null
+      },
+      "large-standard": {
+        "brackets": [
+          {
+            "upTo": 4,
+            "value": 3.68
+          },
+          {
+            "upTo": 8,
+            "value": 3.9
+          },
+          {
+            "upTo": 12,
+            "value": 4.15
+          },
+          {
+            "upTo": 16,
+            "value": 4.55
+          },
+          {
+            "upTo": 20,
+            "value": 4.99
+          },
+          {
+            "upTo": 24,
+            "value": 5.37
+          },
+          {
+            "upTo": 28,
+            "value": 5.52
+          },
+          {
+            "upTo": 32,
+            "value": 5.77
+          },
+          {
+            "upTo": 36,
+            "value": 5.87
+          },
+          {
+            "upTo": 40,
+            "value": 6.05
+          },
+          {
+            "upTo": 44,
+            "value": 6.21
+          },
+          {
+            "upTo": 48,
+            "value": 6.62
+          }
+        ],
+        "overage": {
+          "baseOz": 48,
+          "baseFee": 6.92,
+          "perStepFee": 0.08,
+          "stepOz": 4
+        }
+      },
+      "large-bulky": {
+        "brackets": [
+          {
+            "upTo": 16,
+            "value": 9.61
+          }
+        ],
+        "overage": {
+          "baseOz": 16,
+          "baseFee": 9.61,
+          "perStepFee": 0.38,
+          "stepOz": 16
+        }
+      },
+      "extra-large-0-50": {
+        "brackets": [
+          {
+            "upTo": 16,
+            "value": 26.33
+          }
+        ],
+        "overage": {
+          "baseOz": 16,
+          "baseFee": 26.33,
+          "perStepFee": 0.38,
+          "stepOz": 16
+        }
+      },
+      "extra-large-50-70": {
+        "brackets": [
+          {
+            "upTo": 800,
+            "value": 40.12
+          }
+        ],
+        "overage": {
+          "baseOz": 800,
+          "baseFee": 40.12,
+          "perStepFee": 0.75,
+          "stepOz": 16
+        }
+      },
+      "extra-large-70-150": {
+        "brackets": [
+          {
+            "upTo": 1120,
+            "value": 54.81
+          }
+        ],
+        "overage": {
+          "baseOz": 1120,
+          "baseFee": 54.81,
+          "perStepFee": 0.75,
+          "stepOz": 16
+        }
+      },
+      "extra-large-150-plus": {
+        "brackets": [
+          {
+            "upTo": 2400,
+            "value": 194.95
+          }
+        ],
+        "overage": {
+          "baseOz": 2400,
+          "baseFee": 194.95,
+          "perStepFee": 0.19,
+          "stepOz": 16
+        }
+      }
+    }
+  },
+  "storage": {
+    "unit": "per cubic foot per month",
+    "standard": {
+      "janSep": 0.78,
+      "octDec": 2.4
+    },
+    "oversize": {
+      "janSep": 0.56,
+      "octDec": 1.4
+    },
+    "note": "Monthly inventory storage. A separate aged-inventory surcharge applies to units held over 181 days."
+  },
+  "otherFees": {
+    "inboundPlacementMin": 0.27,
+    "inboundPlacementNote": "Inbound placement service fee, charged when you send inventory to a single receiving centre rather than splitting shipments. Varies by size tier and split.",
+    "lowInventoryLevelNote": "A low-inventory-level fee applies when historical days of supply run below Amazon's threshold.",
+    "removalPerUnit": 0.97,
+    "returnsProcessingNote": "Returns processing fees apply in categories with high return rates (notably Apparel and Shoes)."
+  }
+}

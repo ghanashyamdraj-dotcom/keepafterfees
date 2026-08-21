@@ -1,0 +1,676 @@
+{
+  "version": "2026.2",
+  "locale": "en-GB",
+  "platform": "Amazon",
+  "marketplace": "amazon.co.uk (UK)",
+  "currency": "GBP",
+  "effective": "2026-07-01",
+  "verifiedOn": "2026-08-03",
+  "confidence": "partially-verified",
+  "note": "Fulfilment fee size tiers, weight brackets, fee amounts, storage fees, dimensional-weight divisor, professional/individual plan cost, and the per-item referral minimum were transcribed directly from Amazon's own published UK rate card PDF ('260630-FBA-Rate-Card-EN1.pdf', linked from sell.amazon.co.uk/pricing), effective 1 July 2026 — retrieved and checked 2026-08-03. Left genuinely open: (1) the referral 'categories' list below is a verified SUBSET matching the US file's most common categories, not the full ~35-category UK table, which runs several more pages in the source PDF; categories not listed here fall back to 'default' and should be added before broad launch. (2) The overage per-kg rate on oversize brackets IS from the source (e.g. '+£0.25/kg' on Small oversize), but the PDF does not state the ROUNDING GRANULARITY for that per-kg charge — modelled here as whole-kg steps (ceiling-rounded), matching the US file's established per-pound-step pattern, not independently confirmed for the UK. (3) A '>31.5kg: +£0.09/kg' row appeared adjacent to Heavy oversize in the extracted text but is very likely unreachable in practice — Special oversize's own trigger ('unit weight > 31.5kg, longest side > 175cm, or girth > 360cm') fires at the exact same weight boundary, so it was NOT included. Confirm before relying on it for a >31.5kg item.",
+  "sources": [
+    {
+      "label": "Amazon — Sell on Amazon UK pricing",
+      "url": "https://sell.amazon.co.uk/pricing",
+      "retrieved": "2026-08-03"
+    },
+    {
+      "label": "Amazon UK — FBA Rate Card (PDF, effective 1 July 2026)",
+      "url": "https://m.media-amazon.com/images/G/02/sell/images/260630-FBA-Rate-Card-EN1.pdf",
+      "retrieved": "2026-08-03"
+    },
+    {
+      "label": "Amazon — Sell on Amazon UK pricing (2026 European fee reductions)",
+      "url": "https://sell.amazon.co.uk/pricing#referral-fees",
+      "retrieved": "2026-08-21"
+    }
+  ],
+  "accountFees": {
+    "professionalMonthly": 25,
+    "individualPerItem": 0.75,
+    "note": "Both quoted excl. VAT on Amazon's own pricing page, consistent with how UK B2B software pricing is normally communicated."
+  },
+  "referral": {
+    "minimumFee": 0.25,
+    "note": "A £0.25 minimum referral fee applies per item in most categories (source PDF footnote 3, referral fee table). Heavy Oversize items (unit weight 23-31.5kg) carry a £20 minimum instead; Heavy Bulky items (>31.5kg, longest side >175cm, or girth >360cm) carry a £25 minimum — not yet modelled as a per-category override here.",
+    "categories": [
+      {
+        "id": "default",
+        "label": "Everything else",
+        "mode": "flat",
+        "tiers": [
+          {
+            "upTo": null,
+            "rate": 0.15
+          }
+        ]
+      },
+      {
+        "id": "amazon-device-accessories",
+        "label": "Amazon Device Accessories",
+        "mode": "flat",
+        "tiers": [
+          {
+            "upTo": null,
+            "rate": 0.45
+          }
+        ]
+      },
+      {
+        "id": "automotive",
+        "label": "Automotive & Powersports",
+        "mode": "marginal",
+        "tiers": [
+          {
+            "upTo": 45,
+            "rate": 0.15
+          },
+          {
+            "upTo": null,
+            "rate": 0.09
+          }
+        ],
+        "note": "Genuinely marginal in the UK — 15% on the first £45, 9% on the rest. The US equivalent is a flat 12% regardless of price; this is a real structural difference, not a currency swap."
+      },
+      {
+        "id": "baby",
+        "label": "Baby Products",
+        "mode": "flat",
+        "tiers": [
+          {
+            "upTo": 10,
+            "rate": 0.08
+          },
+          {
+            "upTo": null,
+            "rate": 0.15
+          }
+        ]
+      },
+      {
+        "id": "beauty-health",
+        "label": "Beauty, Health & Personal Care",
+        "mode": "flat",
+        "tiers": [
+          {
+            "upTo": 10,
+            "rate": 0.08
+          },
+          {
+            "upTo": null,
+            "rate": 0.15
+          }
+        ]
+      },
+      {
+        "id": "backpacks-handbags-luggage",
+        "label": "Rucksacks & Handbags",
+        "mode": "flat",
+        "tiers": [
+          {
+            "upTo": null,
+            "rate": 0.15
+          }
+        ]
+      },
+      {
+        "id": "beer-wine-spirits",
+        "label": "Beer, Wine & Spirits",
+        "mode": "flat",
+        "tiers": [
+          {
+            "upTo": null,
+            "rate": 0.1
+          }
+        ]
+      },
+      {
+        "id": "books",
+        "label": "Books",
+        "mode": "flat",
+        "tiers": [
+          {
+            "upTo": null,
+            "rate": 0.15
+          }
+        ],
+        "closingFee": 0.5,
+        "note": "Closing fee is £0.50 in the UK, not a currency conversion of the US $1.80 — Amazon sets this independently per marketplace."
+      },
+      {
+        "id": "business-industrial",
+        "label": "Business, Industrial & Scientific Supplies",
+        "mode": "flat",
+        "tiers": [
+          {
+            "upTo": null,
+            "rate": 0.15
+          }
+        ]
+      },
+      {
+        "id": "appliances-compact",
+        "label": "Compact Appliances",
+        "mode": "flat",
+        "tiers": [
+          {
+            "upTo": null,
+            "rate": 0.15
+          }
+        ]
+      },
+      {
+        "id": "clothing",
+        "label": "Clothing & Accessories",
+        "mode": "flat",
+        "tiers": [
+          {
+            "upTo": 15,
+            "rate": 0.05
+          },
+          {
+            "upTo": 20,
+            "rate": 0.1
+          },
+          {
+            "upTo": null,
+            "rate": 0.15
+          }
+        ],
+        "note": "Simplified. The source PDF adds a further FBA/Prime-specific rule for items above £40: 15% on the portion up to £40, 7% on the remainder — a hybrid flat-then-marginal structure the current tiered-fee engine (flat OR marginal, not both) can't express in one tier definition yet. Since every item in this FBA calculator is Prime-eligible by definition, that rule applies more often than not for higher-priced clothing and this simplification will overstate the fee above £40. Flagged rather than silently wrong; needs an engine change to model correctly."
+      },
+      {
+        "id": "commercial-electrical",
+        "label": "Commercial Electrical & Energy Supplies",
+        "mode": "flat",
+        "tiers": [
+          {
+            "upTo": null,
+            "rate": 0.12
+          }
+        ]
+      }
+    ]
+  },
+  "units": {
+    "dimension": "cm",
+    "weight": "g",
+    "volume": "cu ft",
+    "note": "Amazon UK's own rate card prices storage in £ per cubic FOOT per month despite every dimension and weight elsewhere being metric — confirmed on two independent Amazon-owned pages, not a transcription assumption. volumeDivisor below converts cm3 to cubic feet accordingly, not to cubic metres."
+  },
+  "sizeTierRules": {
+    "note": "12 tiers, verified against the July 2026 UK rate card PDF. Ordered smallest to largest; the first tier an item fits wins. Envelopes and Special oversize bill on actual weight only (usesDimensionalWeight: false) per the source's own stated rule — every other tier bills on the greater of actual and dimensional weight. No tier here has a packagingWeight set (all default to 0): the source material described does not state a packaging-weight allowance the way the US rate card does (4 oz on large-standard, 16 oz on large-bulky and up). Either the UK card folds any such allowance into its brackets directly, or this is a genuine gap — not yet confirmed either way.",
+    "dimensionalWeightDivisor": 5000,
+    "dimensionalWeightUnitMultiplier": 1000,
+    "volumeDivisor": 28316.846592,
+    "tiers": [
+      {
+        "id": "light-envelope",
+        "maxDimensions": [
+          33,
+          23,
+          2.5
+        ],
+        "maxWeight": 100,
+        "usesDimensionalWeight": false,
+        "reason": "Fits within 33 x 23 x 2.5 cm and weighs 100 g or less."
+      },
+      {
+        "id": "standard-envelope",
+        "maxDimensions": [
+          33,
+          23,
+          2.5
+        ],
+        "maxWeight": 460,
+        "usesDimensionalWeight": false,
+        "reason": "Fits within 33 x 23 x 2.5 cm and weighs 460 g or less."
+      },
+      {
+        "id": "large-envelope",
+        "maxDimensions": [
+          33,
+          23,
+          4
+        ],
+        "maxWeight": 960,
+        "usesDimensionalWeight": false,
+        "reason": "Fits within 33 x 23 x 4 cm and weighs 960 g or less."
+      },
+      {
+        "id": "extra-large-envelope",
+        "maxDimensions": [
+          33,
+          23,
+          6
+        ],
+        "maxWeight": 960,
+        "usesDimensionalWeight": false,
+        "reason": "Exceeds Large envelope's depth but still fits within 33 x 23 x 6 cm at 960 g or less."
+      },
+      {
+        "id": "small-parcel",
+        "maxDimensions": [
+          35,
+          25,
+          12
+        ],
+        "maxWeight": 3900,
+        "maxDimensionalWeight": 2100,
+        "usesDimensionalWeight": true,
+        "reason": "Fits within 35 x 25 x 12 cm, weighs 3.90 kg or less, and dimensional weight is 2.10 kg or less."
+      },
+      {
+        "id": "standard-parcel",
+        "maxDimensions": [
+          45,
+          34,
+          26
+        ],
+        "maxWeight": 11900,
+        "maxDimensionalWeight": 7960,
+        "usesDimensionalWeight": true,
+        "reason": "Fits within 45 x 34 x 26 cm, weighs 11.90 kg or less, and dimensional weight is 7.96 kg or less."
+      },
+      {
+        "id": "small-oversize",
+        "maxDimensions": [
+          61,
+          46,
+          46
+        ],
+        "maxWeight": 1760,
+        "maxDimensionalWeight": 25820,
+        "usesDimensionalWeight": true,
+        "reason": "Exceeds Standard parcel but fits within 61 x 46 x 46 cm at 1.76 kg or less."
+      },
+      {
+        "id": "standard-oversize-light",
+        "maxDimensions": [
+          101,
+          60,
+          60
+        ],
+        "maxWeight": 15000,
+        "maxDimensionalWeight": 72720,
+        "usesDimensionalWeight": true,
+        "reason": "Fits within 101 x 60 x 60 cm and weighs 15 kg or less."
+      },
+      {
+        "id": "standard-oversize-heavy",
+        "maxDimensions": [
+          101,
+          60,
+          60
+        ],
+        "maxWeight": 23000,
+        "maxDimensionalWeight": 72720,
+        "usesDimensionalWeight": true,
+        "reason": "Fits within 101 x 60 x 60 cm and weighs more than 15 kg, up to 23 kg."
+      },
+      {
+        "id": "standard-oversize-large",
+        "maxDimensions": [
+          120,
+          60,
+          60
+        ],
+        "maxWeight": 23000,
+        "maxDimensionalWeight": 86400,
+        "usesDimensionalWeight": true,
+        "reason": "Exceeds 101 x 60 x 60 cm but fits within 120 x 60 x 60 cm at 23 kg or less."
+      },
+      {
+        "id": "bulky-oversize",
+        "maxDimensions": [
+          null,
+          null,
+          null
+        ],
+        "maxWeight": 23000,
+        "maxDimensionalWeight": 126000,
+        "usesDimensionalWeight": true,
+        "reason": "Exceeds 120 x 60 x 60 cm and weighs 23 kg or less."
+      },
+      {
+        "id": "heavy-oversize",
+        "maxDimensions": [
+          null,
+          null,
+          null
+        ],
+        "maxWeight": 31500,
+        "maxDimensionalWeight": 126000,
+        "usesDimensionalWeight": true,
+        "reason": "Weighs more than 23 kg, up to 31.5 kg."
+      },
+      {
+        "id": "special-oversize",
+        "maxDimensions": [
+          null,
+          null,
+          null
+        ],
+        "maxWeight": null,
+        "usesDimensionalWeight": false,
+        "reason": "Weighs more than 31.5 kg, or the longest side exceeds 175 cm, or girth exceeds 360 cm. Billed on actual weight only."
+      }
+    ]
+  },
+  "sizeTiers": [
+    {
+      "id": "light-envelope",
+      "label": "Light envelope"
+    },
+    {
+      "id": "standard-envelope",
+      "label": "Standard envelope"
+    },
+    {
+      "id": "large-envelope",
+      "label": "Large envelope"
+    },
+    {
+      "id": "extra-large-envelope",
+      "label": "Extra-large envelope"
+    },
+    {
+      "id": "small-parcel",
+      "label": "Small parcel"
+    },
+    {
+      "id": "standard-parcel",
+      "label": "Standard parcel"
+    },
+    {
+      "id": "small-oversize",
+      "label": "Small oversize"
+    },
+    {
+      "id": "standard-oversize-light",
+      "label": "Standard oversize (light)"
+    },
+    {
+      "id": "standard-oversize-heavy",
+      "label": "Standard oversize (heavy)"
+    },
+    {
+      "id": "standard-oversize-large",
+      "label": "Standard oversize (large)"
+    },
+    {
+      "id": "bulky-oversize",
+      "label": "Bulky oversize"
+    },
+    {
+      "id": "heavy-oversize",
+      "label": "Heavy oversize"
+    },
+    {
+      "id": "special-oversize",
+      "label": "Special oversize"
+    }
+  ],
+  "fulfillment": {
+    "unit": "g",
+    "note": "Standard FBA local/Pan-European rate card, UK column, non-apparel/non-hazmat. Effective 1 July 2026 per the source PDF; a further 1.5% fuel and logistics surcharge applies across UK/EU fulfilment fees from 17 April 2026 per the same document and is NOT yet folded into these figures.",
+    "apparelSurcharge": 0,
+    "dangerousGoodsSurcharge": 0.1,
+    "tiers": {
+      "light-envelope": {
+        "brackets": [
+          {
+            "upTo": 20,
+            "value": 1.83
+          },
+          {
+            "upTo": 40,
+            "value": 1.87
+          },
+          {
+            "upTo": 60,
+            "value": 1.89
+          },
+          {
+            "upTo": 80,
+            "value": 2.07
+          },
+          {
+            "upTo": 100,
+            "value": 2.08
+          }
+        ],
+        "overage": null
+      },
+      "standard-envelope": {
+        "brackets": [
+          {
+            "upTo": 210,
+            "value": 2.1
+          },
+          {
+            "upTo": 460,
+            "value": 2.16
+          }
+        ],
+        "overage": null
+      },
+      "large-envelope": {
+        "brackets": [
+          {
+            "upTo": 960,
+            "value": 2.72
+          }
+        ],
+        "overage": null
+      },
+      "extra-large-envelope": {
+        "brackets": [
+          {
+            "upTo": 960,
+            "value": 2.94
+          }
+        ],
+        "overage": null
+      },
+      "small-parcel": {
+        "brackets": [
+          {
+            "upTo": 150,
+            "value": 2.91
+          },
+          {
+            "upTo": 400,
+            "value": 3
+          },
+          {
+            "upTo": 900,
+            "value": 3.04
+          },
+          {
+            "upTo": 1400,
+            "value": 3.05
+          },
+          {
+            "upTo": 1900,
+            "value": 3.25
+          },
+          {
+            "upTo": 3900,
+            "value": 3.27
+          }
+        ],
+        "overage": null
+      },
+      "standard-parcel": {
+        "brackets": [
+          {
+            "upTo": 150,
+            "value": 2.94
+          },
+          {
+            "upTo": 400,
+            "value": 3.01
+          },
+          {
+            "upTo": 900,
+            "value": 3.06
+          },
+          {
+            "upTo": 1400,
+            "value": 3.26
+          },
+          {
+            "upTo": 1900,
+            "value": 3.48
+          },
+          {
+            "upTo": 2900,
+            "value": 3.49
+          },
+          {
+            "upTo": 3900,
+            "value": 3.54
+          },
+          {
+            "upTo": 5900,
+            "value": 3.56
+          },
+          {
+            "upTo": 8900,
+            "value": 3.57
+          },
+          {
+            "upTo": 11900,
+            "value": 3.58
+          }
+        ],
+        "overage": null
+      },
+      "small-oversize": {
+        "brackets": [
+          {
+            "upTo": 760,
+            "value": 3.49
+          }
+        ],
+        "overage": {
+          "baseOz": 760,
+          "baseFee": 3.49,
+          "perStepFee": 0.25,
+          "stepOz": 1000
+        }
+      },
+      "standard-oversize-light": {
+        "brackets": [
+          {
+            "upTo": 760,
+            "value": 4.35
+          }
+        ],
+        "overage": {
+          "baseOz": 760,
+          "baseFee": 4.35,
+          "perStepFee": 0.15,
+          "stepOz": 1000
+        }
+      },
+      "standard-oversize-heavy": {
+        "brackets": [
+          {
+            "upTo": 15760,
+            "value": 6.58
+          }
+        ],
+        "overage": {
+          "baseOz": 15760,
+          "baseFee": 6.58,
+          "perStepFee": 0.08,
+          "stepOz": 1000
+        }
+      },
+      "standard-oversize-large": {
+        "brackets": [
+          {
+            "upTo": 760,
+            "value": 5.67
+          }
+        ],
+        "overage": {
+          "baseOz": 760,
+          "baseFee": 5.67,
+          "perStepFee": 0.07,
+          "stepOz": 1000
+        }
+      },
+      "bulky-oversize": {
+        "brackets": [
+          {
+            "upTo": 760,
+            "value": 10.2
+          }
+        ],
+        "overage": {
+          "baseOz": 760,
+          "baseFee": 10.2,
+          "perStepFee": 0.24,
+          "stepOz": 1000
+        }
+      },
+      "heavy-oversize": {
+        "brackets": [
+          {
+            "upTo": 31500,
+            "value": 13.04
+          }
+        ],
+        "overage": null
+      },
+      "special-oversize": {
+        "brackets": [
+          {
+            "upTo": 30000,
+            "value": 16.22
+          },
+          {
+            "upTo": 40000,
+            "value": 17.24
+          },
+          {
+            "upTo": 50000,
+            "value": 34.38
+          },
+          {
+            "upTo": 60000,
+            "value": 42.04
+          }
+        ],
+        "overage": {
+          "baseOz": 60000,
+          "baseFee": 42.04,
+          "perStepFee": 0.35,
+          "stepOz": 1000
+        }
+      }
+    }
+  },
+  "storage": {
+    "unit": "per cubic foot per month",
+    "standard": {
+      "janSep": 0.76,
+      "octDec": 1.51
+    },
+    "oversize": {
+      "janSep": 0.55,
+      "octDec": 0.87
+    },
+    "note": "Non-dangerous-goods rate for standard-size products outside Clothing/Accessories/Eyewear/Footwear/Rucksacks/Handbags (those categories get a lower rate: £0.62/£0.82). Cross-checked against sell.amazon.co.uk/pricing independently of the rate-card PDF — both agree. A separate aged-inventory surcharge applies past 241 days."
+  },
+  "otherFees": {
+    "hazmatOrLithiumPerUnit": 0.1,
+    "hazmatOrLithiumNote": "Additional per-unit fee for products containing or sold with lithium batteries, and for other dangerous goods.",
+    "lowInventoryLevelNote": "A low-inventory cost coverage fee applies when historical days of supply run below Amazon's threshold, same mechanism as the US.",
+    "returnsProcessingNote": "Returns processing fees apply in high-return categories, same mechanism as the US; UK-specific amounts not yet sourced."
+  },
+  "recheckNote": "Re-checked 2026-08-21 against Amazon UK's public pricing page. CONFIRMED unchanged: the Professional plan at 25 GBP/month excl. VAT and the Individual plan at 0.75 GBP per unit sold, and the Clothing and Accessories tiers (5% at and up to 15 GBP, 10% from 15 to 20 GBP, 15% above) — these already reflect Amazon’s January 2026 reduction, so the July 2026 rate card this file was built from was current. NEWLY IDENTIFIED GAP: Amazon announced European fee reductions effective 15 December 2025 and 5 January 2026 that introduced or re-rated four categories this file does not carry at all — Home Products (new category, cut from 15% to 8% for items at and up to 20 GBP), Grocery and Gourmet (8% to 5% for items up to 10 GBP), Pet Clothing and Food (15% to 5% for items up to 10 GBP), and Vitamins, Minerals and Supplements (new category, 8% to 5% for items up to 10 GBP). Those four are deliberately NOT added here: Amazon’s announcement states only the reduced lower tier and not the rate that applies above each threshold, and guessing the upper tier would produce a confidently wrong number above it. Anyone with the current rate card should add all four with both tiers. Until then they fall back to the 15% default, which understates the seller’s payout on cheap items in those categories rather than overstating it. Also confirmed on the same page: most products priced at or below 20 GBP are now automatically eligible for Low-Price FBA rates, with no separate enrolment — not modelled here."
+}

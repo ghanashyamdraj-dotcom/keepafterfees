@@ -1,0 +1,231 @@
+/* ============================================================
+   AfterFees design tokens — "Obsidian Ledger"
+   ------------------------------------------------------------
+   Still a ledger: money you keep in green, money taken in clay,
+   every figure monospaced and tabular so columns line up. What
+   changed is the ground it is printed on. The previous palette
+   was ink-on-warm-paper with dark mode as an afterthought, and
+   in dark mode that read as a flat charcoal template — sterile,
+   lots of dead black, one solitary green.
+
+   This version is DARK-FIRST. Dark is defined on :root and is
+   what the site is designed in; light is the override. That is
+   the opposite of the usual arrangement and it is deliberate —
+   the audience (sellers, creators, freelancers checking payouts
+   at night) skews dark, and every design decision below was made
+   against the obsidian ground rather than adapted to it.
+
+   The palette:
+     - Obsidian slate base (#0B0F17), not pitch black. Pure black
+       gives you nothing to build depth with; a blue-shifted near
+       black lets card surfaces sit visibly above the page.
+     - Card surfaces at #131B2E — a real step up from the base,
+       so cards read as objects rather than as outlined voids.
+     - Electric mint (#00E599) as the keep colour. Higher chroma
+       than the old #06714a, because on obsidian a desaturated
+       green reads as grey.
+     - Electric violet (#6366F1) as a genuine second accent, used
+       for processing/structure so that not every coloured thing
+       on the page means "money".
+
+   Constraints this palette is built under, unchanged:
+     - No webfonts. System stacks only. A Google Fonts request
+       would add a third-party round trip to the critical path and
+       break the "zero third-party requests" audit check.
+     - Body text and figures hit WCAG AA against their own
+       background in both schemes; the keep/take colours are
+       always carried by a label as well as a hue, never hue alone.
+     - Hubs 2 and 3 get their own metaphor. This file is the only
+       thing that needs to differ for them to not look like the
+       same template three times.
+   ============================================================ */
+
+:root {
+  color-scheme: dark light;
+
+  /* --- colour: dark (the designed default) ---------------- */
+  --ink:            #eef2f8;
+  --ink-soft:       #9fb0c9;
+  /* Measured against the CARD surface (#131B2E), not the page — card blurbs
+     and the slicer footnote are the two places this token does real work, and
+     the card is the lighter of the two grounds. #6b7d99 gave 4.10:1 there. */
+  --ink-faint:      #8296b5;
+  --surface:        #131B2E;   /* cards, header, footer */
+  --surface-sunk:   #0B0F17;   /* the page itself */
+  --surface-raised: #1A2440;   /* things stacked on a card */
+  --line:           #22304d;
+  --line-strong:    #35486f;
+
+  /* Brand is now the mint, not graphite. On obsidian the graphite
+     brand disappeared entirely, which is what made the old header
+     feel unbranded. */
+  --brand:          #00E599;
+  --brand-bright:   #5BFFC4;
+  --brand-ink:      #04121B;
+
+  --keep:           #00E599;   /* what lands in your account */
+  --keep-strong:    #5BFFC4;
+  --keep-bg:        #062A22;
+  --keep-line:      #0C6B52;
+
+  --take:           #FF7A66;   /* what the platform takes */
+  --take-strong:    #FFA48F;
+  --take-bg:        #2C1410;
+  --take-line:      #7A3324;
+
+  /* The second accent. Used for structure and processing fees —
+     things that are neither "yours" nor "taken by the platform" —
+     so colour never has to do double duty. */
+  --accent:         #6366F1;
+  --accent-bright:  #8E90FF;
+  --accent-bg:      #171A3A;
+  --accent-line:    #343A7A;
+
+  --warn:           #F5C451;
+  --warn-bg:        #2A2210;
+  --warn-line:      #5C4A1C;
+
+  --link:           #7DD3FC;
+  --link-hover:     #B6E7FF;
+
+  --focus:          #00E599;
+
+  /* --- type ---------------------------------------------- */
+  /* Figures are mono everywhere. Prose is the system UI face. */
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+               "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", "Cascadia Mono", Menlo, Consolas,
+               "Liberation Mono", monospace;
+
+  --step--1: clamp(0.82rem, 0.80rem + 0.10vw, 0.88rem);
+  --step-0:  clamp(1.00rem, 0.97rem + 0.15vw, 1.06rem);
+  --step-1:  clamp(1.18rem, 1.10rem + 0.35vw, 1.35rem);
+  --step-2:  clamp(1.42rem, 1.28rem + 0.65vw, 1.75rem);
+  --step-3:  clamp(1.70rem, 1.45rem + 1.15vw, 2.30rem);
+  --step-4:  clamp(2.05rem, 1.60rem + 2.00vw, 3.05rem);
+
+  /* --- space (4px base) ---------------------------------- */
+  --sp-1: 0.25rem;
+  --sp-2: 0.5rem;
+  --sp-3: 0.75rem;
+  --sp-4: 1rem;
+  --sp-5: 1.5rem;
+  --sp-6: 2rem;
+  --sp-7: 3rem;
+  --sp-8: 4rem;
+
+  /* --- shape --------------------------------------------- */
+  /* Slightly softer than the old 6px. On obsidian, hard corners
+     read as "unstyled div"; the receipt metaphor is now carried
+     by the perforated rule and the mono figures, not the corners. */
+  --radius:    10px;
+  --radius-sm: 6px;
+  --radius-lg: 16px;
+
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.5);
+  --shadow-md: 0 1px 2px rgb(0 0 0 / 0.4), 0 12px 32px rgb(0 0 0 / 0.5);
+  --shadow-glow: 0 0 0 1px rgb(0 229 153 / 0.20), 0 8px 40px rgb(0 229 153 / 0.10);
+
+  --wrap:        1180px;
+  --wrap-narrow: 720px;
+
+  /* Perforated rule used by the receipt edges. */
+  --rule-dash: repeating-linear-gradient(
+    90deg, var(--line-strong) 0 6px, transparent 6px 12px);
+
+  /* --- gradient touches ------------------------------------
+     More of these than the previous system had, and that is the
+     point — the old dark mode's flatness came from having almost
+     none. Each still either adds depth to something that was flat
+     or a wash behind text sitting on bare ground. None of them
+     changes a hue, so the keep/take colour coding that carries
+     meaning is untouched. */
+  --grad-brand: linear-gradient(135deg, #00E599 0%, #00C48A 55%, #14B8A6 100%);
+  --grad-keep:  linear-gradient(135deg, #5BFFC4 0%, #00E599 55%, #00B87A 100%);
+  --grad-accent: linear-gradient(135deg, #8E90FF 0%, #6366F1 60%, #4F46E5 100%);
+
+  /* The headline gradient: mint into violet, left to right. Used
+     once per page at most — on the word that matters. */
+  --grad-text: linear-gradient(100deg, #5BFFC4 0%, #00E599 35%, #8E90FF 100%);
+
+  --grad-wash-keep: linear-gradient(180deg, #0A3A2D 0%, var(--keep-bg) 100%);
+  --grad-wash-take: linear-gradient(180deg, #3A1A14 0%, var(--take-bg) 100%);
+
+  /* Card surface with a faint top-edge highlight, the thing that
+     makes a dark card look lit rather than cut out. */
+  --grad-card: linear-gradient(180deg, rgb(255 255 255 / 0.045) 0%, rgb(255 255 255 / 0) 140px);
+
+  --grad-hero:
+    radial-gradient(80% 90% at 8% -10%, rgb(0 229 153 / 0.16), transparent 62%),
+    radial-gradient(70% 80% at 96% 0%, rgb(99 102 241 / 0.18), transparent 58%),
+    radial-gradient(60% 70% at 50% 110%, rgb(0 229 153 / 0.05), transparent 60%);
+
+  /* Faint dot grid. Replaces dead black with something that has
+     texture without competing with content. */
+  --grid-dot: radial-gradient(rgb(255 255 255 / 0.045) 1px, transparent 1px);
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    /* Light stays paper — warm neutral, not blue-grey — but the
+       accents are the same mint and violet family so the two
+       schemes read as one brand rather than two sites. */
+    --ink:            #14161a;
+    --ink-soft:       #4a4f58;
+    /* Was #767c86, which measured 4.20:1 on white — under the 4.5:1 AA floor
+       for normal text, and this token carries card blurbs and source notes. */
+    --ink-faint:      #656b76;
+    --surface:        #ffffff;
+    --surface-sunk:   #f6f7f9;
+    --surface-raised: #ffffff;
+    --line:           #e3e6ec;
+    --line-strong:    #c5cad4;
+
+    --brand:          #00875A;
+    --brand-bright:   #00A870;
+    --brand-ink:      #ffffff;
+
+    --keep:           #00734D;
+    --keep-strong:    #005E3F;
+    --keep-bg:        #E6F7F0;
+    --keep-line:      #9BDCC2;
+
+    --take:           #B23A20;
+    --take-strong:    #922E18;
+    --take-bg:        #FDEEE9;
+    --take-line:      #F0C0AC;
+
+    --accent:         #4F46E5;
+    --accent-bright:  #6366F1;
+    --accent-bg:      #EEEEFC;
+    --accent-line:    #C3C4F5;
+
+    --warn:           #7d5300;
+    --warn-bg:        #fdf5e2;
+    --warn-line:      #e6d3a4;
+
+    --link:           #0d5a94;
+    --link-hover:     #08406b;
+
+    --focus:          #0a5fa8;
+
+    --shadow-sm: 0 1px 2px rgb(20 22 26 / 0.05);
+    --shadow-md: 0 1px 2px rgb(20 22 26 / 0.04), 0 6px 20px rgb(20 22 26 / 0.06);
+    --shadow-glow: 0 0 0 1px rgb(0 115 77 / 0.16), 0 8px 30px rgb(0 115 77 / 0.08);
+
+    --grad-brand: linear-gradient(135deg, #00A870 0%, #00875A 55%, #006A47 100%);
+    --grad-keep:  linear-gradient(135deg, #00A870 0%, #00734D 60%, #005E3F 100%);
+    --grad-accent: linear-gradient(135deg, #6366F1 0%, #4F46E5 60%, #4338CA 100%);
+    --grad-text: linear-gradient(100deg, #00875A 0%, #00734D 40%, #4F46E5 100%);
+
+    --grad-wash-keep: linear-gradient(180deg, #F0FBF6 0%, var(--keep-bg) 100%);
+    --grad-wash-take: linear-gradient(180deg, #FEF6F2 0%, var(--take-bg) 100%);
+    --grad-card: linear-gradient(180deg, rgb(255 255 255 / 0) 0%, rgb(255 255 255 / 0) 140px);
+
+    --grad-hero:
+      radial-gradient(80% 90% at 8% -10%, rgb(0 135 90 / 0.09), transparent 62%),
+      radial-gradient(70% 80% at 96% 0%, rgb(79 70 229 / 0.08), transparent 58%);
+
+    --grid-dot: radial-gradient(rgb(20 22 26 / 0.05) 1px, transparent 1px);
+  }
+}

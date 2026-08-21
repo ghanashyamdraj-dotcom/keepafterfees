@@ -1,0 +1,16 @@
+{
+  "locale": "en-GB",
+  "country": "United Kingdom",
+  "countryCode": "GB",
+  "language": "en",
+  "currency": {
+    "code": "GBP",
+    "symbol": "£",
+    "symbolPosition": "before",
+    "minorUnitDigits": 2
+  },
+  "formatting": {
+    "numberLocale": "en-GB",
+    "dateFormat": "DD/MM/YYYY"
+  }
+}

@@ -1,0 +1,331 @@
+{
+  "version": "2026.2",
+  "locale": "en-US",
+  "platform": "eBay",
+  "marketplace": "ebay.com (US)",
+  "currency": "USD",
+  "effective": "2026-08-21",
+  "verifiedOn": "2026-08-21",
+  "confidence": "verified",
+  "sources": [
+    {
+      "label": "eBay — Selling fees (no store / Starter store)",
+      "url": "https://www.ebay.com/help/selling/fees-credits-invoices/selling-fees?id=4822",
+      "retrieved": "2026-08-21"
+    },
+    {
+      "label": "eBay — Store selling fees (Starter through Enterprise)",
+      "url": "https://www.ebay.com/help/selling/fees-credits-invoices/store-selling-fees?id=4809",
+      "retrieved": "2026-08-21"
+    }
+  ],
+  "verificationNote": "Transcribed from eBay's own US fee pages on 2026-08-21. Two things changed since the previous version of this file and are corrected here: the base rate for most categories is 13.6%, not 13.25%, and Basic/Premium/Anchor/Enterprise store subscribers are charged from an entirely separate and cheaper fee table with a $2,500 tier boundary rather than $7,500. Both were verified against the live pages. Left deliberately open: eBay's published tables run to roughly 60 category rows with sub-category exceptions; the 15 categories modelled here are the representative ones, and anything not listed falls back to 'default'. The Promoted Listings ad-rate range below was NOT re-verified on this pass and is still carried over from the original seeding.",
+  "perOrderFee": {
+    "underOrEqual10": 0.3,
+    "over10": 0.4,
+    "note": "Charged once per order, not per item. Based on the total order amount including shipping. An order is any number of items bought by the same buyer at checkout with the same shipping method."
+  },
+  "finalValueFee": {
+    "appliesTo": "Total amount of the sale: item price, handling charges, shipping collected from the buyer, sales tax, and any other applicable fees.",
+    "scheduleNote": "eBay publishes two different final value fee tables. Sellers with no store, or a Starter store, are charged from the standard table. Basic, Premium, Anchor and Enterprise subscribers are charged from a lower table that also moves the first tier boundary down from $7,500 to $2,500.",
+    "schedules": [
+      {
+        "id": "standard",
+        "label": "No store or Starter store",
+        "storeTiers": ["none", "starter"],
+        "categories": [
+          {
+            "id": "default",
+            "label": "Most categories",
+            "mode": "marginal",
+            "tiers": [{ "upTo": 7500, "rate": 0.136 }, { "upTo": null, "rate": 0.0235 }]
+          },
+          {
+            "id": "books-movies-music",
+            "label": "Books & Magazines, Movies & TV, Music (excl. Vinyl Records and NFTs)",
+            "mode": "marginal",
+            "tiers": [{ "upTo": 7500, "rate": 0.153 }, { "upTo": null, "rate": 0.0235 }]
+          },
+          {
+            "id": "clothing",
+            "label": "Clothing, Shoes & Accessories",
+            "mode": "marginal",
+            "tiers": [{ "upTo": 7500, "rate": 0.136 }, { "upTo": null, "rate": 0.0235 }]
+          },
+          {
+            "id": "womens-bags",
+            "label": "Women's Bags & Handbags",
+            "mode": "flat",
+            "tiers": [{ "upTo": 2000, "rate": 0.15 }, { "upTo": null, "rate": 0.09 }]
+          },
+          {
+            "id": "sneakers-over-150",
+            "label": "Athletic Shoes",
+            "mode": "flat",
+            "tiers": [{ "upTo": 149.99, "rate": 0.136 }, { "upTo": null, "rate": 0.08 }],
+            "noPerOrderFeeAbove": 150,
+            "note": "8% with no per-order fee once the sale total reaches $150. Below $150 the ordinary rate and per-order fee apply."
+          },
+          {
+            "id": "jewelry",
+            "label": "Jewelry & Watches (excl. Watches, Parts & Accessories)",
+            "mode": "flat",
+            "tiers": [{ "upTo": 5000, "rate": 0.15 }, { "upTo": null, "rate": 0.09 }]
+          },
+          {
+            "id": "watches",
+            "label": "Watches, Parts & Accessories",
+            "mode": "marginal",
+            "tiers": [
+              { "upTo": 1000, "rate": 0.15 },
+              { "upTo": 7500, "rate": 0.065 },
+              { "upTo": null, "rate": 0.03 }
+            ]
+          },
+          {
+            "id": "coins-bullion",
+            "label": "Coins & Paper Money — Bullion",
+            "mode": "flat",
+            "tiers": [{ "upTo": 7500, "rate": 0.136 }, { "upTo": null, "rate": 0.07 }]
+          },
+          {
+            "id": "coins-paper-money",
+            "label": "Coins & Paper Money (excl. Bullion)",
+            "mode": "marginal",
+            "tiers": [{ "upTo": 7500, "rate": 0.1325 }, { "upTo": null, "rate": 0.0235 }]
+          },
+          {
+            "id": "trading-cards",
+            "label": "Trading Cards, Comic Books & Collectible Card Games",
+            "mode": "marginal",
+            "tiers": [{ "upTo": 7500, "rate": 0.1325 }, { "upTo": null, "rate": 0.0235 }]
+          },
+          {
+            "id": "musical-instruments",
+            "label": "Musical Instruments — Guitars & Basses",
+            "mode": "marginal",
+            "tiers": [{ "upTo": 7500, "rate": 0.067 }, { "upTo": null, "rate": 0.0235 }]
+          },
+          {
+            "id": "heavy-equipment",
+            "label": "Heavy Equipment, Commercial Printing Presses & Food Trucks",
+            "mode": "marginal",
+            "tiers": [{ "upTo": 15000, "rate": 0.03 }, { "upTo": null, "rate": 0.005 }],
+            "note": "These categories carry a $20 insertion fee rather than a free listing allowance."
+          },
+          {
+            "id": "motors-parts",
+            "label": "eBay Motors — Parts & Accessories",
+            "mode": "marginal",
+            "tiers": [{ "upTo": 7500, "rate": 0.136 }, { "upTo": null, "rate": 0.0235 }]
+          },
+          {
+            "id": "business-industrial",
+            "label": "Business & Industrial — Heavy Machinery",
+            "mode": "marginal",
+            "tiers": [{ "upTo": 15000, "rate": 0.03 }, { "upTo": null, "rate": 0.005 }]
+          },
+          {
+            "id": "art-nfts",
+            "label": "NFT categories",
+            "mode": "marginal",
+            "tiers": [{ "upTo": null, "rate": 0.05 }]
+          }
+        ]
+      },
+      {
+        "id": "store-plus",
+        "label": "Basic, Premium, Anchor or Enterprise store",
+        "storeTiers": ["basic", "premium", "anchor", "enterprise"],
+        "categories": [
+          {
+            "id": "default",
+            "label": "Most categories",
+            "mode": "marginal",
+            "tiers": [{ "upTo": 2500, "rate": 0.127 }, { "upTo": null, "rate": 0.0235 }]
+          },
+          {
+            "id": "books-movies-music",
+            "label": "Books & Magazines, Movies & TV, Music (excl. Vinyl Records and NFTs)",
+            "mode": "marginal",
+            "tiers": [{ "upTo": 2500, "rate": 0.153 }, { "upTo": null, "rate": 0.0235 }]
+          },
+          {
+            "id": "clothing",
+            "label": "Clothing, Shoes & Accessories",
+            "mode": "marginal",
+            "tiers": [{ "upTo": 2500, "rate": 0.127 }, { "upTo": null, "rate": 0.0235 }]
+          },
+          {
+            "id": "womens-bags",
+            "label": "Women's Bags & Handbags",
+            "mode": "flat",
+            "tiers": [{ "upTo": 2000, "rate": 0.13 }, { "upTo": null, "rate": 0.07 }]
+          },
+          {
+            "id": "sneakers-over-150",
+            "label": "Athletic Shoes",
+            "mode": "flat",
+            "tiers": [{ "upTo": 149.99, "rate": 0.127 }, { "upTo": null, "rate": 0.07 }],
+            "noPerOrderFeeAbove": 150,
+            "note": "7% with no per-order fee once the sale total reaches $150. Below $150 the ordinary rate and per-order fee apply."
+          },
+          {
+            "id": "jewelry",
+            "label": "Jewelry & Watches (excl. Watches, Parts & Accessories)",
+            "mode": "flat",
+            "tiers": [{ "upTo": 5000, "rate": 0.13 }, { "upTo": null, "rate": 0.07 }]
+          },
+          {
+            "id": "watches",
+            "label": "Watches, Parts & Accessories",
+            "mode": "marginal",
+            "tiers": [
+              { "upTo": 1000, "rate": 0.125 },
+              { "upTo": 5000, "rate": 0.04 },
+              { "upTo": null, "rate": 0.03 }
+            ]
+          },
+          {
+            "id": "coins-bullion",
+            "label": "Coins & Paper Money — Bullion",
+            "mode": "flat",
+            "tiers": [
+              { "upTo": 1500, "rate": 0.075 },
+              { "upTo": 10000, "rate": 0.05 },
+              { "upTo": null, "rate": 0.045 }
+            ]
+          },
+          {
+            "id": "coins-paper-money",
+            "label": "Coins & Paper Money (excl. Bullion)",
+            "mode": "marginal",
+            "tiers": [{ "upTo": 4000, "rate": 0.09 }, { "upTo": null, "rate": 0.0235 }]
+          },
+          {
+            "id": "trading-cards",
+            "label": "Trading Cards, Comic Books & Collectible Card Games",
+            "mode": "marginal",
+            "tiers": [{ "upTo": 2500, "rate": 0.1235 }, { "upTo": null, "rate": 0.0235 }]
+          },
+          {
+            "id": "musical-instruments",
+            "label": "Musical Instruments — Guitars & Basses",
+            "mode": "marginal",
+            "tiers": [{ "upTo": 2500, "rate": 0.067 }, { "upTo": null, "rate": 0.0235 }]
+          },
+          {
+            "id": "heavy-equipment",
+            "label": "Heavy Equipment, Commercial Printing Presses & Food Trucks",
+            "mode": "marginal",
+            "tiers": [{ "upTo": 15000, "rate": 0.025 }, { "upTo": null, "rate": 0.005 }]
+          },
+          {
+            "id": "motors-parts",
+            "label": "eBay Motors — Parts & Accessories",
+            "mode": "marginal",
+            "tiers": [{ "upTo": 1000, "rate": 0.115 }, { "upTo": null, "rate": 0.0235 }]
+          },
+          {
+            "id": "business-industrial",
+            "label": "Business & Industrial — Heavy Machinery",
+            "mode": "marginal",
+            "tiers": [{ "upTo": 15000, "rate": 0.025 }, { "upTo": null, "rate": 0.005 }]
+          },
+          {
+            "id": "art-nfts",
+            "label": "NFT categories",
+            "mode": "marginal",
+            "tiers": [{ "upTo": null, "rate": 0.05 }]
+          }
+        ]
+      }
+    ]
+  },
+  "storeSubscriptions": [
+    {
+      "id": "none",
+      "label": "No store",
+      "monthlyAnnual": 0,
+      "monthlyMonthly": 0,
+      "freeListings": 250,
+      "insertionFee": 0.35
+    },
+    {
+      "id": "starter",
+      "label": "Starter",
+      "monthlyAnnual": 4.95,
+      "monthlyMonthly": 7.95,
+      "freeListings": 250,
+      "insertionFee": 0.3
+    },
+    {
+      "id": "basic",
+      "label": "Basic",
+      "monthlyAnnual": 21.95,
+      "monthlyMonthly": 27.95,
+      "freeListings": 1000,
+      "insertionFee": 0.25
+    },
+    {
+      "id": "premium",
+      "label": "Premium",
+      "monthlyAnnual": 59.95,
+      "monthlyMonthly": 74.95,
+      "freeListings": 10000,
+      "insertionFee": 0.1
+    },
+    {
+      "id": "anchor",
+      "label": "Anchor",
+      "monthlyAnnual": 299.95,
+      "monthlyMonthly": 349.95,
+      "freeListings": 25000,
+      "insertionFee": 0.05
+    },
+    {
+      "id": "enterprise",
+      "label": "Enterprise",
+      "monthlyAnnual": 2999.95,
+      "monthlyMonthly": null,
+      "freeListings": 100000,
+      "insertionFee": 0.05
+    }
+  ],
+  "storeListingNote": "Free listing allowances shown are the fixed-price, all-categories figures. eBay publishes separate and larger allowances for auction-style listings and for select categories.",
+  "internationalFee": {
+    "rate": 0.0165,
+    "note": "Charged when the delivery address or the buyer's registered address is outside the US. Waived on eligible listings shipped through eBay International Shipping."
+  },
+  "belowStandardSurcharge": {
+    "rate": 0.06,
+    "escalatedRate": 0.07,
+    "escalatesAfterMonths": 4,
+    "note": "Added to the final value fee percentage for sellers rated Below Standard on the 20th-of-month evaluation. Rises to 7% after four or more consecutive Below Standard months. Does not apply to Above Standard or Top-rated sellers."
+  },
+  "veryHighInadSurcharge": {
+    "rate": 0.05,
+    "escalatedRate": 0.06,
+    "escalatesAfterMonths": 4,
+    "note": "Charged instead on categories where your 'item not as described' return rate is evaluated Very High. If you are both Below Standard and Very High, only the Below Standard surcharge is charged."
+  },
+  "disputeFee": {
+    "amount": 20.0,
+    "note": "Charged per dispute when you are found responsible for a disputed amount, such as a chargeback. Excludes sales tax."
+  },
+  "currencyConversionCharge": {
+    "rate": 0.03,
+    "note": "Retained by eBay on top of the base exchange rate whenever it converts your funds, for sellers with a US registered address."
+  },
+  "promotedListings": {
+    "standardMinRate": 0.02,
+    "standardMaxRate": 1.0,
+    "confidence": "needs-verification",
+    "note": "Promoted Listings Standard charges your chosen ad rate on the total sale amount, but only when a buyer clicks your ad and purchases within 30 days. This range was not re-verified in the 2026-08-21 pass."
+  },
+  "insertionFee": {
+    "amount": 0.35,
+    "freeListingsNoStore": 250,
+    "note": "Charged per listing beyond your monthly free allocation, in every category you list in."
+  }
+}

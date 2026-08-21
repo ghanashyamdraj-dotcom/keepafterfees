@@ -1,0 +1,97 @@
+{
+  "version": "2026.2",
+  "locale": "en-US",
+  "platform": "Etsy",
+  "marketplace": "etsy.com (US seller, USD)",
+  "currency": "USD",
+  "effective": "2026-08-21",
+  "verifiedOn": "2026-08-21",
+  "confidence": "verified",
+  "sources": [
+    {
+      "label": "Etsy — Fees & Payments Policy",
+      "url": "https://www.etsy.com/legal/fees/",
+      "retrieved": "2026-08-21"
+    },
+    {
+      "label": "Etsy — Etsy Payments Policy (processing fees by country)",
+      "url": "https://www.etsy.com/legal/etsy-payments/",
+      "retrieved": "2026-08-21"
+    }
+  ],
+  "verificationNote": "Every figure below except the Regulatory Operating fee percentages was read off Etsy's own policy pages on 2026-08-21. The listing fee, 6.5% transaction fee, Offsite Ads 15%/12% split with its $10,000 threshold and $100 per-order cap, the 2.5% currency conversion fee, the $10 Etsy Plus subscription and the US 3% + $0.25 processing rate all matched the previous values. One correction was made: Australia is 3% domestic and 4% international, not a flat 4%.",
+  "listingFee": {
+    "amount": 0.2,
+    "renewalMonths": 4,
+    "note": "Charged when you publish a listing and again every 4 months, or automatically on each sale if auto-renew is on. Multi-quantity listings incur a renewal fee per additional item sold."
+  },
+  "transactionFee": {
+    "rate": 0.065,
+    "appliesTo": [
+      "itemPrice",
+      "shippingCharged",
+      "giftWrap",
+      "personalization"
+    ],
+    "note": "6.5% of the price you display plus what you charge for delivery, gift wrapping and personalisation. For sellers based in the US the transaction fee does NOT apply to sales tax — which is the opposite of how the payment processing fee below works, and the distinction is the single most common source of a mismatched Etsy fee estimate."
+  },
+  "paymentProcessing": {
+    "appliesTo": "The total amount of the sale, including sales tax and postage.",
+    "US": {
+      "rate": 0.03,
+      "fixed": 0.25
+    },
+    "GB": {
+      "rate": 0.04,
+      "fixed": 0.2,
+      "currency": "GBP"
+    },
+    "CA": {
+      "rate": 0.03,
+      "fixed": 0.25,
+      "currency": "CAD",
+      "note": "3% on domestic orders and on orders from the US; 4% on other international orders."
+    },
+    "AU": {
+      "rate": 0.03,
+      "fixed": 0.25,
+      "currency": "AUD",
+      "internationalRate": 0.04,
+      "note": "3% on domestic orders, 4% on international orders."
+    },
+    "note": "Etsy Payments processing. Rate and fixed component vary by the country your bank account is in, not the buyer's country. Unlike the transaction fee, this one IS assessed on the total sale including tax and postage."
+  },
+  "offsiteAds": {
+    "standardRate": 0.15,
+    "highVolumeRate": 0.12,
+    "highVolumeThreshold": 10000,
+    "capPerOrder": 100,
+    "note": "Charged only when a buyer reaches your listing through an Etsy-purchased ad and orders from your shop within 30 days of that click. Sellers under $10,000 in trailing-365-day sales can opt out; at or above that threshold participation is mandatory at the lower 12% rate — and once you have crossed it, the 12% rate applies for the lifetime of the shop even if sales later fall back below $10,000."
+  },
+  "regulatoryOperatingFee": {
+    "confidence": "needs-verification",
+    "rates": {
+      "GB": 0.0025,
+      "FR": 0.004,
+      "IT": 0.0025,
+      "ES": 0.004,
+      "TR": 0.0111
+    },
+    "note": "Applies to sellers in certain countries only. US sellers are not charged this fee, which is why it was not re-verified in the 2026-08-21 pass — Etsy publishes the per-country percentages in a separate help article rather than in the Fees & Payments Policy. Confirm before relying on these for any non-US locale."
+  },
+  "patternSubscription": {
+    "monthly": 15.0,
+    "freeTrialDays": 30,
+    "note": "Etsy's standalone website builder. Listings already in your Etsy shop carry no extra listing fee on Pattern; Pattern-only listings incur no listing fee and do not expire."
+  },
+  "currencyConversion": {
+    "rate": 0.025,
+    "note": "Applied when your listing currency differs from your payment account currency."
+  },
+  "subscriptions": {
+    "etsyPlusMonthly": 10.0
+  },
+  "squareFee": {
+    "note": "In-person sales synced from Square are charged a $0.20 listing fee but no Etsy transaction fee."
+  }
+}
