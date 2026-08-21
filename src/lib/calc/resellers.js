@@ -40,8 +40,12 @@ function platformFees(platform, { salePrice, shippingCharged, sellerPaysShipping
         ? toCents(c.flatUnderThreshold)
         : pctOfCents(base, c.rateAtOrAbove);
       break;
+    // `tierMode` because these are not all the same shape. eBay's tiers are
+    // marginal — only the portion above the boundary re-rates. Grailed's are a
+    // cliff: a $130 sale is charged 9% on the whole amount, not 6% on the
+    // first $120. Defaulting to marginal keeps eBay unchanged.
     case 'tiered':
-      commissionCents = tieredCents(base, c.tiers, 'marginal');
+      commissionCents = tieredCents(base, c.tiers, c.tierMode ?? 'marginal');
       break;
     case 'level-based': {
       const level = c.levels.find((l) => l.id === (stockxLevel ?? 'level-1')) ?? c.levels[0];
@@ -51,9 +55,15 @@ function platformFees(platform, { salePrice, shippingCharged, sellerPaysShipping
     case 'flat-rate':
     default:
       commissionCents = pctOfCents(base, c.rate ?? 0);
-      if (c.minimumFee) commissionCents = Math.max(commissionCents, toCents(c.minimumFee));
       break;
   }
+
+  // A floor under the commission, applied whatever shape produced it. Hoisted
+  // out of the switch because it is not a property of one fee shape — Facebook
+  // puts a minimum under a flat rate, StockX under a level-based one, and
+  // Grailed under a tier. It is what makes a cheap item disproportionately
+  // expensive to sell, so it has to survive every branch above.
+  if (c.minimumFee) commissionCents = Math.max(commissionCents, toCents(c.minimumFee));
 
   const processingCents = pctOfCents(base, platform.processingRate ?? 0)
     + toCents(platform.processingFixed ?? 0);

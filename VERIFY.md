@@ -49,21 +49,6 @@ this site that cannot be fixed by an algorithm.
   - [ ] [Square — Pricing plans](https://squareup.com/us/en/pricing)
   - [ ] [Wise — Pricing](https://wise.com/us/pricing/)
 
-### `src/data/rates/resellers/en-US.json`
-
-- **Covers:** Resale marketplaces
-- **Effective date claimed:** 2026-08-21
-- **Status:** partially verified — some figures confirmed against a primary source, others not. The note says which is which.
-- **Note:** Resale platform fee structures changed more than any other category between 2024 and 2026, and this file proves the point. VERIFIED 2026-08-21 against each platform's own fee page: Poshmark, Mercari, Depop, eBay and Etsy. Two were wrong and are now fixed. Mercari was carried here as a zero-seller-fee platform, which was true only between March 2024 and 6 January 2025 — it reinstated a 10% selling fee on that date, charged on item price plus buyer-paid shipping. eBay's base rate was 13.25% and is now 13.6%, matching the correction made in the eBay rate file on the same day. Facebook Marketplace was corrected on 2026-08-22 and is now the third error found in this file: it was carried here at 5% with a $0.40 minimum, charged on the item price alone. Meta charges 10% with a $0.80 minimum, on the whole transaction including shipping and tax — double the rate on a base that is larger. STILL UNVERIFIED, and the reason verifiedOn remains null: Vinted, StockX and Grailed.
-- **Check against:**
-  - [ ] [Poshmark — Fee Policy](https://poshmark.com/terms#fee-policy)
-  - [ ] [Mercari — Fees on Mercari](https://www.mercari.com/us/help_center/article/169/)
-  - [ ] [Depop — Seller fees and charges](https://depophelp.zendesk.com/hc/en-gb/articles/360001791127-Seller-fees-and-charges)
-  - [ ] [Vinted — Is selling on Vinted free?](https://www.vinted.com/help)
-  - [ ] [StockX — Seller fees](https://stockx.com/help/en_US/Article/Seller-Fees)
-  - [ ] [Grailed — Selling fees](https://www.grailed.com/drycleanonly/selling-fees)
-  - [ ] [Meta Business Help — About fees for sales using checkout](https://www.facebook.com/business/help/223030991929920)
-
 ### `src/data/rates/shopify/en-US.json`
 
 - **Covers:** Shopify

@@ -4,9 +4,9 @@
   "platform": "Resale marketplaces",
   "currency": "USD",
   "effective": "2026-08-21",
-  "verifiedOn": null,
-  "confidence": "partially-verified",
-  "note": "Resale platform fee structures changed more than any other category between 2024 and 2026, and this file proves the point. VERIFIED 2026-08-21 against each platform's own fee page: Poshmark, Mercari, Depop, eBay and Etsy. Two were wrong and are now fixed. Mercari was carried here as a zero-seller-fee platform, which was true only between March 2024 and 6 January 2025 — it reinstated a 10% selling fee on that date, charged on item price plus buyer-paid shipping. eBay's base rate was 13.25% and is now 13.6%, matching the correction made in the eBay rate file on the same day. Facebook Marketplace was corrected on 2026-08-22 and is now the third error found in this file: it was carried here at 5% with a $0.40 minimum, charged on the item price alone. Meta charges 10% with a $0.80 minimum, on the whole transaction including shipping and tax — double the rate on a base that is larger. STILL UNVERIFIED, and the reason verifiedOn remains null: Vinted, StockX and Grailed.",
+  "verifiedOn": "2026-08-22",
+  "confidence": "verified",
+  "note": "Resale platform fee structures changed more than any other category between 2024 and 2026, and this file proves the point. VERIFIED 2026-08-21 against each platform's own fee page: Poshmark, Mercari, Depop, eBay and Etsy. Two were wrong and are now fixed. Mercari was carried here as a zero-seller-fee platform, which was true only between March 2024 and 6 January 2025 — it reinstated a 10% selling fee on that date, charged on item price plus buyer-paid shipping. eBay's base rate was 13.25% and is now 13.6%, matching the correction made in the eBay rate file on the same day. Facebook Marketplace was corrected on 2026-08-22 and is now the third error found in this file: it was carried here at 5% with a $0.40 minimum, charged on the item price alone. Meta charges 10% with a $0.80 minimum, on the whole transaction including shipping and tax — double the rate on a base that is larger. Vinted, StockX and Grailed were checked on 2026-08-22, completing the file. Vinted was correct. StockX's five level rates and 3% processing were correct but it was missing the $5 US minimum seller fee. Grailed had changed structurally: since 20 May 2026 it charges 6% below $120 and 9% at or above, where this file carried a flat 9% — which overstated the fee on every item under $120, including this page's own $45 default example. That is four real errors found in one file, which is what a category that re-prices this often looks like.",
   "sources": [
     {
       "label": "Poshmark — Fee Policy",
@@ -25,22 +25,27 @@
     },
     {
       "label": "Vinted — Is selling on Vinted free?",
-      "url": "https://www.vinted.com/help",
-      "retrieved": null
+      "url": "https://www.vinted.com/help/373-is-selling-on-vinted-free",
+      "retrieved": "2026-08-22"
     },
     {
       "label": "StockX — Seller fees",
-      "url": "https://stockx.com/help/en_US/Article/Seller-Fees",
-      "retrieved": null
+      "url": "https://stockx.com/help/articles/what-are-stockxs-fees-for-sellers",
+      "retrieved": "2026-08-22"
     },
     {
       "label": "Grailed — Selling fees",
-      "url": "https://www.grailed.com/drycleanonly/selling-fees",
-      "retrieved": null
+      "url": "https://support.grailed.com/hc/en-us/articles/30282580172045-What-are-the-fees",
+      "retrieved": "2026-08-22"
     },
     {
       "label": "Meta Business Help — About fees for sales using checkout",
       "url": "https://www.facebook.com/business/help/223030991929920",
+      "retrieved": "2026-08-22"
+    },
+    {
+      "label": "Grailed — Does Grailed charge a payment processing fee?",
+      "url": "https://support.grailed.com/hc/en-us/articles/30299544492301-Does-Grailed-charge-a-payment-processing-fee",
       "retrieved": "2026-08-22"
     }
   ],
@@ -99,7 +104,7 @@
       "processingRate": 0,
       "processingFixed": 0,
       "listingFee": 0,
-      "note": "Vinted charges sellers nothing. Buyers pay a Buyer Protection fee plus shipping. The seller keeps the full item price."
+      "note": "Vinted charges sellers nothing — no listing fee, no commission, no processing fee, and the seller keeps 100% of the item price. Buyers pay for shipping and a Buyer Protection fee of 5% of the item price plus a fixed amount. Optional paid promotion (bumping) exists but is opt-in per listing and is not modelled."
     },
     {
       "id": "ebay",
@@ -160,25 +165,38 @@
             "label": "Level 5",
             "rate": 0.07
           }
-        ]
+        ],
+        "minimumFee": 5
       },
       "processingRate": 0.03,
       "processingFixed": 0,
       "listingFee": 0,
-      "note": "StockX charges a transaction fee that falls as your seller level rises, plus a 3% payment processing fee. Sellers pay to ship to StockX for authentication."
+      "note": "Transaction fee falls as your seller level rises: 9% / 8.5% / 8% / 7.5% / 7% for Levels 1 to 5, on the final sale price, plus a 3% payment processing fee. A regional minimum seller fee applies — $5 in the US — which is what makes StockX poor for cheap items regardless of level. Levels 3 to 5 can earn a further 2% off through Quick Ship and Successful Ship bonuses; that discount is not modelled here because it depends on performance rather than level. Sellers always pay to ship to StockX for authentication. StockX was running a promotional 0% processing rate at the time of checking; the standing 3% is used here, since a promo rate would understate the ordinary cost."
     },
     {
       "id": "grailed",
       "label": "Grailed",
       "shippingModel": "seller-choice",
       "commission": {
-        "mode": "flat-rate",
-        "rate": 0.09
+        "mode": "tiered",
+        "tierMode": "flat",
+        "minimumFee": 1.99,
+        "tiers": [
+          {
+            "upTo": 119.99,
+            "rate": 0.06
+          },
+          {
+            "upTo": null,
+            "rate": 0.09
+          }
+        ]
       },
       "processingRate": 0.0349,
       "processingFixed": 0.49,
       "listingFee": 0,
-      "note": "Grailed charges a 9% commission plus PayPal-equivalent payment processing."
+      "note": "Two commission rates since 20 May 2026, not one: 6% with a $1.99 minimum below $120, and 9% at $120 and above. It is a cliff, not a marginal tier — a $130 sale pays 9% on the whole amount. Payment processing is separate at 3.49% + $0.49 for a US seller onboarded with Stripe; an eligible seller who has NOT onboarded pays 3.49% + $0.99, and a seller outside Stripe-eligible countries pays 4.99% + $0.49. Commission counts the shipping you charge the buyer unless you use a Grailed Label, in which case it is the listing price alone — this calculator assumes no Grailed Label, the more expensive case.",
+      "commissionIncludesShipping": true
     },
     {
       "id": "etsy",
