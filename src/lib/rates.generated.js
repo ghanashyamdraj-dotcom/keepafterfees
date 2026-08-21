@@ -4,7 +4,7 @@
  * Regenerate with: npm run build  (or node build/gen-rates.mjs)
  *
  * Rate data version: 2026.1
- * Generated: 2026-08-21T20:40:20.233Z
+ * Generated: 2026-08-21T21:05:38.301Z
  */
 
 export const byLocale = {
@@ -3973,7 +3973,7 @@ export const site = {
     "contactEmail": "hello@keepafterfees.com",
     "foundingDate": "2026"
   },
-  "_setupWarning": "Author identity filled 2026-08-02. Still outstanding before launch: (1) sameAs URLs for both author and organization — an empty array is correct until profiles exist, a broken link is worse than an omission; (2) a jurisdiction in /terms/, still marked TODO; (3) DONE 2026-08-22 — contact moved to hello@keepafterfees.com via Cloudflare Email Routing.",
+  "_setupWarning": "Author identity filled 2026-08-02. Still outstanding before launch: (1) sameAs URLs for both author and organization — an empty array is correct until profiles exist, a broken link is worse than an omission; (2) DONE 2026-08-22 — /terms/ governed by the laws of India, courts of Bengaluru, Karnataka; (3) DONE 2026-08-22 — contact moved to hello@keepafterfees.com via Cloudflare Email Routing.",
   "nav": [
     {
       "label": "Marketplace fees",

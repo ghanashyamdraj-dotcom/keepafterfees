@@ -193,8 +193,12 @@ use the calculators for commercial purposes.</p>
 anyone; the way they are compiled, explained, and presented here is.</p>
 
 <h2>Governing law</h2>
-<p>TODO before launch: name the jurisdiction whose law governs these terms — normally where the operating
-entity is established.</p>
+<p>${site.name} is operated from India. These terms are governed by the laws of India, and the courts of
+Bengaluru, Karnataka have exclusive jurisdiction over any dispute arising from them or from your use of this
+site.</p>
+<p>This does not take away rights you have under the mandatory consumer law of the country you live in. If
+you are a consumer in a jurisdiction whose law gives you protections that cannot be contracted away, those
+protections still apply to you.</p>
 
 <h2>Contact</h2>
 <p>Questions about these terms: use the <a href="/contact/">contact page</a>.</p>
