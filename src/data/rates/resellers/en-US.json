@@ -6,7 +6,7 @@
   "effective": "2026-08-21",
   "verifiedOn": null,
   "confidence": "partially-verified",
-  "note": "Resale platform fee structures changed more than any other category between 2024 and 2026, and this file proves the point. VERIFIED 2026-08-21 against each platform's own fee page: Poshmark, Mercari, Depop, eBay and Etsy. Two were wrong and are now fixed. Mercari was carried here as a zero-seller-fee platform, which was true only between March 2024 and 6 January 2025 — it reinstated a 10% selling fee on that date, charged on item price plus buyer-paid shipping. eBay's base rate was 13.25% and is now 13.6%, matching the correction made in the eBay rate file on the same day. STILL UNVERIFIED, and the reason verifiedOn remains null: Vinted, StockX, Grailed and Facebook Marketplace were not re-checked in this pass.",
+  "note": "Resale platform fee structures changed more than any other category between 2024 and 2026, and this file proves the point. VERIFIED 2026-08-21 against each platform's own fee page: Poshmark, Mercari, Depop, eBay and Etsy. Two were wrong and are now fixed. Mercari was carried here as a zero-seller-fee platform, which was true only between March 2024 and 6 January 2025 — it reinstated a 10% selling fee on that date, charged on item price plus buyer-paid shipping. eBay's base rate was 13.25% and is now 13.6%, matching the correction made in the eBay rate file on the same day. Facebook Marketplace was corrected on 2026-08-22 and is now the third error found in this file: it was carried here at 5% with a $0.40 minimum, charged on the item price alone. Meta charges 10% with a $0.80 minimum, on the whole transaction including shipping and tax — double the rate on a base that is larger. STILL UNVERIFIED, and the reason verifiedOn remains null: Vinted, StockX and Grailed.",
   "sources": [
     {
       "label": "Poshmark — Fee Policy",
@@ -37,6 +37,11 @@
       "label": "Grailed — Selling fees",
       "url": "https://www.grailed.com/drycleanonly/selling-fees",
       "retrieved": null
+    },
+    {
+      "label": "Meta Business Help — About fees for sales using checkout",
+      "url": "https://www.facebook.com/business/help/223030991929920",
+      "retrieved": "2026-08-22"
     }
   ],
   "platforms": [
@@ -195,13 +200,14 @@
       "shippingModel": "seller-choice",
       "commission": {
         "mode": "flat-rate",
-        "rate": 0.05,
-        "minimumFee": 0.4
+        "rate": 0.1,
+        "minimumFee": 0.8
       },
       "processingRate": 0,
       "processingFixed": 0,
       "listingFee": 0,
-      "note": "Applies to checkout-enabled shipped orders only. Local pickup sales arranged off-platform carry no fee."
+      "note": "Selling fee is 10% of the whole transaction — item price plus shipping plus applicable taxes — with a $0.80 minimum per order, and it applies only to orders that go through Facebook checkout with shipping. Local pickup and any sale arranged off-platform carry no fee at all. The fee covers payment processing, purchase protection and support, so there is no separate processing charge. Sales tax is part of the fee base on Facebook but is not modelled by this calculator, so the figure here is slightly optimistic for taxed orders.",
+      "commissionIncludesShipping": true
     }
   ]
 }

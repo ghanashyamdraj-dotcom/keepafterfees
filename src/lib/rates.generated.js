@@ -4,7 +4,7 @@
  * Regenerate with: npm run build  (or node build/gen-rates.mjs)
  *
  * Rate data version: 2026.1
- * Generated: 2026-08-21T21:05:38.301Z
+ * Generated: 2026-08-21T21:53:50.276Z
  */
 
 export const byLocale = {
@@ -2519,7 +2519,7 @@ export const byLocale = {
       "effective": "2026-08-21",
       "verifiedOn": null,
       "confidence": "partially-verified",
-      "note": "Resale platform fee structures changed more than any other category between 2024 and 2026, and this file proves the point. VERIFIED 2026-08-21 against each platform's own fee page: Poshmark, Mercari, Depop, eBay and Etsy. Two were wrong and are now fixed. Mercari was carried here as a zero-seller-fee platform, which was true only between March 2024 and 6 January 2025 — it reinstated a 10% selling fee on that date, charged on item price plus buyer-paid shipping. eBay's base rate was 13.25% and is now 13.6%, matching the correction made in the eBay rate file on the same day. STILL UNVERIFIED, and the reason verifiedOn remains null: Vinted, StockX, Grailed and Facebook Marketplace were not re-checked in this pass.",
+      "note": "Resale platform fee structures changed more than any other category between 2024 and 2026, and this file proves the point. VERIFIED 2026-08-21 against each platform's own fee page: Poshmark, Mercari, Depop, eBay and Etsy. Two were wrong and are now fixed. Mercari was carried here as a zero-seller-fee platform, which was true only between March 2024 and 6 January 2025 — it reinstated a 10% selling fee on that date, charged on item price plus buyer-paid shipping. eBay's base rate was 13.25% and is now 13.6%, matching the correction made in the eBay rate file on the same day. Facebook Marketplace was corrected on 2026-08-22 and is now the third error found in this file: it was carried here at 5% with a $0.40 minimum, charged on the item price alone. Meta charges 10% with a $0.80 minimum, on the whole transaction including shipping and tax — double the rate on a base that is larger. STILL UNVERIFIED, and the reason verifiedOn remains null: Vinted, StockX and Grailed.",
       "sources": [
         {
           "label": "Poshmark — Fee Policy",
@@ -2550,6 +2550,11 @@ export const byLocale = {
           "label": "Grailed — Selling fees",
           "url": "https://www.grailed.com/drycleanonly/selling-fees",
           "retrieved": null
+        },
+        {
+          "label": "Meta Business Help — About fees for sales using checkout",
+          "url": "https://www.facebook.com/business/help/223030991929920",
+          "retrieved": "2026-08-22"
         }
       ],
       "platforms": [
@@ -2708,13 +2713,14 @@ export const byLocale = {
           "shippingModel": "seller-choice",
           "commission": {
             "mode": "flat-rate",
-            "rate": 0.05,
-            "minimumFee": 0.4
+            "rate": 0.1,
+            "minimumFee": 0.8
           },
           "processingRate": 0,
           "processingFixed": 0,
           "listingFee": 0,
-          "note": "Applies to checkout-enabled shipped orders only. Local pickup sales arranged off-platform carry no fee."
+          "note": "Selling fee is 10% of the whole transaction — item price plus shipping plus applicable taxes — with a $0.80 minimum per order, and it applies only to orders that go through Facebook checkout with shipping. Local pickup and any sale arranged off-platform carry no fee at all. The fee covers payment processing, purchase protection and support, so there is no separate processing charge. Sales tax is part of the fee base on Facebook but is not modelled by this calculator, so the figure here is slightly optimistic for taxed orders.",
+          "commissionIncludesShipping": true
         }
       ]
     }
@@ -2732,8 +2738,8 @@ export const byLocale = {
       "sources": [
         {
           "label": "Shopify — Pricing (US)",
-          "url": "https://www.shopify.com/pricing?country=us&lang=en",
-          "retrieved": "2026-08-21"
+          "url": "https://www.shopify.com/pricing",
+          "retrieved": "2026-08-22"
         },
         {
           "label": "Shopify Help — Shopify Payments rates in the United States by card type",
@@ -2741,7 +2747,7 @@ export const byLocale = {
           "retrieved": "2026-08-21"
         }
       ],
-      "verificationNote": "Checked 2026-08-21, and only partly confirmable. CONFIRMED against Shopify's US pricing page: the third-party payment gateway fees of 2% / 1% / 0.6% / 0.2% for Basic / Grow / Advanced / Plus. NOT CONFIRMED, for two separate reasons. (1) Plan prices: shopify.com/pricing renders its prices from the visitor's IP geolocation rather than from the URL, so it served INR pricing and would not show USD even with country=us&lang=en set. (2) Card rates: Shopify has stopped publishing per-plan card rates publicly — the help page now tells merchants to read their own rates from Settings > Payments in the Shopify admin instead. The plan prices and card rates below are therefore still carried over from the original seeding and should be confirmed by someone with a US IP address or a Shopify admin login before launch. That same help page does document two things not modelled here: US rates split by card type (Standard = domestic consumer Visa/Mastercard/Discover/Diners; Premium = domestic commercial/corporate/business cards and all domestic American Express), and a higher rate for manually entered card payments.",
+      "verificationNote": "Re-checked 2026-08-22 from shopify.com/pricing via a US exit, which resolved the geolocation problem that blocked the 2026-08-21 attempt. CONFIRMED, all twelve figures matching what was already here: monthly-billed plan prices of $39 Basic, $105 Grow, $399 Advanced and $2,300 Plus, and the online card rates of 2.9% / 2.7% / 2.5% / 2.25%, each + $0.30. The third-party gateway fees (2% / 1% / 0.6% / 0.2%) were already confirmed on 2026-08-21. CORRECTION to the earlier note in this file: it said Shopify no longer publishes per-plan card rates publicly. That was wrong — they are listed on the pricing page beside each plan. The help-centre page that tells merchants to read their own rates from the admin is a different page, and reading only that one produced the wrong conclusion. STILL OPEN, which is why verifiedOn stays null: the annual-billing prices ($29 / $79 / $299), the in-person card rates, the international card surcharge, the currency conversion fee and the $15 chargeback fee. Also noted at the time of checking: a limited-time $1/month promotion on the first three plans. Promo pricing is deliberately NOT stored here — it expires, and a calculator that quietly uses a promo rate overstates what a real seller keeps once it lapses.",
       "plans": [
         {
           "id": "basic",
