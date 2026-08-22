@@ -4,7 +4,7 @@
  * Regenerate with: npm run build  (or node build/gen-rates.mjs)
  *
  * Rate data version: 2026.1
- * Generated: 2026-08-22T10:58:51.069Z
+ * Generated: 2026-08-22T11:02:16.684Z
  */
 
 export const byLocale = {
@@ -3983,7 +3983,7 @@ export const site = {
   "author": {
     "name": "Ghanashyam D Raj",
     "jobTitle": "Founder and maintainer, AfterFees",
-    "bio": "Independent, ad-free calculators that show what a sale, invoice, or paycheck actually nets after fees and tax — every rate cited to its source and dated, every calculation shown in full. See the disclaimer for what this site is and isn't.",
+    "bio": "Calculators that show what a sale, invoice, or paycheck actually nets after fees and tax. Independent of every platform they measure — every rate cited to its source and dated, every calculation shown in full. See the disclaimer for what this site is and isn't.",
     "credentials": [],
     "sameAs": [
       "https://github.com/ghanashyamdraj-dotcom"
