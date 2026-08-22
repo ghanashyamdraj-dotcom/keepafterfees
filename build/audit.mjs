@@ -157,16 +157,25 @@ async function audit() {
   const noAdReserve = perPage.filter((p) => /class="ad-slot/.test(p.html) && !/--ad-h-mobile:\d+px/.test(p.html));
   check(9, 'Ad slots have reserved dimensions (CLS)', noAdReserve.length === 0);
 
-  // Only stylesheets and scripts block rendering. A canonical <link> pointing
-  // at an absolute URL is required, not a problem — the earlier version of
-  // this check flagged it and was wrong.
+  // Only stylesheets and SYNCHRONOUS scripts block rendering. A canonical
+  // <link> pointing at an absolute URL is required, not a problem — an earlier
+  // version of this check flagged it and was wrong.
+  //
+  // An external script carrying async or defer does not block the parser, so
+  // flagging it here would be wrong in the same way. The AdSense loader is
+  // async and is the one third-party request this site makes; a *synchronous*
+  // external script still fails, which is the case worth catching.
+  const syncExternalScript = (html) =>
+    (html.match(/<script[^>]+src="https?:\/\/[^"]*"[^>]*>/g) ?? [])
+      .some((tag) => !/\b(async|defer)\b/.test(tag));
+
   const external = perPage.filter((p) =>
-    /<script[^>]+src="https?:\/\//.test(p.html) ||
+    syncExternalScript(p.html) ||
     /<link[^>]+rel="(stylesheet|preload)"[^>]+href="https?:\/\//.test(p.html) ||
     /<link[^>]+href="https?:\/\/[^"]*"[^>]+rel="(stylesheet|preload)"/.test(p.html) ||
     /@import\s+url\(["']?https?:/.test(p.html));
   check(9, 'No render-blocking external resources', external.length === 0,
-    external.length ? external.map((p) => p.rel).join(', ') : 'CSS inlined, JS local and deferred, zero third-party requests');
+    external.length ? external.map((p) => p.rel).join(', ') : 'CSS inlined, no external stylesheets, no synchronous third-party scripts');
 
   const noViewport = perPage.filter((p) => !/name="viewport"/.test(p.html));
   check(9, 'Mobile viewport meta on every page', noViewport.length === 0);

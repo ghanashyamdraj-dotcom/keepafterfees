@@ -4,7 +4,7 @@
  * Regenerate with: npm run build  (or node build/gen-rates.mjs)
  *
  * Rate data version: 2026.1
- * Generated: 2026-08-21T22:16:48.608Z
+ * Generated: 2026-08-22T10:58:51.069Z
  */
 
 export const byLocale = {
@@ -4043,9 +4043,9 @@ export const site = {
     }
   ],
   "adSlots": {
-    "enabled": false,
-    "clientId": "",
-    "note": "Leave enabled:false until AdSense approval. Slots render as reserved empty space so enabling them later causes no layout shift.",
+    "enabled": true,
+    "clientId": "ca-pub-9546036902768059",
+    "note": "enabled:true loads the AdSense loader script sitewide, which is what Google needs in order to review the site and what lets Auto Ads serve. It also flips the Advertising and Your-rights sections of /privacy/ to their ad-serving wording — those are conditional on this flag, so the policy cannot silently disagree with what the site actually does.",
     "sizes": {
       "leaderboard": {
         "mobile": [
@@ -4099,7 +4099,15 @@ export const site = {
       }
     },
     "sizeNote": "midContent and endContent sit inside the 720px prose column, so they declare 336x280 rather than a 728x90 leaderboard — a 728-wide unit cannot fit there and would be clamped to 720, leaving the declared size a lie. Only the leaderboard, which sits in the full-width wrap, is 728x90.",
-    "railNote": "The rail renders only at 1100px and up, in the gutter beside the 720px prose column that was previously empty. It is hidden — not merely empty — below that width, so it costs mobile nothing."
+    "railNote": "The rail renders only at 1100px and up, in the gutter beside the 720px prose column that was previously empty. It is hidden — not merely empty — below that width, so it costs mobile nothing.",
+    "slotIds": {
+      "leaderboard": "",
+      "result": "",
+      "midContent": "",
+      "rail": "",
+      "endContent": ""
+    },
+    "slotIdNote": "Populate each of these with the ad unit ID from AdSense once the account is approved and you have created the units. A position with an empty id renders the reserved, correctly-sized container and nothing else — so the layout is already holding the space, and filling these in causes no layout shift."
   },
   "affiliates": {
     "enabled": false,

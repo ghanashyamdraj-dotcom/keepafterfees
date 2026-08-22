@@ -141,9 +141,16 @@ prevention, as they do for every website.</p>
   : 'This site does not currently use affiliate links.'}</p>
 
 <h2>Your rights</h2>
-<p>Because no personal data is collected or stored by this site, there is generally nothing to access,
+<p>${site.adSlots.enabled
+  ? `We hold no personal data about you ourselves — there is no account, no server, and no database on this
+site. Our advertising partner does process data about your visit, and rights over that data are exercised
+through Google rather than through us: see <a href="https://policies.google.com/privacy" rel="noopener nofollow">Google's privacy policy</a>
+and <a href="https://myadcenter.google.com/" rel="noopener nofollow">My Ad Center</a> to see, change, or turn off
+personalised advertising. If you are in the EU, UK, or California and want to reach us directly, use the
+<a href="/contact/">contact page</a> and we will respond within 30 days.`
+  : `Because no personal data is collected or stored by this site, there is generally nothing to access,
 correct, or delete. If you are in the EU, UK, or California and believe we hold data about you, use the
-<a href="/contact/">contact page</a> and we will respond within 30 days.</p>
+<a href="/contact/">contact page</a> and we will respond within 30 days.`}</p>
 
 <h2>Children</h2>
 <p>This site is aimed at people running businesses and is not directed at children under 13. We do not

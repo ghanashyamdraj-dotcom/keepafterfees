@@ -47,7 +47,21 @@ ${hreflang ? `${hreflang}\n` : ''}<meta name="robots" content="index, follow, ma
 <meta name="theme-color" content="#0B0F17">
 
 <style>${css}</style>
-${renderSchema(site, page, trail)}
+${
+  /**
+   * The AdSense loader. Deliberately the ONLY third-party request the site
+   * makes, and it is `async` so it never blocks the first paint — the audit's
+   * render-blocking check still passes and LCP is unaffected.
+   *
+   * Gated on adSlots.enabled because the same flag flips the Advertising and
+   * Your-rights sections of /privacy/. Tying the script and the policy to one
+   * switch is what stops the site from serving ads while the policy still says
+   * it does not.
+   */
+  site.adSlots?.enabled && site.adSlots?.clientId
+    ? `<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${esc(site.adSlots.clientId)}" crossorigin="anonymous"></script>\n`
+    : ''
+}${renderSchema(site, page, trail)}
 </head>
 <body class="${page.bodyClass ?? ''}">
 <a class="skip-link" href="#main">Skip to the calculator</a>

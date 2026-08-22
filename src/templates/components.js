@@ -182,9 +182,24 @@ export function adSlot(site, position) {
   const [mw, mh] = size.mobile;
   const [dw, dh] = size.desktop;
 
+  const { enabled, clientId } = site.adSlots;
+  const slotId = site.adSlots.slotIds?.[position] ?? '';
+
+  // Three states, not two. Ads off → an empty reserved box. Ads on but no unit
+  // id yet → still an empty reserved box, because a manual <ins> with no slot
+  // renders an AdSense error rather than an ad; Auto Ads fill the page in the
+  // meantime. Ads on with a unit id → the real unit, in a container that has
+  // been holding exactly this space since before there were any ads at all,
+  // so switching it on shifts nothing.
+  const inner = enabled && clientId && slotId
+    ? `<ins class="adsbygoogle" style="display:block;width:100%;height:100%"
+    data-ad-client="${esc(clientId)}" data-ad-slot="${esc(slotId)}"></ins>
+  <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>`
+    : '<!-- reserved -->';
+
   return `<div class="ad-slot ad-slot--${position}" data-ad-slot="${position}"
   style="--ad-w-mobile:${mw}px;--ad-h-mobile:${mh}px;--ad-w-desktop:${dw}px;--ad-h-desktop:${dh}px"
-  role="complementary" aria-label="Advertisement">${site.adSlots.enabled ? '' : '<!-- reserved -->'}</div>`;
+  role="complementary" aria-label="Advertisement">${inner}</div>`;
 }
 
 /** Affiliate block. Renders nothing until slots have real URLs. */
