@@ -1,6 +1,6 @@
 # Rate verification checklist
 
-_Generated 2026-08-22 by `npm run verify:rates`. Do not edit by hand._
+_Generated 2026-08-23 by `npm run verify:rates`. Do not edit by hand._
 
 Every figure in `src/data/` was seeded from published rate cards but **has not been
 confirmed against the live source**. Confirm each file below, then set `verifiedOn`

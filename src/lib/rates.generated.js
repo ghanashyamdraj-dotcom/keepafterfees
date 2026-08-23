@@ -4,7 +4,7 @@
  * Regenerate with: npm run build  (or node build/gen-rates.mjs)
  *
  * Rate data version: 2026.1
- * Generated: 2026-08-22T11:02:16.684Z
+ * Generated: 2026-08-23T06:20:32.828Z
  */
 
 export const byLocale = {

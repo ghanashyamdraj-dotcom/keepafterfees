@@ -1454,6 +1454,30 @@ async function writeAssets(site) {
     );
   }
 
+  /**
+   * ads.txt — the IAB authorised-sellers file.
+   *
+   * Separate from the AdSense loader script and required independently: until
+   * this resolves, AdSense reports "Ads.txt status: Not found" and will
+   * eventually restrict serving, because without it nobody can prove the
+   * inventory on this domain is really yours.
+   *
+   * Derived from adSlots.clientId rather than written out, because the two
+   * IDs are DIFFERENT FORMS of the same number — the script tag wants
+   * `ca-pub-…` and ads.txt wants `pub-…`. Typing the second by hand is how it
+   * ends up one digit off from the first and silently authorises nobody.
+   * f08c47fec0942fa0 is Google's own TAG certification ID, identical for every
+   * AdSense publisher.
+   */
+  if (site.adSlots?.clientId) {
+    const pubId = site.adSlots.clientId.replace(/^ca-/, '');
+    await writeFile(
+      join(dist, 'ads.txt'),
+      `google.com, ${pubId}, DIRECT, f08c47fec0942fa0\n`,
+      'utf8'
+    );
+  }
+
   // Favicon: the brand mark on the obsidian ground, inline SVG so it costs one
   // request and stays sharp at any size. Same mark as the header — a full bar
   // with a wedge taken out of it, which is the subject of the site.
