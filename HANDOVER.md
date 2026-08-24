@@ -355,7 +355,36 @@ clears.
 > step, since the org page is exactly the kind of external profile that entry
 > wants.
 
-### 2.7 Small things
+### 2.7 Four ad slots still have no unit
+
+The **leaderboard** now carries a real unit (`1805655779`, horizontal
+responsive) on every page. The other four are still reserved-but-empty, and
+each wants a unit of its own shape:
+
+| Position | Where it sits | Shape to create |
+|---|---|---|
+| `result` | beside the calculator | rectangle, 336x280 / 300x250 |
+| `midContent` | inside the 720px prose column | rectangle, same |
+| `endContent` | end of the article | rectangle, same |
+| `rail` | the gutter, 1360px and up only | vertical, 300x600 |
+
+Create them in AdSense, paste each id into `site.json` → `adSlots.slotIds`, and
+set `adSlots.formats` for that position if the unit is responsive (any
+non-empty value there switches the container from a fixed box to full width
+with the declared size as a min-height, and adds `data-ad-format` /
+`data-full-width-responsive`).
+
+**Do not reuse `1805655779` across the other four.** It is permitted by
+AdSense, but reporting merges placements that share a unit id, so you would
+never learn which position earns — and it is a horizontal unit being asked to
+fill rectangle and vertical boxes.
+
+Note the loader script lives in `<head>` once per page, emitted by
+`layout.js`. The full AdSense snippet includes it; pasting that snippet at a
+placement would load `adsbygoogle.js` a second and third time. `adSlot()`
+emits only the `<ins>` and its `push()`.
+
+### 2.8 Small things
 
 - The **favicon is still mint on obsidian** while the in-page brand mark is now
   monochrome. Deliberate — a favicon has to be findable among thirty tabs and

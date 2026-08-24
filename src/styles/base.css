@@ -351,6 +351,20 @@ code { font-family: var(--font-mono); font-size: 0.9em; background: var(--surfac
 /* Reserved space is invisible but occupies layout, so enabling ads later
    causes zero cumulative layout shift. */
 
+/* A responsive unit picks its own height, so the declared size becomes a FLOOR
+   rather than a box. It still reserves the space — the common case shifts
+   nothing — but a taller ad is allowed to grow into the page instead of being
+   clipped, which would be both lost revenue and an AdSense policy violation.
+   Width goes full-bleed so data-full-width-responsive has something to fill. */
+.ad-slot[data-ad-responsive] {
+  width: 100%;
+  height: auto;
+  min-height: var(--ad-h-mobile);
+}
+@media (min-width: 800px) {
+  .ad-slot[data-ad-responsive] { width: 100%; min-height: var(--ad-h-desktop); }
+}
+
 .ad-rail { display: none; }
 
 @media (min-width: 1240px) {

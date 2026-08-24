@@ -286,20 +286,37 @@ export function adSlot(site, position) {
 
   const { enabled, clientId } = site.adSlots;
   const slotId = site.adSlots.slotIds?.[position] ?? '';
+  const format = site.adSlots.formats?.[position] ?? '';
+  const responsive = Boolean(format);
 
-  // Three states, not two. Ads off → an empty reserved box. Ads on but no unit
-  // id yet → still an empty reserved box, because a manual <ins> with no slot
-  // renders an AdSense error rather than an ad; Auto Ads fill the page in the
-  // meantime. Ads on with a unit id → the real unit, in a container that has
-  // been holding exactly this space since before there were any ads at all,
-  // so switching it on shifts nothing.
+  /**
+   * Three states, not two. Ads off → an empty reserved box. Ads on but no unit
+   * id yet → still an empty reserved box, because a manual <ins> with no slot
+   * renders an AdSense error rather than an ad, and Auto Ads fill the page in
+   * the meantime. Ads on with a unit id → the real unit, in a container that
+   * has been holding exactly this space since before there were any ads, so
+   * switching it on shifts nothing.
+   *
+   * The loader script is NOT emitted here. It is in <head> once per page (see
+   * layout.js), gated on the same `enabled` flag. Pasting the full AdSense
+   * snippet at each placement would load adsbygoogle.js three or four times a
+   * page — a wasted request each and something Google's own diagnostics flag.
+   *
+   * A RESPONSIVE unit differs in two ways. It must not be given a fixed height,
+   * because AdSense picks the height and a container that clips a taller ad is
+   * both lost revenue and a policy violation; and it takes data-ad-format plus
+   * data-full-width-responsive so it can size to the column it is in.
+   */
   const inner = enabled && clientId && slotId
-    ? `<ins class="adsbygoogle" style="display:block;width:100%;height:100%"
-    data-ad-client="${esc(clientId)}" data-ad-slot="${esc(slotId)}"></ins>
+    ? `<ins class="adsbygoogle" style="display:block${responsive ? '' : ';width:100%;height:100%'}"
+    data-ad-client="${esc(clientId)}" data-ad-slot="${esc(slotId)}"${
+        responsive ? `
+    data-ad-format="${esc(format)}" data-full-width-responsive="true"` : ''
+      }></ins>
   <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>`
     : '<!-- reserved -->';
 
-  return `<div class="ad-slot ad-slot--${position}" data-ad-slot="${position}"
+  return `<div class="ad-slot ad-slot--${position}"${responsive ? ' data-ad-responsive' : ''} data-ad-slot="${position}"
   style="--ad-w-mobile:${mw}px;--ad-h-mobile:${mh}px;--ad-w-desktop:${dw}px;--ad-h-desktop:${dh}px"
   role="complementary" aria-label="Advertisement">${inner}</div>`;
 }
