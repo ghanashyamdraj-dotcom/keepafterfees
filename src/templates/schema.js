@@ -16,9 +16,17 @@
  *   - No HowTo. Deprecated 2023, dead everywhere.
  */
 
-/** Escape a string for safe embedding inside a <script> block. */
+/**
+ * Escape a string for safe embedding inside a <script> block.
+ *
+ * Not pretty-printed. This was `JSON.stringify(obj, null, 2)`, which shipped
+ * the indentation of an eleven-kilobyte graph to every visitor — around 3 KB
+ * per page of whitespace no parser needs and no human reads, on a site with a
+ * self-imposed 100 KB page budget and five ad slots competing for the same
+ * bytes. Anyone who wants to read it has a formatter in their devtools.
+ */
 function safeJson(obj) {
-  return JSON.stringify(obj, null, 2).replace(/</g, '\\u003c').replace(/>/g, '\\u003e');
+  return JSON.stringify(obj).replace(/</g, '\\u003c').replace(/>/g, '\\u003e');
 }
 
 export function organizationGraph(site) {
@@ -54,6 +62,15 @@ export function organizationGraph(site) {
     },
   ];
 
+  /**
+   * A Person node only when there is a person to name.
+   *
+   * Attribution on this site is to the Organization by explicit decision of
+   * the maintainer; `author.name` is empty, so no Person is emitted and every
+   * `author:` reference below falls back to the org's @id. The graph stays
+   * connected and valid either way — Organization is a legitimate `author`
+   * for schema.org — it simply names an entity rather than a human.
+   */
   if (site.author?.name && !site.author.name.startsWith('REPLACE')) {
     nodes.push({
       '@type': 'Person',
@@ -75,6 +92,16 @@ export function organizationGraph(site) {
   }
 
   return nodes;
+}
+
+/**
+ * Whichever entity is the author: the Person when one is named, the
+ * Organization otherwise. Never absent — an unattributed page is a worse
+ * signal than one attributed to a site.
+ */
+function authorRef(site) {
+  const named = site.author?.name && !site.author.name.startsWith('REPLACE');
+  return { '@id': named ? `${site.url}/about/#person` : `${site.url}/#org` };
 }
 
 export function breadcrumbNode(site, trail) {
@@ -106,9 +133,7 @@ export function softwareApplicationNode(site, page) {
     ...(page.featureList?.length ? { featureList: page.featureList } : {}),
     ...(page.updated ? { dateModified: page.updated } : {}),
     publisher: { '@id': `${site.url}/#org` },
-    ...(site.author?.name && !site.author.name.startsWith('REPLACE')
-      ? { author: { '@id': `${site.url}/about/#person` } }
-      : {}),
+    author: authorRef(site),
   };
 }
 
@@ -136,9 +161,7 @@ export function webPageNode(site, page) {
     isPartOf: { '@id': `${site.url}/#website` },
     ...(page.published ? { datePublished: page.published } : {}),
     ...(page.updated ? { dateModified: page.updated } : {}),
-    ...(site.author?.name && !site.author.name.startsWith('REPLACE')
-      ? { author: { '@id': `${site.url}/about/#person` } }
-      : {}),
+    author: authorRef(site),
     breadcrumb: { '@id': `${site.url}${page.path}#breadcrumb` },
   };
 }

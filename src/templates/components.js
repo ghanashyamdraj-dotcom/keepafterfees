@@ -26,11 +26,59 @@ export const esc = (s) =>
 
 /* ---------------------------------------------------------------- chrome -- */
 
-export function header(site, currentPath) {
+/**
+ * The site header, with a hover/focus mega menu per section.
+ *
+ * The top-level nav entries are already group index pages, so each one has a
+ * real list of tools behind it — a visitor hovering "Marketplace fees" wants
+ * to know that Etsy, eBay, Amazon and Shopify are in there, and making them
+ * load a page to find out is a wasted step.
+ *
+ * It is CSS-only: `:hover` opens it for a mouse and `:focus-within` opens it
+ * for a keyboard, so it works with JavaScript disabled and needs no ARIA
+ * expanded-state bookkeeping that JS would then have to keep honest. The
+ * top-level link is still a real link to the group page, so the panel is
+ * additive rather than a replacement for navigating.
+ *
+ * Below the mega breakpoint the panels are hidden outright and the existing
+ * hamburger shows the flat list — a hover menu on a touch screen is a trap.
+ *
+ * @param {Function} toolsFor  (groupId) => TOOLS entries in that group, live only.
+ */
+export function header(site, currentPath, { toolsFor = () => [] } = {}) {
   const links = site.nav
     .map((item) => {
       const active = currentPath.startsWith(item.href) && item.href !== '/';
-      return `<li><a href="${item.href}"${active ? ' aria-current="page"' : ''}>${esc(item.label)}</a></li>`;
+      const group = item.group ?? GROUP_BY_PATH[item.href] ?? null;
+      const tools = group ? toolsFor(group) : [];
+
+      // Two or more, not one. A panel that drops open to reveal a single link
+      // to the page the trigger already goes to is a worse version of no panel
+      // — it costs a hover, a wait and a second click to arrive where one
+      // click would have. The Paycheck section is currently exactly that.
+      if (tools.length < 2) {
+        return `<li class="nav-item"><a href="${item.href}"${active ? ' aria-current="page"' : ''}>${esc(item.label)}</a></li>`;
+      }
+
+      // Emitted on one line on purpose. This markup repeats twenty-five times
+      // on every page of the site, and pretty-printing it cost more bytes in
+      // leading whitespace than all twenty-five descriptions put together.
+      const cards = tools
+        .map((t) => `<li><a href="${t.path}"${t.path === currentPath ? ' aria-current="page"' : ''}>`
+          + `<span class="mega-icon" aria-hidden="true">${groupIcon(t.group)}</span>`
+          + `<span class="mega-text"><strong>${esc(t.linkLabel ?? t.h1)}</strong>`
+          + `<span>${esc(t.blurb)}</span></span></a></li>`)
+        .join('');
+
+      return `<li class="nav-item nav-item--mega" data-group="${esc(group)}">
+    <a href="${item.href}"${active ? ' aria-current="page"' : ''}>${esc(item.label)}<span class="nav-caret" aria-hidden="true">${ICONS.caret}</span></a>
+    <div class="mega">
+      <div class="wrap mega-inner">
+        <ul class="mega-grid">${cards}</ul>
+        <a class="mega-all" href="${item.href}">See all ${tools.length} calculators ${ICONS.arrow}</a>
+      </div>
+    </div>
+  </li>`;
     })
     .join('');
 
@@ -44,11 +92,23 @@ export function header(site, currentPath) {
       <span></span><span></span><span></span>
     </button>
     <nav id="site-nav" class="site-nav" aria-label="Main">
-      <ul>${links}</ul>
+      <ul class="nav-list">${links}</ul>
     </nav>
   </div>
 </header>`;
 }
+
+/**
+ * Group index path -> group id, so site.json's nav does not have to repeat
+ * what tools.js already declares. A nav entry pointing anywhere else (About)
+ * simply finds nothing here and renders as a plain link.
+ */
+const GROUP_BY_PATH = {
+  '/marketplace-fees/': 'marketplace',
+  '/payment-processor-fees/': 'processor',
+  '/freelance-tools/': 'freelance',
+  '/paycheck-calculator/': 'paycheck',
+};
 
 export function breadcrumbs(trail) {
   // A one-item trail is just the word "Home" floating above the page — it
@@ -97,57 +157,99 @@ export function footer(site) {
 /**
  * One tool card for the directory grid.
  *
- * Replaces the old title+blurb+"live" card. Three things changed, all from the
- * design critique:
+ * Four elements: a small monochrome glyph, a title, a line of what the tool
+ * does, and — where it means something — one computed figure. That is down
+ * from eight. The previous card carried a tinted glyph tile, a title, a blurb,
+ * two or three bordered chips, a rule, an uppercase label, a mono figure and a
+ * two-tone bar; sixteen of those on one screen was the single largest source
+ * of the "everything is shouting" problem.
  *
- *   - A category glyph, so the grid has visual anchors and you can tell a
- *     marketplace tool from a paycheck tool without reading.
- *   - Real metadata chips ("2026 rates", "Includes shipping") instead of a
- *     `live` tag repeated on every card, which carried no information.
- *   - A footer stat showing the actual headline rate, plus a two-segment bar
- *     for the keep/take split.
+ * The glyph no longer varies in colour by category either. Category tinting
+ * looked like a code the reader was expected to learn, and there was nothing
+ * anywhere explaining it — so it read as four more competing hues. Grouping is
+ * carried by the filter above the grid, which is a control that says what it
+ * does in words.
  *
  * `stat` is computed from the rate JSON by the caller and passed in — this
- * function never knows a percentage. A card that has no meaningful headline
- * rate (the reverse calculators, margin) simply omits the footer rather than
- * inventing one.
+ * function never knows a percentage. A card with no meaningful headline rate
+ * (the reverse calculators, margin) omits it rather than inventing one.
  */
 export function toolCard(tool, { chips = [], stat = null } = {}) {
   const planned = tool.status === 'planned';
 
-  const chipHtml = [
-    ...(planned ? [{ label: 'Coming soon', kind: 'soon' }] : []),
-    ...chips.map((c) => (typeof c === 'string' ? { label: c } : c)),
-  ]
-    .map((c) => `<span class="chip${c.kind ? ` chip--${c.kind}` : ''}">${esc(c.label)}</span>`)
-    .join('');
+  /**
+   * Metadata, as text.
+   *
+   * These were pills: bordered, backgrounded, one per capability, styled
+   * identically to the filter buttons above the grid — so the eye tried to
+   * parse them as navigation before working out they were labels. Three of
+   * them on each of sixteen cards is forty-eight capsules on one screen.
+   *
+   * They are now a single quiet line, capped at two items. What a tool models
+   * is worth saying; it is not worth saying loudly on a card whose job is to
+   * get clicked.
+   */
+  const shown = chips.map((c) => (typeof c === 'string' ? c : c.label)).slice(0, 2);
+  const metaHtml = planned || shown.length
+    ? `<p class="card-meta">${planned ? '<span class="card-soon">Coming soon</span>' : ''}${esc(shown.join(' · '))}</p>`
+    : '';
 
+  /**
+   * The computed figure, as a sentence rather than a labelled statistic.
+   *
+   * It used to be an uppercase letter-spaced label, a mono figure, and a
+   * two-tone progress bar underneath. The bar encoded the same ratio as the
+   * figure, at a resolution where 90% and 86% are indistinguishable, in the
+   * two colours the rest of the page was already using for other purposes.
+   */
   const statHtml = stat
-    ? `<div class="card-stat">
-      <span class="card-stat-label">${esc(stat.label)}</span>
-      <span class="card-stat-value">${esc(stat.value)}</span>
-    </div>
-    ${
-      stat.keepPct != null
-        ? `<div class="card-bar" role="img" aria-label="${esc(stat.barLabel ?? '')}">
-      <span class="keep" style="width:${stat.keepPct.toFixed(1)}%"></span>
-      <span class="take" style="width:${(100 - stat.keepPct).toFixed(1)}%"></span>
-    </div>`
-        : ''
-    }`
+    ? `<p class="card-stat"><span class="card-stat-value">${esc(stat.value)}</span> ${esc(stat.label)}</p>`
     : '';
 
   return `<li class="tool-card" data-group="${esc(tool.group)}" data-name="${esc(`${tool.h1} ${tool.blurb}`.toLowerCase())}">
   <a href="${tool.path}">
-    <div class="card-top">
-      <span class="card-glyph" aria-hidden="true">${groupIcon(tool.group)}</span>
-      <h3 class="card-title">${esc(tool.linkLabel ?? tool.h1)}</h3>
-    </div>
+    <span class="card-glyph" aria-hidden="true">${groupIcon(tool.group)}</span>
+    <h3 class="card-title">${esc(tool.linkLabel ?? tool.h1)}</h3>
     <p class="card-blurb">${esc(tool.blurb)}</p>
-    ${chipHtml ? `<div class="card-chips">${chipHtml}</div>` : ''}
+    ${metaHtml}
     ${statHtml}
   </a>
 </li>`;
+}
+
+/**
+ * The in-section sidebar on a tool page.
+ *
+ * Persistent navigation within a tool family: every calculator in the same
+ * group, the current one marked, and a way out to the full directory. It does
+ * three things at once — orients a visitor who arrived on a deep page from a
+ * search result, gives them the obvious next click without scrolling to the
+ * footer, and puts every tool in a family one hop from every other, which is
+ * the internal-linking shape this hub wanted anyway.
+ *
+ * Locale variants are filtered out: a US visitor on the Amazon FBA page does
+ * not need the UK page in a sidebar, and the locale banner already offers it
+ * to anyone whose browser says they want it.
+ */
+export function toolSidebar({ group, tools, currentPath }) {
+  if (!group || tools.length < 2) return '';
+
+  // One line, for the same reason as the mega items above.
+  const items = tools
+    .map((t) => `<li${t.path === currentPath ? ' data-current' : ''}>`
+      + `<a href="${t.path}"${t.path === currentPath ? ' aria-current="page"' : ''}>`
+      + `<span>${esc(t.linkLabel ?? t.h1)}</span>`
+      + `<span class="side-chevron" aria-hidden="true">${ICONS.chevron}</span></a></li>`)
+    .join('');
+
+  return `<aside class="tool-side" data-group="${esc(group.id)}" aria-labelledby="side-heading">
+  <p class="side-head" id="side-heading">
+    <span class="side-glyph" aria-hidden="true">${groupIcon(group.id)}</span>
+    ${esc(group.label)}
+  </p>
+  <ul class="side-list">${items}</ul>
+  <a class="side-all" href="/tools/">All calculators ${ICONS.arrow}</a>
+</aside>`;
 }
 
 /**
@@ -422,8 +524,23 @@ export function renderQuarterly(q) {
  *
  * `locale` follows the shape in src/data/locales/*.json; defaults to en-US
  * (formatMoney's own default) so every existing call site is unaffected.
+ *
+ * `total` and `totalLabel` mirror `totalOverride` / `totalLabel` on the client
+ * registry entry, and exist because `res.totals.net` is the wrong figure for
+ * several tools: a reverse calculator's answer is the amount to CHARGE, a tax
+ * page's is the tax OWED, an hourly-rate page's is a RATE and not the year's
+ * revenue at all. Before these existed the total row was rendered from
+ * `totals.net` regardless, so the server shipped a different figure from the
+ * one the browser computed a moment later and the row visibly changed on load
+ * — /freelance-hourly-rate-calculator/ served "Your hourly rate $85,000.55" to
+ * anything that does not run JavaScript, which is every AI crawler except
+ * Googlebot. Both default to the old behaviour, so any caller that passes
+ * neither is unaffected.
  */
-export function resultBlock(res, { headline, headlineLabel, secondary = [], extra = '', locale = undefined }) {
+export function resultBlock(res, {
+  headline, headlineLabel, secondary = [], extra = '', locale = undefined,
+  total = undefined, totalLabel = undefined,
+}) {
   if (!res.ok) {
     return `<div class="result-card result-card--empty"><p>${esc(res.error)}</p></div>`;
   }
@@ -456,8 +573,10 @@ export function resultBlock(res, { headline, headlineLabel, secondary = [], extr
     ? `<div class="callouts">${res.notes.map((n) => `<p class="callout callout--note">${esc(n)}</p>`).join('')}</div>`
     : '';
 
+  const totalValue = total ?? res.totals.net;
+
   return `<div class="result-card">
-  <div class="result-headline">
+  <div class="result-headline"${totalValue < 0 ? ' data-negative' : ''}>
     <span class="result-label">${esc(headlineLabel)}</span>
     <output class="result-value" id="result-headline">${esc(headline)}</output>
   </div>
@@ -470,8 +589,8 @@ export function resultBlock(res, { headline, headlineLabel, secondary = [], extr
     <tbody>${lines}</tbody>
     <tfoot>
       <tr class="line line--total">
-        <th scope="row">${esc(headlineLabel)}</th>
-        <td class="line-value">${res.totals.net < 0 ? '&minus;' : ''}${formatMoney(Math.abs(res.totals.net), locale)}</td>
+        <th scope="row">${esc(totalLabel ?? headlineLabel)}</th>
+        <td class="line-value">${totalValue < 0 ? '&minus;' : ''}${formatMoney(Math.abs(totalValue), locale)}</td>
       </tr>
     </tfoot>
   </table>
@@ -662,6 +781,33 @@ export function faqSection(faqs) {
 </section>`;
 }
 
+/**
+ * Head-to-head links, kept separate from `relatedTools`.
+ *
+ * A comparison page answers a question one step earlier than a calculator
+ * does — "which of these should I be on" rather than "what does this one
+ * take" — so it belongs in its own labelled block rather than mixed into a
+ * list of sibling calculators where a reader scanning for another tool would
+ * skim straight past it. Renders nothing when a page has no comparisons
+ * mapped to it, so most pages are unaffected.
+ */
+export function comparisonLinks(tools, currentPath) {
+  const items = (tools ?? [])
+    .filter((t) => t.path !== currentPath)
+    .map(
+      (t) => `<li><a href="${t.path}">
+    <strong>${esc(t.linkLabel ?? t.h1)}</strong>
+    <span>${esc(t.blurb)}</span>
+  </a></li>`
+    )
+    .join('');
+  if (!items) return '';
+  return `<nav class="related related--compare" aria-labelledby="compare-heading">
+  <h2 id="compare-heading">Compare this against the alternatives</h2>
+  <ul class="related-list">${items}</ul>
+</nav>`;
+}
+
 export function relatedTools(tools, currentPath) {
   const items = tools
     .filter((t) => t.path !== currentPath)
@@ -721,13 +867,30 @@ export function lastUpdated(page) {
   return `<p class="last-updated">Last updated <time datetime="${esc(page.updated)}">${formatDate(page.updated)}</time></p>`;
 }
 
+/**
+ * The byline.
+ *
+ * Attribution is to the SITE, not to a person, by explicit decision of the
+ * maintainer — the name is not to appear anywhere on the site or in its
+ * structured data. Hub 2 (MaterialMath) already runs this way, so it is a
+ * pattern this portfolio has rather than a compromise invented here.
+ *
+ * That has a real cost worth stating: for money-adjacent tools, a named human
+ * with relevant experience is one of the stronger trust signals available, and
+ * an org-only site gives that up. What is left has to do the work instead —
+ * which is why the byline points at the method rather than at a masthead. The
+ * sourcing, the dates and the shown arithmetic are the credential.
+ *
+ * Renders even when `author.name` is empty, which is the normal state now; the
+ * old build-warning branch that fired on a missing name is gone with it.
+ */
 export function authorLine(site) {
-  if (!site.author?.name || site.author.name.startsWith('REPLACE')) {
-    return `<p class="byline byline--missing">No author set. Add one in <code>src/data/site.json</code> before launch — a money tool with no named human behind it is screened out of exactly the surfaces you are trying to reach.</p>`;
+  if (site.author?.name && !site.author.name.startsWith('REPLACE')) {
+    return `<p class="byline">Written and maintained by <a href="/about/" rel="author">${esc(site.author.name)}</a>${
+      site.author.jobTitle ? `, ${esc(site.author.jobTitle)}` : ''
+    }.</p>`;
   }
-  return `<p class="byline">Written and maintained by <a href="/about/" rel="author">${esc(site.author.name)}</a>${
-    site.author.jobTitle ? `, ${esc(site.author.jobTitle)}` : ''
-  }.</p>`;
+  return `<p class="byline">Written and maintained by <a href="/about/" rel="author">${esc(site.name)}</a>. Every rate on this page is cited to its source and dated — <a href="/about/">how these numbers are made</a>.</p>`;
 }
 
 function formatDate(iso) {

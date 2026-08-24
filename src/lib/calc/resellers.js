@@ -21,6 +21,7 @@ import { nonNeg, num, round2, tieredCents, toCents, toDollars, pctOfCents, usd }
 import { result, invalid } from '../result.js';
 
 const CALC = 'reseller-comparison';
+const CALC_SINGLE = 'reseller-single';
 
 /** Fees charged by one platform on one sale. Returns dollars. */
 function platformFees(platform, { salePrice, shippingCharged, sellerPaysShipping, shippingCost, stockxLevel }) {
@@ -102,6 +103,105 @@ function platformFees(platform, { salePrice, shippingCharged, sellerPaysShipping
  * @param {string} input.stockxLevel        StockX seller level.
  * @param {string[]} input.platforms        Optional subset of platform ids.
  */
+/**
+ * One platform, in full, as a proper receipt.
+ *
+ * compareResellers() answers "where should I list this?" and puts the fee
+ * detail inside `rows[]`, which is the right shape for a ranked table and the
+ * wrong shape for a page about a single platform: its `lines[]` carry the sale
+ * and the seller's costs but no fee lines at all, so a breakdown rendered from
+ * it would show a payout with nothing visibly taken out of it.
+ *
+ * This runs the same platformFees() and returns each charge as its own line,
+ * which is what the per-platform pages need and what the CSV export, the copy
+ * button and the parity test all read.
+ *
+ * @param {string} input.platformId  Which platform. Falls back to the first.
+ */
+export function calculateReseller(input, rates, { formatMoney = usd } = {}) {
+  const salePrice = nonNeg(input.salePrice);
+  if (salePrice <= 0) return invalid(CALC_SINGLE, 'Enter a sale price above $0 to see your payout.');
+
+  const platform = rates.platforms.find((p) => p.id === input.platformId) ?? rates.platforms[0];
+  const shippingCharged = nonNeg(input.shippingCharged);
+  const shippingCost = nonNeg(input.shippingCost);
+  const itemCost = nonNeg(input.itemCost);
+  const sellerPaysShipping = Boolean(input.sellerPaysShipping);
+
+  const fees = platformFees(platform, {
+    salePrice, shippingCharged, shippingCost, sellerPaysShipping,
+    stockxLevel: input.stockxLevel,
+  });
+
+  // Buyer-paid-label platforms never route postage through the seller, so the
+  // postage they collect is not the seller's revenue either.
+  const collectsShipping = platform.shippingModel === 'seller-choice';
+
+  const r = result({ calculator: CALC_SINGLE, rates })
+    .inputs({ ...input, platformId: platform.id })
+    .revenue('sale', 'Sale price', salePrice)
+    .revenue('shipping-charged', 'Postage charged to buyer', collectsShipping ? shippingCharged : 0)
+    .fee('commission', commissionLabel(platform, salePrice), fees.commission)
+    .fee('processing', processingLabel(platform), fees.processing)
+    .fee('per-order', 'Per-order fee', fees.perOrder)
+    .fee('listing', 'Listing fee', fees.listing)
+    .cost('shipping-cost', 'Postage you pay', fees.shipping)
+    .cost('item-cost', 'What the item cost you', itemCost);
+
+  if (platform.commissionIncludesShipping && shippingCharged > 0) {
+    r.note(`${platform.label} charges its fee on the postage you collect as well as the item price, so the ${formatMoney(shippingCharged)} of delivery is part of the fee base.`);
+  }
+  if (!collectsShipping && shippingCost > 0) {
+    r.note(`${platform.label} supplies a prepaid label the buyer pays for, so the ${formatMoney(shippingCost)} of postage never touches your ledger here.`);
+  }
+  if (platform.commission?.minimumFee && fees.commission <= platform.commission.minimumFee + 0.005) {
+    r.warn(`The ${formatMoney(platform.commission.minimumFee)} minimum fee applies at this price — it is higher than the percentage would have been, which is what makes cheap items disproportionately expensive to sell here.`);
+  }
+
+  const posh = platform.commission?.mode === 'hybrid-flat-under-threshold' ? platform.commission : null;
+  if (posh && salePrice >= posh.threshold && salePrice < posh.threshold + 4) {
+    const belowNet = round2(posh.threshold - 0.01 - posh.flatUnderThreshold);
+    const hereNet = round2(salePrice - fees.commission);
+    if (belowNet > hereNet) {
+      r.warn(`Listing at ${formatMoney(posh.threshold - 0.01)} would leave you ${formatMoney(round2(belowNet - hereNet))} better off than listing at ${formatMoney(salePrice)}. ${platform.label} switches from a flat ${formatMoney(posh.flatUnderThreshold)} fee to ${(posh.rateAtOrAbove * 100).toFixed(0)}% at ${formatMoney(posh.threshold)}, and the whole sale re-rates.`);
+    }
+  }
+
+  const built = r.build();
+  built.platform = platform.label;
+  built.platformId = platform.id;
+  built.fees = fees;
+  built.feeBase = round2(platform.commissionIncludesShipping ? salePrice + shippingCharged : salePrice);
+  built.effectiveFeeRate = built.totals.gross > 0 ? fees.totalFees / built.totals.gross : 0;
+  return built;
+}
+
+/** A commission label that states the shape actually applied at this price. */
+function commissionLabel(platform, salePrice) {
+  const c = platform.commission ?? {};
+  switch (c.mode) {
+    case 'hybrid-flat-under-threshold':
+      return salePrice < c.threshold
+        ? `Commission (flat ${usd(c.flatUnderThreshold)} under ${usd(c.threshold)})`
+        : `Commission (${(c.rateAtOrAbove * 100).toFixed(0)}%)`;
+    case 'tiered': {
+      const tier = c.tiers.find((t) => t.upTo === null || salePrice <= t.upTo) ?? c.tiers.at(-1);
+      return `Commission (${(tier.rate * 100).toFixed(1)}%)`;
+    }
+    case 'level-based':
+      return 'Commission (by seller level)';
+    default:
+      return c.rate ? `Commission (${(c.rate * 100).toFixed(1)}%)` : 'Commission';
+  }
+}
+
+function processingLabel(platform) {
+  const rate = platform.processingRate ?? 0;
+  const fixed = platform.processingFixed ?? 0;
+  if (!rate && !fixed) return 'Payment processing';
+  return `Payment processing (${(rate * 100).toFixed(2)}%${fixed ? ` + ${usd(fixed)}` : ''})`;
+}
+
 export function compareResellers(input, rates, { formatMoney = usd } = {}) {
   const salePrice = nonNeg(input.salePrice);
   if (salePrice <= 0) return invalid(CALC, 'Enter a sale price above $0 to compare platforms.');

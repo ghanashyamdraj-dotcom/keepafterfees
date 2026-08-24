@@ -4,7 +4,7 @@
  * Regenerate with: npm run build  (or node build/gen-rates.mjs)
  *
  * Rate data version: 2026.1
- * Generated: 2026-08-23T06:20:32.828Z
+ * Generated: 2026-08-24T16:49:23.477Z
  */
 
 export const byLocale = {
@@ -2597,6 +2597,7 @@ export const byLocale = {
           "id": "depop",
           "label": "Depop",
           "shippingModel": "seller-choice",
+          "commissionIncludesShipping": true,
           "commission": {
             "mode": "flat-rate",
             "rate": 0
@@ -3981,19 +3982,15 @@ export const site = {
   "currency": "USD",
   "taxYear": 2026,
   "author": {
-    "name": "Ghanashyam D Raj",
-    "jobTitle": "Founder and maintainer, AfterFees",
+    "name": "",
+    "jobTitle": "",
     "bio": "Calculators that show what a sale, invoice, or paycheck actually nets after fees and tax. Independent of every platform they measure — every rate cited to its source and dated, every calculation shown in full. See the disclaimer for what this site is and isn't.",
     "credentials": [],
-    "sameAs": [
-      "https://github.com/ghanashyamdraj-dotcom"
-    ],
+    "sameAs": [],
     "email": "hello@keepafterfees.com"
   },
   "organization": {
-    "sameAs": [
-      "https://github.com/ghanashyamdraj-dotcom/keepafterfees"
-    ],
+    "sameAs": [],
     "contactEmail": "hello@keepafterfees.com",
     "foundingDate": "2026"
   },

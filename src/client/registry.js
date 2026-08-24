@@ -12,7 +12,8 @@ import { calculateAmazonFBA } from '../lib/calc/amazon.js';
 import { calculateEtsy } from '../lib/calc/etsy.js';
 import { calculateEbay } from '../lib/calc/ebay.js';
 import { calculateShopify, comparePlans } from '../lib/calc/shopify.js';
-import { compareResellers } from '../lib/calc/resellers.js';
+import { compareResellers, calculateReseller } from '../lib/calc/resellers.js';
+import { compareChannels, versusTable } from '../lib/calc/versus.js';
 import { calculateProcessorFee, calculateChargeToReceive } from '../lib/calc/processors.js';
 import { calculateHourlyRate, calculateInvoiceTakeHome, calculateDayRate } from '../lib/calc/freelance.js';
 import { calculateSelfEmploymentTax } from '../lib/calc/setax.js';
@@ -130,6 +131,60 @@ export const REGISTRY = {
       ],
       bestKey: 'netProfit',
     }),
+  },
+
+  /**
+   * One resale platform in full — the Poshmark and Mercari pages.
+   *
+   * Which platform is carried in a hidden `platformId` field in the page
+   * markup, the same way the comparison pages carry their matchup, so a third
+   * per-platform page is a page definition and not a code change.
+   */
+  'reseller-single': {
+    run: (input) => calculateReseller(input, rates.resellers),
+    headlineLabel: 'You keep',
+    headline: (r) => money(r.totals.net),
+    stats: (r) => [
+      { label: 'Platform takes', value: money(r.fees?.totalFees) },
+      { label: 'Fee rate', value: pct(r.effectiveFeeRate) },
+      { label: 'Payout', value: money(r.totals.payout) },
+    ],
+  },
+
+  /**
+   * The four head-to-head comparison pages, all on one entry.
+   *
+   * Which channels are being compared is carried in a hidden `matchup` field
+   * in the page's own markup, not in four near-identical registry entries —
+   * so a page is a data choice rather than a code change, and the four pages
+   * can never drift apart in how they rank or render.
+   *
+   * `headlineLabel` and `totalOverride` both branch on `r.axis` because the
+   * two kinds of comparison answer in different units: a page with a
+   * subscription in play has to answer per MONTH (a monthly plan has no
+   * per-sale meaning), and one without answers per SALE. Reading the axis off
+   * the result rather than off the input keeps the total row and the headline
+   * agreeing with the table under them in both cases.
+   */
+  'channel-versus': {
+    run: (input) => compareChannels(input, rates),
+    headlineLabel: (r) => (r.axis === 'volume' ? 'Best monthly take-home' : 'Best net per sale'),
+    headline: (r) => {
+      if (!r.best) return '—';
+      const value = r.axis === 'volume' ? r.best.monthlyNet : r.best.netPerOrder;
+      return `${r.best.label} — ${usd(value)}`;
+    },
+    stats: (r) => [
+      { label: 'Gap to worst', value: money(r.spread) },
+      { label: r.axis === 'volume' ? 'Cheapest all-in rate' : 'Lowest fee rate', value: pct(r.best?.effectiveRate) },
+      { label: 'Channels', value: String(r.rows?.length ?? 0) },
+    ],
+    totalOverride: (r) => (r.axis === 'volume' ? r.best?.monthlyNet ?? 0 : r.best?.netPerOrder ?? 0),
+    totalLabel: (r) => (r.axis === 'volume' ? 'Best monthly take-home' : 'Best net per sale'),
+    extraRender: (r) => {
+      const { columns, bestKey } = versusTable(r.axis);
+      return renderComparison(r.rows, { columns, bestKey });
+    },
   },
 
   /**

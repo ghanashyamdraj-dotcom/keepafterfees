@@ -17,13 +17,7 @@ body {
   font-size: var(--step-0);
   line-height: 1.6;
   color: var(--ink);
-  /* A faint dot grid over the obsidian ground. The previous dark mode was a
-     flat fill, which is what read as "under construction" — there was nothing
-     for the eye to register as a surface. 32px spacing is coarse enough to
-     never compete with text. */
   background-color: var(--surface-sunk);
-  background-image: var(--grid-dot);
-  background-size: 32px 32px;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
@@ -44,6 +38,12 @@ a:hover { color: var(--link-hover); }
 }
 
 img, svg { max-width: 100%; height: auto; }
+
+/* Every icon on the site is a <use> reference into the sprite emitted at the
+   top of <body>. A default size means an icon never renders at the SVG spec's
+   300x150 fallback if a component forgets to size it. */
+.ico { width: 1em; height: 1em; display: block; flex: none; }
+.icon-sprite { display: none; }
 code { font-family: var(--font-mono); font-size: 0.9em; background: var(--surface-sunk); padding: 0.1em 0.35em; border-radius: 4px; }
 
 .visually-hidden {
@@ -55,13 +55,39 @@ code { font-family: var(--font-mono); font-size: 0.9em; background: var(--surfac
 .skip-link {
   position: absolute; left: var(--sp-3); top: -100px;
   z-index: 100; padding: var(--sp-3) var(--sp-4);
-  background: var(--brand); color: var(--brand-ink);
+  background: var(--keep); color: var(--on-keep);
   border-radius: var(--radius); font-weight: 600; text-decoration: none;
 }
 .skip-link:focus { top: var(--sp-3); }
 
 .wrap { width: min(100% - 2rem, var(--wrap)); margin-inline: auto; }
 .wrap--narrow { width: min(100% - 2rem, var(--wrap-narrow)); }
+
+/* Category custom properties, set once per element that carries a group.
+   Every component that needs a section colour — the mega panel, a card glyph,
+   the sidebar, a section band — reads `var(--cat)` and never names a hue
+   itself. That is what keeps amber meaning "marketplace" in five different
+   components without five places to keep in sync. */
+[data-group="marketplace"] {
+  --cat: var(--cat-marketplace);
+  --cat-bg: var(--cat-marketplace-bg);
+  --cat-line: var(--cat-marketplace-line);
+}
+[data-group="processor"] {
+  --cat: var(--cat-processor);
+  --cat-bg: var(--cat-processor-bg);
+  --cat-line: var(--cat-processor-line);
+}
+[data-group="freelance"] {
+  --cat: var(--cat-freelance);
+  --cat-bg: var(--cat-freelance-bg);
+  --cat-line: var(--cat-freelance-line);
+}
+[data-group="paycheck"] {
+  --cat: var(--cat-paycheck);
+  --cat-bg: var(--cat-paycheck-bg);
+  --cat-line: var(--cat-paycheck-line);
+}
 
 /* ===================== locale banner ===================== */
 /* JS-injected only (initLocaleBanner in app.js) — a page with no JS still
@@ -70,7 +96,7 @@ code { font-family: var(--font-mono); font-size: 0.9em; background: var(--surfac
 .locale-banner {
   display: flex; align-items: center; justify-content: center; gap: var(--sp-4);
   padding: var(--sp-3) var(--sp-5);
-  background: var(--surface-sunk); border-bottom: 1px solid var(--line);
+  background: var(--surface-raised); border-bottom: 1px solid var(--line);
   font-size: var(--step--1); text-align: center;
 }
 .locale-banner p { margin: 0; }
@@ -83,78 +109,166 @@ code { font-family: var(--font-mono); font-size: 0.9em; background: var(--surfac
 .locale-banner-close:hover { color: var(--ink); border-color: var(--ink-faint); }
 
 /* ===================== header ===================== */
+/* The frame. Deep forest, solid, identical on every page — chrome that says
+   "you are inside AfterFees" and then gets out of the way. It is a colour used
+   nowhere else in the system, so it never competes with a category hue or a
+   money figure for meaning. */
 
 .site-header {
-  /* Translucent rather than solid, so the hero glow bleeds under it and the
-     header reads as part of the page instead of a bar bolted on top. */
-  background: color-mix(in srgb, var(--surface) 82%, transparent);
-  backdrop-filter: blur(14px) saturate(150%);
-  -webkit-backdrop-filter: blur(14px) saturate(150%);
-  border-bottom: 1px solid var(--line);
+  background: var(--frame);
+  border-bottom: 1px solid var(--frame-deep);
   position: sticky; top: 0; z-index: 40;
 }
-@supports not (backdrop-filter: blur(1px)) {
-  .site-header { background: var(--surface); }
-}
 .header-inner {
-  display: flex; align-items: center; gap: var(--sp-5);
-  min-height: 64px;
+  display: flex; align-items: center; gap: var(--sp-6);
+  min-height: 66px;
 }
 .brand {
   display: inline-flex; align-items: center; gap: var(--sp-3);
-  font-size: var(--step-1); text-decoration: none; color: var(--ink);
+  font-size: var(--step-1); text-decoration: none; color: var(--frame-ink);
   font-weight: 600; letter-spacing: -0.02em;
 }
-/* The mark is an SVG now, not a "$" in a box. A dollar sign in a green square
-   is the single most generic thing a money site can put in its corner; this one
-   draws the actual idea — a full bar with a slice taken out of it. */
+/* The mark is an SVG, not a "$" in a box — a dollar sign in a green square is
+   the most generic thing a money site can put in its corner. This one draws
+   the actual idea: a full bar with a slice taken out of it. On the deep frame
+   it needs no tile behind it. */
 .brand-mark {
   display: grid; place-items: center;
-  width: 32px; height: 32px; flex: none;
-  border-radius: 9px;
-  background: var(--grad-brand);
-  box-shadow: 0 2px 10px rgb(0 229 153 / 0.28);
+  width: 30px; height: 30px; flex: none;
+  color: var(--keep);
 }
-.brand-mark svg { display: block; width: 18px; height: 18px; }
-.brand-text { color: var(--ink); }
-.brand-text strong { font-weight: 750; }
-.brand-text em {
-  font-style: normal; font-weight: 750;
-  background: var(--grad-text);
-  -webkit-background-clip: text; background-clip: text;
-  color: transparent;
-}
+.brand-mark svg { display: block; width: 26px; height: 26px; }
+.brand-text { color: var(--frame-ink); }
+.brand-text strong { font-weight: 700; }
+.brand-text em { font-style: normal; font-weight: 400; color: var(--frame-soft); }
 
 .site-nav { margin-left: auto; }
-.site-nav ul { display: flex; gap: var(--sp-5); list-style: none; margin: 0; padding: 0; }
-.site-nav a {
-  text-decoration: none; color: var(--ink-soft);
-  font-size: var(--step--1); font-weight: 550;
-  padding: var(--sp-2) 0; display: inline-block;
-  border-bottom: 2px solid transparent;
+.nav-list { display: flex; gap: var(--sp-1); list-style: none; margin: 0; padding: 0; }
+
+/* `position: static` is load-bearing: it lets the mega panel below position
+   itself against the HEADER rather than against its own list item, which is
+   what makes it span the full width. */
+.nav-item { position: static; }
+.nav-item > a {
+  display: inline-flex; align-items: center; gap: var(--sp-2);
+  text-decoration: none; color: var(--frame-soft);
+  font-size: var(--step--1); font-weight: 600;
+  padding: var(--sp-3);
+  border-radius: var(--radius-sm);
+  transition: color .14s, background-color .14s;
 }
-.site-nav a:hover { color: var(--ink); }
-.site-nav a[aria-current="page"] { color: var(--ink); border-bottom-color: var(--keep); }
+.nav-item > a:hover { color: var(--frame-ink); background: var(--frame-line); }
+.nav-item > a[aria-current="page"] { color: var(--frame-ink); background: var(--frame-line); }
+.nav-caret { display: inline-grid; }
+.nav-caret svg { width: 13px; height: 13px; transition: transform .18s; }
+.nav-item--mega:hover .nav-caret svg,
+.nav-item--mega:focus-within .nav-caret svg { transform: rotate(180deg); }
+
+/* ---- the mega menu -------------------------------------------------------
+   CSS-only: `:hover` for a mouse, `:focus-within` for a keyboard. No script,
+   so it works on a page whose JS failed to load, and there is no aria-expanded
+   state for JS to get out of sync with. The top-level entry stays a real link
+   to the group index, so the panel is additive rather than a gate.
+
+   Full-bleed rather than a dropdown pinned under its trigger: the panels hold
+   four or five items with descriptions, and a narrow column of that is a list
+   nobody scans. */
+
+.mega {
+  position: absolute; left: 0; right: 0; top: 100%;
+  background: var(--surface);
+  border-bottom: 1px solid var(--line);
+  box-shadow: var(--shadow-lg);
+  opacity: 0; visibility: hidden; transform: translateY(-6px);
+  transition: opacity .16s, transform .16s, visibility .16s;
+  z-index: 50;
+}
+.nav-item--mega:hover .mega,
+.nav-item--mega:focus-within .mega {
+  opacity: 1; visibility: visible; transform: translateY(0);
+}
+@media (prefers-reduced-motion: reduce) {
+  .mega, .nav-item--mega:hover .mega, .nav-item--mega:focus-within .mega { transform: none; }
+}
+
+/* A band in the section's own colour along the top edge, so the panel says
+   which section opened it before a word is read. */
+.mega::before {
+  content: ""; position: absolute; inset: 0 0 auto; height: 3px;
+  background: var(--cat, var(--keep));
+}
+
+.mega-inner { padding: var(--sp-6) 0 var(--sp-5); }
+.mega-grid {
+  list-style: none; margin: 0 0 var(--sp-4); padding: 0;
+  display: grid; gap: var(--sp-2);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr));
+}
+.mega-grid a {
+  display: flex; align-items: flex-start; gap: var(--sp-3);
+  padding: var(--sp-3);
+  border-radius: var(--radius);
+  text-decoration: none;
+  border: 1px solid transparent;
+  transition: background-color .14s, border-color .14s;
+}
+.mega-grid a:hover, .mega-grid a:focus-visible {
+  background: var(--surface-raised);
+  border-color: var(--line);
+}
+.mega-grid a[aria-current="page"] { background: var(--cat-bg); border-color: var(--cat-line); }
+.mega-icon {
+  display: grid; place-items: center; flex: none;
+  width: 34px; height: 34px; border-radius: 9px;
+  background: var(--cat-bg); border: 1px solid var(--cat-line); color: var(--cat);
+}
+.mega-icon svg { width: 18px; height: 18px; }
+
+.mega-text { min-width: 0; }
+.mega-text strong {
+  display: block; color: var(--ink); font-size: var(--step--1);
+  font-weight: 650; margin-bottom: 2px;
+}
+.mega-text span { display: block; color: var(--ink-faint); font-size: var(--step--2); line-height: 1.45; }
+
+.mega-all {
+  display: inline-flex; align-items: center; gap: var(--sp-2);
+  font-size: var(--step--1); font-weight: 650;
+  color: var(--cat, var(--keep)); text-decoration: none;
+  padding-top: var(--sp-4); border-top: 1px solid var(--line);
+  width: 100%;
+}
+.mega-all svg { width: 15px; height: 15px; }
+.mega-all:hover { text-decoration: underline; text-underline-offset: 0.2em; }
 
 .nav-toggle { display: none; }
 
-@media (max-width: 800px) {
+@media (max-width: 980px) {
+  /* A hover menu on a touch screen is a trap: the first tap opens it and the
+     second navigates, or it opens under a finger that is already moving.
+     Below this width the panels are inert and the flat list is the nav. */
+  .mega, .nav-caret { display: none; }
+
   .nav-toggle {
     display: grid; place-content: center; gap: 4px;
     margin-left: auto; width: 40px; height: 40px;
-    background: none; border: 1px solid var(--line);
+    background: none; border: 1px solid var(--frame-line);
     border-radius: var(--radius-sm); cursor: pointer;
   }
-  .nav-toggle span { display: block; width: 18px; height: 2px; background: var(--ink); }
+  .nav-toggle span { display: block; width: 18px; height: 2px; background: var(--frame-ink); }
   .site-nav {
     display: none; margin: 0;
-    position: absolute; inset: 60px 0 auto;
-    background: var(--surface); border-bottom: 1px solid var(--line);
+    position: absolute; inset: 66px 0 auto;
+    background: var(--frame); border-bottom: 1px solid var(--frame-deep);
     padding: var(--sp-3) 1rem var(--sp-4);
   }
   .site-nav[data-open] { display: block; }
-  .site-nav ul { flex-direction: column; gap: 0; }
-  .site-nav a { padding: var(--sp-3) 0; border-bottom: 1px solid var(--line); width: 100%; }
+  .nav-list { flex-direction: column; gap: 0; }
+  .nav-item > a {
+    padding: var(--sp-3) 0; border-bottom: 1px solid var(--frame-line);
+    width: 100%; border-radius: 0;
+  }
+  .nav-item > a:hover, .nav-item > a[aria-current="page"] { background: none; }
 }
 
 /* ===================== breadcrumbs ===================== */
@@ -170,26 +284,30 @@ code { font-family: var(--font-mono); font-size: 0.9em; background: var(--surfac
 .breadcrumbs a:hover { color: var(--link); text-decoration: underline; }
 
 /* ===================== footer ===================== */
+/* The other half of the frame, so the page is bracketed rather than trailing
+   off into the ground colour. */
 
 .site-footer {
   margin-top: var(--sp-8);
-  padding: var(--sp-7) 0 var(--sp-6);
-  background: var(--surface);
-  border-top: 1px solid var(--line);
+  padding: var(--sp-8) 0 var(--sp-6);
+  background: var(--frame);
+  color: var(--frame-soft);
   font-size: var(--step--1);
 }
 .footer-grid {
   display: grid; gap: var(--sp-6);
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
 }
-.site-footer h2 { font-size: var(--step-0); margin: 0 0 var(--sp-3); }
+.footer-brand { display: inline-flex; align-items: center; gap: var(--sp-3); margin-bottom: var(--sp-3); font-size: var(--step-1); font-weight: 600; }
+.site-footer h2 { font-size: var(--step-0); margin: 0 0 var(--sp-3); color: var(--frame-ink); }
 .site-footer ul { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--sp-2); }
-.site-footer a { color: var(--ink-soft); text-decoration: none; }
-.site-footer a:hover { color: var(--link); text-decoration: underline; }
-.footer-about p, .footer-legal p { color: var(--ink-faint); margin: var(--sp-2) 0 0; }
+.site-footer a { color: var(--frame-soft); text-decoration: none; }
+.site-footer a:hover { color: var(--frame-ink); text-decoration: underline; }
+.footer-about p, .footer-legal p { color: var(--frame-soft); margin: var(--sp-2) 0 0; opacity: 0.85; }
+.footer-legal strong { color: var(--frame-ink); }
 .copyright {
   margin: var(--sp-6) 0 0; padding-top: var(--sp-4);
-  border-top: 1px solid var(--line); color: var(--ink-faint);
+  border-top: 1px solid var(--frame-line); color: var(--frame-soft);
 }
 
 /* ===================== buttons ===================== */
@@ -197,26 +315,26 @@ code { font-family: var(--font-mono); font-size: 0.9em; background: var(--surfac
 .btn {
   display: inline-flex; align-items: center; justify-content: center;
   gap: var(--sp-2); padding: var(--sp-3) var(--sp-5);
-  font: inherit; font-weight: 600; font-size: var(--step--1);
+  font: inherit; font-weight: 650; font-size: var(--step--1);
   border-radius: var(--radius); border: 1px solid transparent;
   cursor: pointer; text-decoration: none;
-  transition: background-color .12s, border-color .12s, color .12s;
-  min-height: 44px;
+  transition: background-color .12s, border-color .12s, color .12s, box-shadow .12s;
+  min-height: 46px;
 }
+.btn svg { width: 16px; height: 16px; }
+/* Solid, not a gradient. A gradient on a button is the tell of a template. */
 .btn-primary {
-  background: var(--grad-brand); color: var(--brand-ink);
-  box-shadow: 0 2px 14px rgb(0 229 153 / 0.22);
+  background: var(--keep); color: var(--on-keep);
+  box-shadow: var(--shadow-sm);
 }
-.btn-primary:hover {
-  background: linear-gradient(135deg, var(--brand-bright) 0%, var(--brand) 100%);
-  color: var(--brand-ink);
-  box-shadow: 0 4px 22px rgb(0 229 153 / 0.34);
-}
-.btn-ghost { background: transparent; color: var(--ink-soft); border-color: var(--line-strong); }
-.btn-ghost:hover { color: var(--ink); border-color: var(--keep); background: color-mix(in srgb, var(--keep) 8%, transparent); }
-.btn-small { padding: var(--sp-2) var(--sp-3); min-height: 36px; font-size: var(--step--1);
-  background: var(--surface-raised); border-color: var(--line-strong); color: var(--ink-soft); }
-.btn-small:hover { border-color: var(--keep); color: var(--ink); }
+.btn-primary:hover { background: var(--keep-strong); color: var(--on-keep); box-shadow: var(--shadow-md); }
+.btn-ghost { background: var(--surface); color: var(--ink); border-color: var(--line-strong); }
+.btn-ghost:hover { border-color: var(--ink-faint); }
+.btn-small { padding: var(--sp-2) var(--sp-3); min-height: 38px; font-size: var(--step--1);
+  background: var(--surface); border-color: var(--line-strong); color: var(--ink-soft); }
+.btn-small:hover { border-color: var(--ink-faint); color: var(--ink); }
+/* Transient success feedback, gone in a second — the one place a green fill is
+   doing a job nothing else can do. */
 .btn[data-copied] { background: var(--keep-bg); border-color: var(--keep-line); color: var(--keep); }
 
 /* ===================== ad slots ===================== */
@@ -233,83 +351,80 @@ code { font-family: var(--font-mono); font-size: 0.9em; background: var(--surfac
 /* Reserved space is invisible but occupies layout, so enabling ads later
    causes zero cumulative layout shift. */
 
-/* --- side rail -------------------------------------------------------
-   The prose column is 720px inside an 1180px wrap, which left ~230px of
-   dead gutter on either side at desktop width. The rail puts a 300x600 in
-   one of them and sticks it while the article scrolls.
-
-   Below 1100px it is display:none rather than empty — a hidden slot that
-   still reserved 600px of height would push the whole article down on
-   tablets for nothing. */
-.prose-layout { display: block; }
-
 .ad-rail { display: none; }
 
-@media (min-width: 1100px) {
-  .prose-layout {
-    display: grid;
-    grid-template-columns: minmax(0, var(--wrap-narrow)) 300px;
-    justify-content: center;
-    gap: var(--sp-6);
-    align-items: start;
-  }
-  /* The prose is already centred by wrap--narrow on small screens; inside the
-     grid it becomes a column, so drop the auto margins that would fight it. */
-  .prose-layout > .prose { width: 100%; margin-inline: 0; }
-
+@media (min-width: 1240px) {
   .ad-rail {
     display: block;
     position: sticky;
-    top: 84px; /* clears the 64px sticky header plus breathing room */
+    top: 86px; /* clears the 66px sticky header plus breathing room */
   }
   .ad-rail .ad-slot { margin-top: 0; }
 }
 
 /* A slot is only worth reserving if something can fill it. With ads off the
-   end-of-content slot would otherwise leave a 90px gap above the footer. */
+   end-of-content slot would otherwise leave a gap above the footer. */
 .ad-slot--endContent { margin-bottom: 0; }
 
 /* ===================== prose ===================== */
 
-.prose { margin-top: var(--sp-7); }
-.prose h2 { scroll-margin-top: 80px; }
+.prose { max-width: var(--wrap-narrow); }
+.prose > h2 {
+  margin-top: var(--sp-8);
+  padding-top: var(--sp-5);
+  border-top: 1px solid var(--line);
+}
+.prose > h2:first-child { margin-top: 0; padding-top: 0; border-top: 0; }
+.prose p { line-height: 1.7; }
+.prose h2 { scroll-margin-top: 86px; }
 .prose ul, .prose ol { margin: 0 0 var(--sp-4); padding-left: var(--sp-5); }
 .prose li { margin-bottom: var(--sp-2); }
 .prose table {
   width: 100%; border-collapse: collapse; margin: var(--sp-4) 0 var(--sp-5);
   font-size: var(--step--1);
+  background: var(--surface);
 }
 .prose th, .prose td {
   padding: var(--sp-3); text-align: left;
   border-bottom: 1px solid var(--line); vertical-align: top;
 }
 .prose thead th {
-  background: var(--surface-sunk); font-weight: 650;
-  border-bottom: 2px solid var(--line-strong);
+  background: var(--surface-raised); font-weight: 650; color: var(--ink);
+  border-bottom: 1px solid var(--line-strong);
 }
+.prose tbody tr:last-child td, .prose tbody tr:last-child th { border-bottom: 0; }
 .prose td:not(:first-child), .prose th:not(:first-child) { text-align: right; font-variant-numeric: tabular-nums; }
-.table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.table-scroll {
+  overflow-x: auto; -webkit-overflow-scrolling: touch;
+  border: 1px solid var(--line); border-radius: var(--radius);
+  margin: var(--sp-4) 0 var(--sp-5);
+}
+.table-scroll table { margin: 0; border-radius: var(--radius); }
 
+/* The formula is the site's proof-of-work: the arithmetic written out so the
+   reader can check it. It gets the ruled edge and mono figures of a ledger
+   entry rather than the grey box of a code sample. */
 .formula {
-  background: var(--surface-sunk); border: 1px solid var(--line);
-  border-left: 3px solid var(--line-strong);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--keep);
   border-radius: var(--radius-sm);
-  padding: var(--sp-4); margin: var(--sp-4) 0;
+  padding: var(--sp-4) var(--sp-5); margin: var(--sp-5) 0;
   font-family: var(--font-mono); font-size: var(--step--1);
-  overflow-x: auto; line-height: 1.7;
+  overflow-x: auto; line-height: 1.75;
   white-space: pre-wrap;
+  color: var(--ink-soft);
 }
 
-/* The worked example is the non-commodity part of every page, so it gets
-   the receipt treatment too — ruled top edge, figures in mono. */
+/* The worked example is the non-commodity part of every page. */
 .worked-example {
   background: var(--surface); border: 1px solid var(--line);
-  border-radius: var(--radius); padding: var(--sp-5); margin: var(--sp-5) 0;
+  border-radius: var(--radius); padding: var(--sp-6); margin: var(--sp-6) 0;
   position: relative;
 }
 .worked-example::before {
   content: ""; position: absolute; inset: 0 0 auto; height: 3px;
-  background: var(--rule-dash); opacity: 0.55;
+  background: var(--rule-dash); opacity: 0.7;
   border-radius: var(--radius) var(--radius) 0 0;
 }
 .worked-example h3 { margin-top: 0; }
@@ -318,36 +433,42 @@ code { font-family: var(--font-mono); font-size: 0.9em; background: var(--surfac
 }
 
 blockquote {
-  margin: var(--sp-5) 0; padding: var(--sp-4) var(--sp-5);
-  border-left: 3px solid var(--keep); background: var(--keep-bg);
-  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  margin: var(--sp-5) 0; padding: var(--sp-2) 0 var(--sp-2) var(--sp-5);
+  border-left: 2px solid var(--line-strong);
+  color: var(--ink-soft);
 }
 blockquote p:last-child { margin-bottom: 0; }
 
 /* ===================== faqs / related / sources ===================== */
 
-.faq-item { padding: var(--sp-4) 0; border-bottom: 1px solid var(--line); }
-.faq-item h3 { margin: 0 0 var(--sp-2); font-size: var(--step-1); }
+.faqs { margin-top: var(--sp-8); }
+.faq-item { padding: var(--sp-5) 0; border-bottom: 1px solid var(--line); }
+.faq-item:first-of-type { border-top: 1px solid var(--line); }
+.faq-item h3 { margin: 0 0 var(--sp-3); font-size: var(--step-1); }
 .faq-item p:last-child { margin-bottom: 0; }
 
-.related { margin-top: var(--sp-7); }
+.related { margin-top: var(--sp-8); }
 .related-list {
   list-style: none; padding: 0; margin: 0;
   display: grid; gap: var(--sp-3);
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
 }
 .related-list a {
   display: block; padding: var(--sp-4);
   background: var(--surface); border: 1px solid var(--line);
   border-radius: var(--radius); text-decoration: none; height: 100%;
-  border-left: 3px solid var(--line);
-  transition: border-color .15s, border-left-color .15s;
+  transition: border-color .15s, box-shadow .15s;
 }
-.related-list a:hover { border-color: var(--line-strong); border-left-color: var(--keep); }
+.related-list a:hover { border-color: var(--line-strong); box-shadow: var(--shadow-sm); }
 .related-list strong { display: block; color: var(--ink); margin-bottom: var(--sp-1); }
 .related-list span { display: block; color: var(--ink-faint); font-size: var(--step--1); line-height: 1.45; }
 
-.sources { margin-top: var(--sp-7); font-size: var(--step--1); }
+/* The head-to-head block, distinguished from sibling calculators by an edge in
+   the money colour — it links to a comparison, which is a payout question. */
+.related--compare .related-list a { border-left: 3px solid var(--keep-line); }
+.related--compare .related-list a:hover { border-left-color: var(--keep); }
+
+.sources { margin-top: var(--sp-8); font-size: var(--step--1); }
 .source-list { list-style: none; padding: 0; display: grid; gap: var(--sp-2); }
 .source-list li { padding-left: var(--sp-4); position: relative; }
 .source-list li::before { content: "\2192"; position: absolute; left: 0; color: var(--ink-faint); }
@@ -355,13 +476,19 @@ blockquote p:last-child { margin-bottom: 0; }
 .source-status {
   padding: var(--sp-3) var(--sp-4); border-radius: var(--radius-sm);
   border: 1px solid var(--line);
+  background: var(--surface);
 }
-.source-status--ok { background: var(--keep-bg); border-color: var(--keep-line); color: var(--keep); }
-.source-status--pending { background: var(--warn-bg); border-color: var(--warn-line); color: var(--warn); }
+/* "We checked these on the 21st" is the NORMAL state and appears on every page
+   of the site; a green banner announcing it on all of them made the accent
+   meaningless. Only the unverified case carries colour — that one is a real
+   caution. */
+.source-status--ok { color: var(--ink-soft); }
+.source-status--pending { border-left: 3px solid var(--warn); color: var(--ink-soft); }
 
 .byline, .last-updated { color: var(--ink-faint); font-size: var(--step--1); margin-bottom: var(--sp-2); }
 .byline--missing { background: var(--warn-bg); border: 1px solid var(--warn-line); color: var(--warn);
   padding: var(--sp-3); border-radius: var(--radius-sm); }
+.page-footer { margin-top: var(--sp-6); padding-top: var(--sp-4); border-top: 1px solid var(--line); }
 
 .affiliate-block {
   margin: var(--sp-6) 0; padding: var(--sp-5);
@@ -377,16 +504,16 @@ blockquote p:last-child { margin-bottom: 0; }
 
 /* ===================== report modal ===================== */
 
-.report-box { margin-top: var(--sp-4); }
+.report-box { margin-top: var(--sp-5); }
 
 .report-dialog {
   padding: 0; margin: auto; border: 1px solid var(--line); border-radius: var(--radius-lg);
   background: var(--surface); color: var(--ink);
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-lg);
   width: min(92vw, 480px);
   max-height: min(88vh, 640px);
 }
-.report-dialog::backdrop { background: rgb(20 22 26 / 0.55); }
+.report-dialog::backdrop { background: rgb(26 23 20 / 0.5); }
 @media (prefers-color-scheme: dark) {
   .report-dialog::backdrop { background: rgb(0 0 0 / 0.65); }
 }
@@ -411,7 +538,7 @@ blockquote p:last-child { margin-bottom: 0; }
   resize: vertical; min-height: 44px;
 }
 .report-form select:focus, .report-form textarea:focus {
-  border-color: var(--keep); box-shadow: 0 0 0 3px rgb(6 113 74 / 0.14); outline: none;
+  border-color: var(--keep); box-shadow: 0 0 0 3px var(--keep-bg); outline: none;
 }
 
 .report-note { font-size: var(--step--1); color: var(--ink-faint); margin: 0; }
@@ -429,10 +556,11 @@ blockquote p:last-child { margin-bottom: 0; }
   /* The waterfall is a block of flat colour that prints as grey mush and
      carries nothing the breakdown table below it doesn't already state. */
   .site-header, .breadcrumbs, .site-footer, .ad-slot, .tool-inputs,
-  .result-actions, .related, .affiliate-block, .skip-link,
+  .result-actions, .related, .affiliate-block, .skip-link, .tool-side,
   .waterfall, .report-box, .locale-banner { display: none !important; }
   body { background: #fff; color: #000; }
   .tool { grid-template-columns: 1fr !important; }
+  .tool-layout { display: block !important; }
   .result-card { box-shadow: none; border-color: #999; }
-  .result-card::before, .worked-example::before { display: none; }
+  .worked-example::before { display: none; }
 }

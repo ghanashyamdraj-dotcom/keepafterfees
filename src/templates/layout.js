@@ -12,8 +12,9 @@
 
 import { header, breadcrumbs, footer, esc } from './components.js';
 import { renderSchema } from './schema.js';
+import { spriteSheet } from './icons.js';
 
-export function layout({ site, page, trail, body, css, inlineData = null, hreflang = '' }) {
+export function layout({ site, page, trail, body, css, inlineData = null, hreflang = '', navTools = () => [] }) {
   const canonical = `${site.url}${page.path}`;
   const title = page.title;
   const ogImage = `${site.url}/og/${page.slug ?? 'default'}.png`;
@@ -64,9 +65,10 @@ ${
 }${renderSchema(site, page, trail)}
 </head>
 <body class="${page.bodyClass ?? ''}">
+${spriteSheet}
 <a class="skip-link" href="#main">Skip to the calculator</a>
 
-${header(site, page.path)}
+${header(site, page.path, { toolsFor: navTools })}
 ${breadcrumbs(trail)}
 
 <main id="main">
@@ -87,28 +89,61 @@ ${inlineData ? `<script type="application/json" id="page-data">${JSON.stringify(
  * arbitrary — the answer block sits above the ad slot, and the tool sits above
  * the fold with no scrolling required to reach the inputs.
  */
-export function toolPage({ site, page, trail, css, answerBlock, tool, content, rail = '', inlineData, hreflang = '' }) {
-  // The article body and the side rail are siblings in a grid, not nested, so
-  // the rail can be `position: sticky` against the article's full height. On
-  // narrow screens .prose-layout collapses to a block and the rail is hidden
-  // outright — see the ad-rail rules in base.css.
+export function toolPage({
+  site, page, trail, css, answerBlock, tool, content, rail = '', sidebar = '',
+  inlineData, hreflang = '', navTools = () => [],
+}) {
+  /**
+   * Three columns on a wide screen: the in-section sidebar, the tool and its
+   * write-up, and the ad rail.
+   *
+   * The sidebar spans the whole article rather than sitting inside the prose
+   * block, because it is navigation for the PAGE and not a note about the
+   * text — a visitor who has scrolled to the FAQ should still be one click
+   * from the next calculator. It is `position: sticky` against the article's
+   * full height, which is only possible while it is a grid sibling of the
+   * content rather than a child of it.
+   *
+   * The prose keeps its own 720px measure inside the middle column. A
+   * comparison table can still break out of that measure; the tool itself
+   * always does.
+   *
+   * Below 1080px the sidebar moves BELOW the content as a horizontal strip
+   * rather than being hidden — on a phone it is the most useful thing on the
+   * page after the calculator itself, and hiding navigation is how a deep
+   * page becomes a dead end.
+   */
+  /**
+   * The modifier matters. Without it the grid keeps declaring a sidebar column
+   * on a page that has no sidebar, the auto-placement algorithm drops
+   * .tool-main into that 224px slot, and the whole article renders in a narrow
+   * strip down the left edge with the ad rail sitting where the content should
+   * be. That is exactly what happened to /paycheck-calculator/, whose group
+   * holds one TOOLS entry and so fell below toolSidebar's two-item floor.
+   *
+   * A layout should not depend on an optional element being present, so the
+   * column count is now a function of whether the sidebar actually rendered.
+   */
   const body = `<article class="tool-page">
-  <div class="wrap wrap--narrow">
-    <h1>${esc(page.h1)}</h1>
-    ${answerBlock}
-  </div>
+  <div class="wrap tool-layout${sidebar ? '' : ' tool-layout--no-side'}">
+    ${sidebar}
 
-  <div class="wrap">
-    ${tool}
-  </div>
+    <div class="tool-main">
+      <div class="tool-intro">
+        <h1>${esc(page.h1)}</h1>
+        ${answerBlock}
+      </div>
 
-  <div class="wrap prose-layout">
-    <div class="prose">
-      ${content}
+      ${tool}
+
+      <div class="prose">
+        ${content}
+      </div>
     </div>
+
     ${rail ? `<aside class="ad-rail" aria-label="Advertisement">${rail}</aside>` : ''}
   </div>
 </article>`;
 
-  return layout({ site, page, trail, body, css, inlineData, hreflang });
+  return layout({ site, page, trail, body, css, inlineData, hreflang, navTools });
 }

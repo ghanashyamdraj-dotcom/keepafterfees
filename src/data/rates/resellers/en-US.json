@@ -84,6 +84,7 @@
       "id": "depop",
       "label": "Depop",
       "shippingModel": "seller-choice",
+      "commissionIncludesShipping": true,
       "commission": {
         "mode": "flat-rate",
         "rate": 0

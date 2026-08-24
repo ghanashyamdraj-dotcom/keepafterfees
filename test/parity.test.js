@@ -104,6 +104,47 @@ test('built HTML shows exactly the figures the client computes', { skip: !exists
 });
 
 /**
+ * The total row, checked separately from the headline above it.
+ *
+ * `totals.net` is the wrong figure on any tool whose answer is not a net: a
+ * reverse calculator's answer is what to CHARGE, a tax page's is what is OWED,
+ * an hourly-rate page's is a RATE rather than the year's revenue. The client
+ * registry has expressed that through `totalOverride`/`totalLabel` since those
+ * pages were written, but the server template ignored both and rendered
+ * `totals.net` regardless — so three shipped pages served one figure to
+ * anything that does not run JavaScript and swapped it for another the moment
+ * app.js loaded. /freelance-hourly-rate-calculator/ was serving
+ * "Your hourly rate $85,000.55" to every AI crawler except Googlebot.
+ *
+ * The test above never caught it because it only reads the headline and the
+ * stats. This one reads the tfoot, which is the row a reader's eye actually
+ * lands on when they scroll the breakdown.
+ */
+test('the total row agrees between server and client', { skip: !existsSync(dist) && 'run `npm run build` first' }, async () => {
+  for (const tool of liveTools) {
+    const def = (await import(`../src/content/pages/${tool.id}.js`)).default;
+    const cfg = REGISTRY[tool.calculator];
+    const res = cfg.run(def.defaults);
+
+    const label = (v) => (typeof v === 'function' ? v(res) : v);
+    const total = cfg.totalOverride ? cfg.totalOverride(res) : res.totals.net;
+    const expectedLabel = label(cfg.totalLabel ?? cfg.headlineLabel);
+    const expectedValue = `${total < 0 ? '&minus;' : ''}${formatMoney(Math.abs(total), cfg.locale)}`;
+
+    const html = await readFile(join(dist, tool.slug, 'index.html'), 'utf8');
+    const row = html.match(
+      /<tfoot>[\s\S]*?<th scope="row">([^<]*)<\/th>[\s\S]*?<td class="line-value">([^<]*)<\/td>/
+    );
+    assert.ok(row, `${tool.path} has no total row`);
+
+    assert.equal(row[1], expectedLabel,
+      `${tool.path} total label: HTML says "${row[1]}", client renders "${expectedLabel}"`);
+    assert.equal(row[2], expectedValue,
+      `${tool.path} total value: HTML says "${row[2]}", client renders "${expectedValue}"`);
+  }
+});
+
+/**
  * Three render helpers exist twice on purpose — once server-side so the markup
  * ships in the raw HTML, once client-side so the browser can re-render it. Each
  * copy carries a comment saying it must stay byte-identical to its twin, but a

@@ -132,15 +132,39 @@ async function audit() {
     toolsWithResult.map((p) => `${p.rel} ${p.words}w`).join(', '));
 
   /* -- 7. entity clarity ------------------------------------------------ */
-  const noOrg = perPage.filter((p) => !/"@type": "Organization"/.test(p.html));
+  /**
+   * `\s*` after the colon, not a literal space.
+   *
+   * These three checks were written against a pretty-printed JSON-LD graph and
+   * silently started failing the moment the graph was minified — which is a
+   * change that improves the page and should never have looked like a
+   * regression. An audit that only recognises schema in one whitespace style
+   * is testing the formatter, not the schema.
+   */
+  const typeIs = (name) => new RegExp(`"@type":\s*"${name}"`);
+
+  const noOrg = perPage.filter((p) => !typeIs('Organization').test(p.html));
   check(7, 'Organization + WebSite schema on every page', noOrg.length === 0);
 
-  const noBreadcrumb = perPage.filter((p) => !/"@type": "BreadcrumbList"/.test(p.html));
+  const noBreadcrumb = perPage.filter((p) => !typeIs('BreadcrumbList').test(p.html));
   check(7, 'BreadcrumbList schema on every page', noBreadcrumb.length === 0);
 
-  const hasPerson = perPage.some((p) => /"@type": "Person"/.test(p.html));
-  check(7, 'Person schema present (needs a real author in site.json)', hasPerson,
-    hasPerson ? 'present' : 'BLOCKED — site.author.name is still a placeholder');
+  /**
+   * Attribution, not a Person specifically.
+   *
+   * This used to demand a Person node and call its absence "BLOCKED". That was
+   * right while the plan was a named maintainer; it is wrong now. The site
+   * attributes to the Organization by decision, and schema.org treats an
+   * Organization as a perfectly valid `author` — so what the audit should
+   * check is that every page names SOME accountable entity as its author, not
+   * that the entity is human.
+   */
+  const unattributed = perPage.filter((p) => !/"author":\s*\{"@id"/.test(p.html));
+  check(7, 'Every page names an author entity (Person or Organization)', unattributed.length === 0,
+    unattributed.length ? unattributed.map((p) => p.rel).join(', ')
+      : perPage.some((p) => typeIs('Person').test(p.html))
+        ? 'attributed to a named Person'
+        : 'attributed to the Organization — no personal name on the site, by decision');
 
   const noCanonical = perPage.filter((p) => !/<link rel="canonical"/.test(p.html));
   check(7, 'Self-referencing canonical on every page', noCanonical.length === 0);

@@ -3,8 +3,8 @@
   "configurations": [
     {
       "name": "afterfees",
-      "runtimeExecutable": "npx",
-      "runtimeArgs": ["--yes", "serve", "dist", "-l", "4321", "--no-clipboard"],
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["build/dev.mjs"],
       "port": 4321
     }
   ]

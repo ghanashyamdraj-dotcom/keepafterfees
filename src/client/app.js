@@ -369,7 +369,21 @@ function initTool() {
     return;
   }
 
-  const storageKey = `${STORAGE_PREFIX}${calculatorId}`;
+  /**
+   * Keyed on the PATH as well as the calculator id.
+   *
+   * Several pages share one calculator: /paypal-fee-calculator/ and
+   * /stripe-fee-calculator/ are both `processor-fees`, and the four
+   * head-to-head pages are all `channel-versus`. Keyed on the id alone they
+   * shared one saved form, so visiting one and then its sibling restored the
+   * first page's inputs over the second's — a Stripe page silently showing
+   * PayPal's rates, or an Etsy vs Shopify page showing the sixteen-channel
+   * comparison, because the hidden field naming the comparison is a persisted
+   * input like any other.
+   *
+   * The locale-banner key above already does this, for the same reason.
+   */
+  const storageKey = `${STORAGE_PREFIX}${calculatorId}:${location.pathname}`;
   let lastResult = null;
 
   // 1. URL params win (a shared link), then localStorage, then the HTML defaults.
@@ -543,18 +557,24 @@ async function initSlicer() {
       if (r.net < 0) continue;
       r.el.querySelector('[data-slicer-fee]').innerHTML = `&minus;${money(r.fees)}`;
       r.el.querySelector('[data-slicer-net]').textContent = money(r.net);
-      r.el.querySelector('[data-slicer-keep]').style.width = `${r.keepPct.toFixed(1)}%`;
-      r.el.querySelector('[data-slicer-take]').style.width = `${(100 - r.keepPct).toFixed(1)}%`;
       r.el.removeAttribute('data-best');
     }
 
-    // Re-rank so the best-paying platform stays at the top and keeps the
-    // mint edge, the same way the server rendered it.
+    // Re-rank so the best-paying platform stays at the top and keeps the one
+    // mint figure on the widget, the same way the server rendered it.
     const ranked = rows
       .filter((r) => r.net >= 0)
       .sort((a, b) => b.net - a.net || (a.hasFixedCost ? 1 : 0) - (b.hasFixedCost ? 1 : 0));
     if (ranked.length) ranked[0].el.setAttribute('data-best', '');
     for (const r of ranked) rowsEl.appendChild(r.el);
+
+    // The verdict names the winner in words. The ranking is already carried by
+    // the row order and one mint figure, and a sentence is the one form of it
+    // that needs no colour vision and no comparison of two numbers.
+    const winner = root.querySelector('[data-slicer-winner]');
+    if (winner && ranked.length) {
+      winner.textContent = ranked[0].el.querySelector('.slicer-name')?.textContent ?? '';
+    }
 
     for (const p of presets) {
       p.setAttribute('aria-pressed', String(Number(p.dataset.slicerPreset) === amount));

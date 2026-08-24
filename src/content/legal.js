@@ -15,7 +15,11 @@ const UPDATED = '2026-08-02';
 
 export function pages(site) {
   const contactEmail = site.organization?.contactEmail ?? 'hello@keepafterfees.com';
-  const needsAuthor = !site.author?.name || site.author.name.startsWith('REPLACE');
+  // Attribution is to the site, not to a person — see authorLine() in
+  // components.js for the decision and what it costs. `named` stays here
+  // because the config still SUPPORTS a named author; it is simply empty, and
+  // an empty name must render the org paragraph rather than a launch warning.
+  const named = Boolean(site.author?.name) && !site.author.name.startsWith('REPLACE');
 
   return [
     {
@@ -32,16 +36,22 @@ export function pages(site) {
 Every calculator here takes a sale price or an invoice amount and works out what lands in your bank account
 after platform fees, payment processing, and tax.</p>
 
-${needsAuthor ? `
-<div class="source-status source-status--pending">
-<p><strong>TODO before launch.</strong> This page needs a real named person with relevant, specific
-experience — what you have sold, on which platforms, for how long. Section 5.2 of the build spec is blunt
-about why: for money-adjacent tools, an anonymous site is screened out of exactly the surfaces you are
-trying to reach. Fill in <code>author</code> in <code>src/data/site.json</code> and this warning disappears.</p>
-</div>` : `
 <h2>Who runs this</h2>
+${named ? `
 <p>${site.name} is built and maintained by ${site.author.name}${site.author.jobTitle ? `, ${site.author.jobTitle}` : ''}.</p>
-<p>${site.author.bio}</p>`}
+<p>${site.author.bio}</p>` : `
+<p>${site.name} is an independent project, not a company and not a team — one maintainer, working on it
+directly, with no investors, no clients among the platforms measured here, and nobody to please by making a
+particular platform look good.</p>
+<p>${site.author.bio}</p>
+<p>The maintainer is not named on the site, and that is a deliberate choice rather than an oversight. It
+also means you have no reputation to take on trust, so nothing here asks you to. Every figure is traceable
+instead: each rate carries the URL it came from, the date it took effect, and the date a human last checked
+it against that source, and every calculator shows its full arithmetic line by line so you can verify the
+result against your own payout rather than believe it. Where a figure has not been re-checked recently, the
+page says so. Where something is not modelled, the page says that too.</p>
+<p>If you find a number that is wrong, <a href="/contact/">tell us</a> — corrections are the fastest route
+to making this more accurate, and they get made.</p>`}
 
 <h2>Where the numbers come from</h2>
 <p>Every fee rate and tax figure on this site is stored in a versioned data file with a source URL, an

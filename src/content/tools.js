@@ -290,6 +290,129 @@ export const TOOLS = [
     keyword: 'profit margin calculator',
   },
 
+  /* ---------------------------------------------- resale spokes --------- */
+  /**
+   * Two platforms from the reseller comparison get their own page, because
+   * each has a question attached to it that the comparison cannot answer in a
+   * table row: Poshmark's $15 cliff, and the very widely believed idea that
+   * Mercari still charges sellers nothing. Both are at the end of the array
+   * for the siblingsFor() reason documented on amazon-fba-uk.
+   */
+  {
+    id: 'poshmark-fees',
+    order: 19,
+    status: 'live',
+    group: 'marketplace',
+    calculator: 'reseller-single',
+    path: '/poshmark-fee-calculator/',
+    slug: 'poshmark-fee-calculator',
+    h1: 'Poshmark Fee Calculator — What You Keep After the 20% Commission (2026)',
+    linkLabel: 'Poshmark fee calculator',
+    title: 'Poshmark Fee Calculator 2026 — Commission and Net Payout',
+    description:
+      'What Poshmark takes from any sale, including the flat fee under $15 and the narrow band of prices just above it where charging more leaves you with less.',
+    blurb: 'A flat fee under $15, 20% above — and a dead band between them.',
+    keyword: 'poshmark fee calculator',
+  },
+  {
+    id: 'mercari-fees',
+    order: 20,
+    status: 'live',
+    group: 'marketplace',
+    calculator: 'reseller-single',
+    path: '/mercari-fee-calculator/',
+    slug: 'mercari-fee-calculator',
+    h1: 'Mercari Fee Calculator — The 10% Seller Fee and What You Keep (2026)',
+    linkLabel: 'Mercari fee calculator',
+    title: 'Mercari Fee Calculator 2026 — Seller Fee and Net Payout',
+    description:
+      'Mercari charges sellers 10% again — on the item price plus the postage you collect. Work out the fee and your exact payout on any sale.',
+    blurb: 'Yes, Mercari charges sellers again. 10%, including on postage.',
+    keyword: 'mercari fee calculator',
+  },
+
+  /* ---------------------------------------------- head-to-head ---------- */
+  /**
+   * The comparison pages. Deliberately filed under the SAME groups as the
+   * calculators they compare rather than in a "comparisons" group of their
+   * own: a visitor browses by subject (marketplace fees, processors), not by
+   * the format of the page, and a fifth index page listing four items would
+   * mostly duplicate what the group pages already say.
+   *
+   * Placed here, near the end of the array, for the reason spelled out on
+   * amazon-fba-uk below — siblingsFor() slices TOOLS by array POSITION. The
+   * three `marketplace` entries change nothing for existing marketplace tools,
+   * whose sibling lists were already five deep. The one `processor` entry DOES
+   * change the related-links block on the three processor pages, which is the
+   * intended effect: /paypal-vs-stripe-fees/ has to be reachable from
+   * /paypal-fee-calculator/ or it has no internal links pointing at it at all.
+   * The marketplace three get theirs from COMPARISONS below instead.
+   */
+  {
+    id: 'marketplace-fee-comparison',
+    order: 15,
+    status: 'live',
+    group: 'marketplace',
+    calculator: 'channel-versus',
+    path: '/marketplace-fee-comparison/',
+    slug: 'marketplace-fee-comparison',
+    h1: 'Marketplace Fee Comparison 2026 — What Every Selling Channel Actually Takes',
+    linkLabel: 'Marketplace fee comparison',
+    title: 'Marketplace Fee Comparison 2026 — Etsy vs eBay vs Amazon vs More',
+    description:
+      'One price in, sixteen selling channels ranked by what you keep. Etsy, eBay, Amazon, Shopify, Mercari, Poshmark, Depop, Vinted and more, at your own volume.',
+    blurb: 'Sixteen selling channels, one sale price, ranked by what reaches you.',
+    keyword: 'marketplace fee comparison',
+  },
+  {
+    id: 'etsy-vs-shopify-fees',
+    order: 16,
+    status: 'live',
+    group: 'marketplace',
+    calculator: 'channel-versus',
+    path: '/etsy-vs-shopify-fees/',
+    slug: 'etsy-vs-shopify-fees',
+    h1: 'Etsy vs Shopify Fees (2026) — The Exact Sales Volume Where Shopify Gets Cheaper',
+    linkLabel: 'Etsy vs Shopify fees',
+    title: 'Etsy vs Shopify Fees 2026 — Where Shopify Becomes Cheaper',
+    description:
+      "Etsy takes a cut of every sale; Shopify charges a flat monthly plan. The two costs cross at one computable point. This works out exactly where yours is.",
+    blurb: 'A cut of every sale against a flat monthly plan. Where do they cross?',
+    keyword: 'etsy vs shopify fees',
+  },
+  {
+    id: 'ebay-vs-mercari-fees',
+    order: 17,
+    status: 'live',
+    group: 'marketplace',
+    calculator: 'channel-versus',
+    path: '/ebay-vs-mercari-fees/',
+    slug: 'ebay-vs-mercari-fees',
+    h1: 'eBay vs Mercari Fees (2026) — What Each One Takes From the Same Sale',
+    linkLabel: 'eBay vs Mercari fees',
+    title: 'eBay vs Mercari Fees 2026 — Side by Side on the Same Sale',
+    description:
+      "eBay's 13.6% against Mercari's 10%, on the same item, including what each charges on postage and sales tax. See the real gap and what it costs you a year.",
+    blurb: 'Same item, both listings. What the 3.6-point gap is really worth.',
+    keyword: 'ebay vs mercari fees',
+  },
+  {
+    id: 'paypal-vs-stripe-fees',
+    order: 18,
+    status: 'live',
+    group: 'processor',
+    calculator: 'channel-versus',
+    path: '/paypal-vs-stripe-fees/',
+    slug: 'paypal-vs-stripe-fees',
+    h1: 'PayPal vs Stripe Fees (2026) — Which Costs Less on Your Payment Size',
+    linkLabel: 'PayPal vs Stripe fees',
+    title: 'PayPal vs Stripe Fees 2026 — Which Is Cheaper at Your Amount',
+    description:
+      'PayPal 3.49% + $0.49 against Stripe 2.9% + $0.30, plus the two pricing tiers that beat both — micropayments under $10 and ACH above it. With the crossovers.',
+    blurb: 'Which is cheaper depends on the amount. Here are the crossovers.',
+    keyword: 'paypal vs stripe fees',
+  },
+
   /* ---------------------------------------------- locale variants -------- */
   /**
    * Declared LAST, not next to `amazon-fba` above, on purpose. siblingsFor()
@@ -354,7 +477,48 @@ export const CARD_CHIPS = {
   'self-employment-tax': ['Quarterly schedule', 'Schedule SE'],
   paycheck: ['5 states', 'FICA + federal'],
   'margin-markup': ['Margin vs markup'],
+  'marketplace-fee-comparison': ['16 channels', 'Ranked by payout', 'Fee cliffs'],
+  'poshmark-fees': ['$15 cliff', 'Buyer-paid label'],
+  'mercari-fees': ['Fee on postage', 'Flat 10%'],
+  'etsy-vs-shopify-fees': ['Volume crossover', 'Plan vs commission'],
+  'ebay-vs-mercari-fees': ['Fee on postage', 'Fee on sales tax'],
+  'paypal-vs-stripe-fees': ['Crossover amounts', 'ACH & micropayments'],
 };
+
+/**
+ * Head-to-head pages worth linking from a given calculator.
+ *
+ * A separate map rather than a change to siblingsFor(), because that function
+ * builds every page's related-links block by slicing TOOLS in array order and
+ * any change to what it returns rewrites blocks on already-shipped pages that
+ * had nothing to do with this. This adds a second, smaller block instead, and
+ * each entry is a deliberate choice about which comparison a reader of that
+ * specific calculator would actually want next.
+ *
+ * The processor pages are absent on purpose: /paypal-vs-stripe-fees/ shares
+ * their group, so siblingsFor() already surfaces it there and a second link to
+ * the same page on the same page helps nobody.
+ */
+export const COMPARISONS = {
+  'etsy-fees': ['etsy-vs-shopify-fees', 'marketplace-fee-comparison'],
+  'shopify-fees': ['etsy-vs-shopify-fees', 'marketplace-fee-comparison'],
+  'ebay-fees': ['ebay-vs-mercari-fees', 'marketplace-fee-comparison'],
+  'reseller-comparison': ['ebay-vs-mercari-fees', 'marketplace-fee-comparison'],
+  'poshmark-fees': ['marketplace-fee-comparison', 'ebay-vs-mercari-fees'],
+  'mercari-fees': ['ebay-vs-mercari-fees', 'marketplace-fee-comparison'],
+  'amazon-fba': ['marketplace-fee-comparison'],
+  'margin-markup': ['marketplace-fee-comparison'],
+  // And the reverse direction: a comparison page points at the other three.
+  'marketplace-fee-comparison': ['etsy-vs-shopify-fees', 'ebay-vs-mercari-fees', 'paypal-vs-stripe-fees'],
+  'etsy-vs-shopify-fees': ['marketplace-fee-comparison', 'ebay-vs-mercari-fees'],
+  'ebay-vs-mercari-fees': ['marketplace-fee-comparison', 'etsy-vs-shopify-fees'],
+  'paypal-vs-stripe-fees': ['marketplace-fee-comparison'],
+};
+
+/** The comparison pages to surface on a tool page, as full TOOLS entries. */
+export function comparisonsFor(toolId) {
+  return (COMPARISONS[toolId] ?? []).map(findTool).filter(Boolean);
+}
 
 export const liveTools = () => TOOLS.filter((t) => t.status === 'live');
 export const findTool = (id) => TOOLS.find((t) => t.id === id);

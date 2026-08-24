@@ -1,31 +1,148 @@
+/* ===================== tool page layout ===================== */
+/* Three columns on a wide screen: in-section sidebar, the tool and its
+   write-up, the ad rail. The sidebar is a grid SIBLING of the content rather
+   than a child of it, which is what lets it stick against the article's full
+   height while the reader scrolls to the FAQ. */
+
+.tool-layout {
+  display: grid;
+  gap: var(--sp-6);
+  grid-template-columns: minmax(0, 1fr);
+  align-items: start;
+  padding: var(--sp-6) 0 var(--sp-8);
+}
+@media (min-width: 1040px) {
+  .tool-layout { grid-template-columns: 224px minmax(0, 1fr); }
+  /* No sidebar rendered — do not hold a column open for one. */
+  .tool-layout--no-side { grid-template-columns: minmax(0, 1fr); }
+}
+/* The rail joins only when there is room for it AND for a usable calculator
+   beside it. Squeezing a 300px ad in earlier would take the middle column
+   below the width at which the tool can show inputs and result side by side,
+   which trades the thing people came for against one of five ad slots — the
+   other four are in the content flow and unaffected. */
+@media (min-width: 1360px) {
+  .tool-layout { grid-template-columns: 224px minmax(0, 1fr) 300px; }
+  .tool-layout--no-side { grid-template-columns: minmax(0, 1fr) 300px; }
+}
+
+/* A container, so the tool inside can lay itself out against the space it
+   actually has rather than against the viewport. Without this the tool's own
+   two-column grid stays on at any viewport above 900px — including inside a
+   580px middle column, where it gave the inputs about 150px. */
+.tool-main { min-width: 0; container-type: inline-size; }
+.tool-intro { max-width: var(--wrap-narrow); margin-bottom: var(--sp-6); }
+.tool-page h1 { margin-bottom: var(--sp-5); }
+
+/* --- the in-section sidebar ---------------------------------------------
+   Every calculator in the same family, the current one marked, and a way out
+   to the full directory. It orients someone who landed here from a search
+   result, gives them the next click without scrolling to the footer, and puts
+   every tool in a family one hop from every other.
+
+   Below 1040px it moves BELOW the content rather than disappearing: on a
+   phone it is the most useful thing on the page after the calculator itself,
+   and hiding navigation is how a deep page becomes a dead end. */
+
+.tool-side {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: var(--sp-4);
+  order: 2;
+}
+@media (min-width: 1040px) {
+  .tool-side { position: sticky; top: 86px; order: 0; }
+}
+
+.side-head {
+  display: flex; align-items: center; gap: var(--sp-3);
+  margin: 0 0 var(--sp-3); padding-bottom: var(--sp-3);
+  border-bottom: 1px solid var(--line);
+  font-size: var(--step--1); font-weight: 700;
+  color: var(--cat, var(--ink));
+}
+.side-glyph {
+  display: grid; place-items: center; flex: none;
+  width: 30px; height: 30px; border-radius: 8px;
+  background: var(--cat-bg); border: 1px solid var(--cat-line); color: var(--cat);
+}
+.side-glyph svg { width: 16px; height: 16px; }
+
+.side-list { list-style: none; margin: 0; padding: 0; }
+.side-list a {
+  display: flex; align-items: center; justify-content: space-between; gap: var(--sp-2);
+  padding: var(--sp-3) var(--sp-2);
+  font-size: var(--step--1); font-weight: 550;
+  color: var(--ink-soft); text-decoration: none;
+  border-radius: var(--radius-sm);
+  border-bottom: 1px solid var(--line);
+  transition: color .13s, background-color .13s;
+}
+.side-list li:last-child a { border-bottom: 0; }
+.side-list a:hover { color: var(--ink); background: var(--surface-raised); }
+.side-chevron { display: inline-grid; color: var(--line-strong); flex: none; }
+.side-chevron svg { width: 15px; height: 15px; }
+.side-list a:hover .side-chevron { color: var(--cat, var(--ink-faint)); }
+
+/* The current page: an edge in the section colour, not a filled row. It marks
+   where you are; it is not a button. */
+.side-list li[data-current] a {
+  color: var(--ink); font-weight: 700;
+  background: var(--cat-bg);
+  box-shadow: inset 3px 0 0 var(--cat);
+}
+.side-list li[data-current] .side-chevron { color: var(--cat); }
+
+.side-all {
+  display: flex; align-items: center; gap: var(--sp-2);
+  margin-top: var(--sp-3); padding-top: var(--sp-3);
+  border-top: 1px solid var(--line);
+  font-size: var(--step--1); font-weight: 650;
+  color: var(--ink-soft); text-decoration: none;
+}
+.side-all svg { width: 14px; height: 14px; }
+.side-all:hover { color: var(--ink); }
+
 /* ===================== the tool ===================== */
 /* Above the fold on every viewport. Inputs left, receipt right on
    desktop; the receipt comes FIRST on mobile so the number you came
    for is what you see without scrolling. */
 
-.tool-page > .wrap:first-child { padding-top: var(--sp-6); }
-.tool-page h1 { margin-bottom: var(--sp-4); }
-
+/* One of only four places the money colour is allowed on a page. This
+   paragraph IS the answer — the thing the visitor came for, above the tool and
+   above any ad — so it is exactly what the accent is reserved to mark. */
 .answer-block {
   font-size: var(--step-1);
-  line-height: 1.55;
+  line-height: 1.6;
   color: var(--ink-soft);
-  margin-bottom: var(--sp-5);
-  padding-left: var(--sp-4);
+  margin-bottom: 0;
+  padding: var(--sp-4) var(--sp-5);
+  background: var(--keep-bg);
+  border: 1px solid var(--keep-line);
   border-left: 3px solid var(--keep);
+  border-radius: 0 var(--radius) var(--radius) 0;
 }
-.answer-block strong { color: var(--ink); font-weight: 650; }
+.answer-block strong { color: var(--ink); font-weight: 700; }
 
+/* Single column by default, two when the CONTAINER is wide enough. Stated in
+   this order on purpose: a browser without container query support falls back
+   to the stacked layout, which is correct everywhere, rather than to a
+   side-by-side layout that is wrong in a narrow column. */
 .tool {
   display: grid;
   gap: var(--sp-5);
-  grid-template-columns: minmax(0, 1fr) minmax(0, 420px);
+  grid-template-columns: minmax(0, 1fr);
   align-items: start;
   margin-bottom: var(--sp-6);
 }
-@media (max-width: 900px) {
-  .tool { grid-template-columns: 1fr; }
-  .tool-results { order: -1; }
+/* Stacked: the receipt comes FIRST, so the number you came for is what you
+   see without scrolling past a form. */
+.tool-results { order: -1; }
+
+@container (min-width: 700px) {
+  .tool { grid-template-columns: minmax(0, 1fr) minmax(0, 400px); }
+  .tool-results { order: 0; }
 }
 
 /* --- inputs --- */
@@ -39,9 +156,11 @@
 
 .field-group { border: 0; padding: 0; margin: 0 0 var(--sp-5); }
 .field-group:last-of-type { margin-bottom: var(--sp-4); }
+/* Sentence case, not uppercase-with-tracking. There are three or four of
+   these on every calculator; shouting each one made the form look like a tax
+   return before the visitor had typed anything. */
 .field-group > legend {
-  font-size: var(--step--1); font-weight: 700; text-transform: uppercase;
-  letter-spacing: 0.08em; color: var(--ink-faint);
+  font-size: var(--step--1); font-weight: 650; color: var(--ink-soft);
   padding: 0 0 var(--sp-3); width: 100%;
   border-bottom: 1px solid var(--line); margin-bottom: var(--sp-4);
 }
@@ -126,26 +245,25 @@
   box-shadow: var(--shadow-md);
   position: relative;
 }
-/* Perforated top edge — the receipt tell. Purely decorative. */
-.result-card::before {
-  content: ""; position: absolute; inset: 0 0 auto; height: 3px;
-  background: var(--rule-dash);
-  opacity: 0.55;
-}
+/* The perforated top edge is gone. It was a decorative 3px dashed strip on
+   the single most important element on the page, and the receipt metaphor is
+   already carried by the mono figures and the ruled breakdown. */
 .result-card--empty { padding: var(--sp-6); text-align: center; color: var(--ink-faint); }
 
+/* The green wash behind the headline is gone. A tinted panel, a tinted
+   border, an uppercase letter-spaced label and a green figure were four
+   devices saying the same thing; the figure alone says it, and it says it
+   louder now that nothing else is competing. */
 .result-headline {
-  padding: var(--sp-5) var(--sp-5) var(--sp-4);
-  background: var(--grad-wash-keep);
-  border-bottom: 1px solid var(--keep-line);
+  padding: var(--sp-6) var(--sp-5) var(--sp-5);
+  border-bottom: 1px solid var(--line);
   text-align: center;
 }
-.result-headline[data-negative] { background: var(--grad-wash-take); border-bottom-color: var(--take-line); }
+.result-headline[data-negative] { border-bottom-color: var(--take-line); }
 
 .result-label {
-  display: block; font-size: var(--step--1); font-weight: 700;
-  text-transform: uppercase; letter-spacing: 0.09em;
-  color: var(--ink-soft); margin-bottom: var(--sp-2);
+  display: block; font-size: var(--step--1); font-weight: 500;
+  color: var(--ink-faint); margin-bottom: var(--sp-3);
 }
 .result-value {
   display: block;
@@ -209,7 +327,7 @@
 }
 .stat { padding: var(--sp-3); text-align: center; border-right: 1px solid var(--line); }
 .stat:last-child { border-right: 0; }
-.stat-label { display: block; font-size: var(--step--1); color: var(--ink-faint); }
+.stat-label { display: block; font-size: var(--step--1); color: var(--ink-faint); margin-bottom: 2px; }
 .stat-value {
   display: block; font-size: var(--step-1); font-weight: 700;
   font-family: var(--font-mono);
@@ -233,8 +351,12 @@
 .line-note { display: block; font-size: 0.86em; color: var(--ink-faint); font-weight: 400;
   line-height: 1.4; margin-top: 2px; }
 
-.line--revenue .line-value { color: var(--ink); font-weight: 700; }
-.line--fee .line-value, .line--tax .line-value { color: var(--take); }
+.line--revenue .line-value { color: var(--ink); font-weight: 650; }
+/* Muted, not red. Every breakdown on this site has four to nine fee lines in
+   it; at full saturation that is nine red figures arguing with the one green
+   one that the visitor actually came to read. The minus sign carries the
+   direction, and the total row carries the verdict. */
+.line--fee .line-value, .line--tax .line-value { color: var(--ink-soft); }
 .line--cost .line-value { color: var(--ink-soft); }
 .line--info { background: var(--surface-sunk); }
 .line--info .line-value { color: var(--ink-soft); font-weight: 600; }
@@ -253,8 +375,10 @@
   font-size: var(--step--1); line-height: 1.45;
   border-left: 3px solid transparent;
 }
-.callout--warn { background: var(--warn-bg); border: 1px solid var(--warn-line); border-left-width: 3px;
-  border-left-color: var(--warn); color: var(--warn); }
+/* A warning needs to be noticed, not to be the brightest thing on the page.
+   Body text stays readable ink; the amber is spent on the edge alone. */
+.callout--warn { background: var(--surface-sunk); border: 1px solid var(--line); border-left-width: 3px;
+  border-left-color: var(--warn); color: var(--ink-soft); }
 .callout--note { background: var(--surface-sunk); border: 1px solid var(--line); border-left-width: 3px;
   border-left-color: var(--line-strong); color: var(--ink-soft); }
 
@@ -279,8 +403,11 @@
   background: var(--surface-sunk); font-weight: 700; font-family: var(--font-sans);
   border-bottom: 2px solid var(--line-strong); position: sticky; top: 0;
 }
-.compare-table tr[data-best] { background: var(--keep-bg); }
-.compare-table tr[data-best] td { font-weight: 700; color: var(--keep-strong); }
+/* The winning row is marked by weight and one mint figure in the ranking
+   column, not by a tinted band across the whole row. A filled row in a table
+   that already sorts best-first is telling you twice. */
+.compare-table tr[data-best] td { font-weight: 700; color: var(--ink); }
+.compare-table tr[data-best] td:last-child { color: var(--keep); }
 .compare-table .rank { color: var(--ink-faint); width: 2rem; }
 
 /* --- home / hub index --- */
@@ -321,9 +448,9 @@
 .tool-index strong { font-size: var(--step-1); color: var(--ink); letter-spacing: -0.015em; }
 .tool-index span { color: var(--ink-faint); font-size: var(--step--1); line-height: 1.5; }
 .tool-index .tag {
-  align-self: flex-start; margin-top: auto; padding: 2px var(--sp-2);
-  font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em;
-  border-radius: 3px; background: var(--surface-sunk); color: var(--ink-faint);
+  align-self: flex-start; margin-top: auto;
+  font-size: var(--step--1); font-weight: 600;
+  color: var(--ink-faint);
 }
 
 .section-heading { margin-top: var(--sp-7); }
@@ -373,9 +500,11 @@
 }
 
 .value-table tbody th { font-family: var(--font-mono); font-weight: 700; }
-.value-table tbody tr[data-best] {
-  background: color-mix(in srgb, var(--keep) 9%, transparent);
-}
+/* Marked by weight and an arrow, not by a tinted band across the whole row.
+   A table that already sorts best-first does not need to shade the answer as
+   well as put it on top. */
+.value-table tbody tr[data-best] td,
+.value-table tbody tr[data-best] th { font-weight: 700; color: var(--ink); }
 .value-table tbody tr[data-best] th::after {
-  content: " ←"; color: var(--keep); font-weight: 700;
+  content: " ←"; color: var(--ink-faint); font-weight: 700;
 }

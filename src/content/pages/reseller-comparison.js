@@ -5,9 +5,11 @@
  *
  *   - The non-commodity section is Poshmark's $15 threshold. Below it the
  *     commission is a flat $2.95; at or above it, 20%. That is a genuine cliff
- *     — an item at $14.99 can net MORE in absolute dollars than the same item
- *     at $15.49 — and no competing calculator surfaces it. The engine computes
- *     both sides, so the page states the real gap rather than describing one.
+ *     — an item at $14.99 nets MORE in absolute dollars than the same item at
+ *     $15.00 — and no competing calculator surfaces it. The engine computes
+ *     both sides, and detectCliffs() in versus.js solves where the dead band
+ *     above the threshold actually ends, so the page states a real boundary
+ *     rather than one derived by algebra from the rate.
  *   - The second differentiator is structural rather than numeric: these
  *     platforms differ in WHO PAYS SHIPPING and WHAT THE FEE IS CHARGED ON, not
  *     just in headline rate. A static "Poshmark 20% vs Mercari 10%" comparison
@@ -103,9 +105,9 @@ by each platform, effective ${rates.resellers.effective}.</p>`,
 <p>That does not automatically make it the best option. The buyer sees a higher total than your asking price, which affects how your listing competes against the same item elsewhere. A platform that takes 10% from you but shows a lower total to the buyer may sell faster. This calculator models your payout, not your sell-through rate.</p>`,
     },
     {
-      q: 'Do I really keep more by listing at $14.99 than at $15.49?',
-      a: `<p>On Poshmark, yes — and it is the most useful thing on this page. Below $${cliff.threshold} Poshmark charges a flat $${rates.resellers.platforms.find((p) => p.id === 'poshmark').commission.flatUnderThreshold}; at or above it, ${(rates.resellers.platforms.find((p) => p.id === 'poshmark').commission.rateAtOrAbove * 100).toFixed(0)}%. At $${(cliff.threshold - 0.01).toFixed(2)} you net $${cliff.under.netProfit.toFixed(2)}; at $${(cliff.threshold + 0.49).toFixed(2)} you net $${cliff.over.netProfit.toFixed(2)}.</p>
-<p>So charging ${((cliff.threshold + 0.49) - (cliff.threshold - 0.01)).toFixed(2)} more leaves you $${Math.abs(cliff.under.netProfit - cliff.over.netProfit).toFixed(2)} ${cliff.under.netProfit > cliff.over.netProfit ? 'worse off' : 'better off'}. The calculator warns you when your price lands in that dead zone.</p>`,
+      q: 'Do I really keep more by listing at $14.99 than at $15.00?',
+      a: `<p>On Poshmark, yes — and it is the most useful thing on this page. Below $${cliff.threshold} Poshmark charges a flat $${rates.resellers.platforms.find((p) => p.id === 'poshmark').commission.flatUnderThreshold}; at or above it, ${(rates.resellers.platforms.find((p) => p.id === 'poshmark').commission.rateAtOrAbove * 100).toFixed(0)}%. At $${(cliff.threshold - 0.01).toFixed(2)} you net $${cliff.under.netProfit.toFixed(2)}; at $${cliff.threshold.toFixed(2)} you net $${cliff.over.netProfit.toFixed(2)}.</p>
+<p>So charging ${(0.01).toFixed(2)} more leaves you $${Math.abs(cliff.under.netProfit - cliff.over.netProfit).toFixed(2)} ${cliff.under.netProfit > cliff.over.netProfit ? 'worse off' : 'better off'}. The calculator warns you when your price lands in that dead zone.</p>`,
     },
     {
       q: 'Why is shipping handled differently per platform?',
@@ -199,18 +201,22 @@ at or above it. It is a step, not a taper.</p>
 <thead><tr><th scope="col">Listed at</th><th scope="col">Poshmark takes</th><th scope="col">You net</th></tr></thead>
 <tbody>
 <tr><td>$${(cliff.threshold - 0.01).toFixed(2)}</td><td>$${cliff.under.fees.totalFees.toFixed(2)}</td><td>$${cliff.under.netProfit.toFixed(2)}</td></tr>
-<tr><td>$${(cliff.threshold + 0.49).toFixed(2)}</td><td>$${cliff.over.fees.totalFees.toFixed(2)}</td><td>$${cliff.over.netProfit.toFixed(2)}</td></tr>
+<tr><td>$${cliff.threshold.toFixed(2)}</td><td>$${cliff.over.fees.totalFees.toFixed(2)}</td><td>$${cliff.over.netProfit.toFixed(2)}</td></tr>
 </tbody>
 </table>
 </div>
 
-<p>Asking $${((cliff.threshold + 0.49) - (cliff.threshold - 0.01)).toFixed(2)} more leaves you
+<p>Asking $${(0.01).toFixed(2)} more leaves you
 <strong>$${Math.abs(cliff.under.netProfit - cliff.over.netProfit).toFixed(2)}
-${cliff.under.netProfit > cliff.over.netProfit ? 'worse off' : 'better off'}</strong>. Anything priced
-between $${cliff.threshold.toFixed(2)} and roughly
-$${(cliff.threshold / (1 - rates.resellers.platforms.find((p) => p.id === 'poshmark').commission.rateAtOrAbove)).toFixed(2)}
-nets less than the same item listed at $${(cliff.threshold - 0.01).toFixed(2)}. There is no reason to ever
-price inside that band on Poshmark. The calculator raises a warning when your price lands there.</p>
+${cliff.under.netProfit > cliff.over.netProfit ? 'worse off' : 'better off'}</strong>.
+${cliff.recoversAt
+    ? `The dead band is narrow but real: anything priced from $${cliff.threshold.toFixed(2)} up to
+$${(cliff.recoversAt - 0.01).toFixed(2)} nets you less than the same item listed at
+$${(cliff.threshold - 0.01).toFixed(2)}, and you do not match that payout again until
+$${cliff.recoversAt.toFixed(2)}. There is no reason to price inside that
+$${cliff.deadZone.toFixed(2)} band on Poshmark.`
+    : `There is no reason to price just above the threshold on Poshmark.`}
+The calculator raises a warning when your price lands there.</p>
 
 <p>The general lesson applies beyond Poshmark: any platform with a flat fee, a minimum fee, or a threshold
 has a dead zone just above it. Facebook Marketplace has a $0.40 minimum, which makes its effective rate on

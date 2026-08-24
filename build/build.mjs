@@ -103,7 +103,8 @@ export async function build() {
   const { TOOLS, GROUPS, PAYCHECK_STATES } = await import('../src/content/tools.js');
   const urls = [];
 
-  const ctx = { site, rates, css, TOOLS, GROUPS, urls };
+  const navTools = await buildNavTools(TOOLS, rates);
+  const ctx = { site, rates, css, TOOLS, GROUPS, urls, navTools };
 
   const toolPages = await renderToolPages(ctx);
   const staticPages = await renderStaticPages(ctx);
@@ -150,18 +151,108 @@ function checkSiteConfig(site) {
   };
   walk(site);
 
-  if (!site.author?.sameAs?.length) {
-    warnings.push('site.author.sameAs is empty — entity identity (spec 5.1) needs at least one profile that resolves');
+  /**
+   * Entity identity, without a personal one.
+   *
+   * This warned whenever `author.sameAs` was empty. It is empty on purpose now
+   * — the maintainer is not named on the site, and the GitHub profile and repo
+   * URLs that used to fill it both contain their username, so they went too.
+   *
+   * The underlying need is real and unmet: an entity with no external profile
+   * anywhere is harder for a search engine to recognise as a thing that
+   * exists. The fix is a profile in the SITE's name rather than a person's —
+   * a GitHub organisation, an X or LinkedIn page under the brand — pointed at
+   * from organization.sameAs. Warn about that, and only that.
+   */
+  if (!site.organization?.sameAs?.length) {
+    warnings.push('site.organization.sameAs is empty — the site has no external profile linking back to it, '
+      + 'which is the one entity signal (spec 5.1) it currently has no substitute for. A GitHub org or a '
+      + 'brand-name social profile would fill it without naming anyone.');
   }
+}
+
+/**
+ * Live tools in a group, in display order, excluding locale variants.
+ *
+ * Feeds both the header mega menu and the tool-page sidebar, so those two can
+ * never disagree about what is in a section. A locale sibling (the /uk/ Amazon
+ * page) is deliberately absent: it is the same tool, and offering both in a
+ * list is a choice the visitor has no basis to make. The locale banner already
+ * suggests it to anyone whose browser asks for it.
+ */
+function groupTools(TOOLS, groupId) {
+  return TOOLS
+    .filter((t) => t.status === 'live' && t.group === groupId && !t.locale)
+    .sort((a, b) => a.order - b.order);
+}
+
+/**
+ * What a section contains, for navigation — one source, used by BOTH the header
+ * mega menu and the tool-page sidebar.
+ *
+ * Usually that is simply the live tools in the group. The paycheck family is
+ * the exception and the reason this is precomputed rather than derived on the
+ * spot: its group holds exactly ONE entry in TOOLS, because the five state
+ * pages are spokes rendered from a `spoke()` factory and are deliberately not
+ * TOOLS entries (siblingsFor slices that array, so five extra entries would
+ * rewrite the related-links block on every already-shipped page).
+ *
+ * That single entry fell below the two-item floor in both consumers, so the
+ * paycheck section rendered no dropdown in the header and no sidebar on the
+ * page — and the missing sidebar then left the layout grid holding an empty
+ * column, which pushed the whole article into it. Expanding the group to
+ * hub + spokes fixes all three symptoms at their one cause.
+ *
+ * Returns `(groupId) => entries[]`, where each entry carries what the two
+ * consumers read: path, linkLabel, blurb and group.
+ */
+async function buildNavTools(TOOLS, rates) {
+  const { PAYCHECK_STATES } = await import('../src/content/tools.js');
+  const byGroup = new Map();
+  for (const group of new Set(TOOLS.map((t) => t.group))) {
+    byGroup.set(group, groupTools(TOOLS, group));
+  }
+
+  for (const tool of TOOLS.filter((t) => t.status === 'live' && t.hasStateSpokes)) {
+    let def;
+    try {
+      def = (await import(`../src/content/pages/${tool.id}.js`)).default;
+    } catch {
+      continue;
+    }
+    if (typeof def.spoke !== 'function') continue;
+
+    const spokes = PAYCHECK_STATES
+      .map((code) => rates.states[code])
+      .filter(Boolean)
+      .map((state) => {
+        const spoke = def.spoke(state, rates);
+        return {
+          path: spoke.path,
+          linkLabel: spoke.linkLabel ?? spoke.h1,
+          h1: spoke.h1,
+          blurb: spoke.blurb,
+          group: tool.group,
+        };
+      });
+
+    const rest = (byGroup.get(tool.group) ?? []).filter((t) => t.id !== tool.id);
+    byGroup.set(tool.group, [tool, ...spokes, ...rest]);
+  }
+
+  return (groupId) => byGroup.get(groupId) ?? [];
 }
 
 /* ------------------------------------------------------------ tool pages -- */
 
-async function renderToolPages({ site, rates, css, TOOLS, urls }) {
+async function renderToolPages({ site, rates, css, TOOLS, GROUPS, urls, navTools }) {
+  // Still needed here to RENDER the spoke pages themselves. buildNavTools()
+  // uses it separately to LIST them; the two are different jobs.
+  const { PAYCHECK_STATES } = await import('../src/content/tools.js');
   css = css.tool;
   const { toolPage } = await import('../src/templates/layout.js');
   const comps = await import('../src/templates/components.js');
-  const { siblingsFor } = await import('../src/content/tools.js');
+  const { siblingsFor, comparisonsFor } = await import('../src/content/tools.js');
 
   let count = 0;
 
@@ -175,7 +266,7 @@ async function renderToolPages({ site, rates, css, TOOLS, urls }) {
       continue;
     }
 
-    count += await renderOneToolPage({ tool, def, site, rates, css, TOOLS, urls, toolPage, comps, siblingsFor });
+    count += await renderOneToolPage({ tool, def, site, rates, css, TOOLS, GROUPS, navTools, urls, toolPage, comps, siblingsFor, comparisonsFor });
 
     /**
      * State spokes. A tool declares `hasStateSpokes` in tools.js and exports a
@@ -189,7 +280,6 @@ async function renderToolPages({ site, rates, css, TOOLS, urls }) {
      * same trap documented on the amazon-fba-uk entry).
      */
     if (tool.hasStateSpokes && typeof def.spoke === 'function') {
-      const { PAYCHECK_STATES } = await import('../src/content/tools.js');
       for (const code of PAYCHECK_STATES) {
         const state = rates.states[code];
         if (!state) {
@@ -197,7 +287,7 @@ async function renderToolPages({ site, rates, css, TOOLS, urls }) {
           continue;
         }
         count += await renderOneToolPage({
-          tool, def, site, rates, css, TOOLS, urls, toolPage, comps, siblingsFor,
+          tool, def, site, rates, css, TOOLS, GROUPS, navTools, urls, toolPage, comps, siblingsFor, comparisonsFor,
           overrides: def.spoke(state, rates),
           parent: tool,
         });
@@ -210,7 +300,7 @@ async function renderToolPages({ site, rates, css, TOOLS, urls }) {
 
 /** Render one tool page (a hub tool, or one of its state spokes). */
 async function renderOneToolPage({
-  tool, def, site, rates, css, TOOLS, urls, toolPage, comps, siblingsFor,
+  tool, def, site, rates, css, TOOLS, GROUPS, navTools, urls, toolPage, comps, siblingsFor, comparisonsFor,
   overrides = null, parent = null,
 }) {
   // `faqs` is resolved in place below, so each call builds a FRESH page object
@@ -245,6 +335,13 @@ async function renderOneToolPage({
     // undefined for every existing (en-US) tool — formatMoney's own
     // default. Only a locale-variant page's engineCtx sets this.
     locale: engineCtx.locale,
+    // Mirrors totalOverride / totalLabel on the matching client registry
+    // entry. Undefined on any tool whose total row really is `totals.net`,
+    // which is most of them; resultBlock falls back to exactly the old
+    // behaviour then. See the note on resultBlock for what went wrong before
+    // these were threaded through.
+    total: engineCtx.total,
+    totalLabel: engineCtx.totalLabel,
   });
 
   const feeRates = engineCtx.rateSource;
@@ -260,6 +357,12 @@ async function renderOneToolPage({
     comps.adSlot(site, 'midContent'),
     comps.affiliateSlot(site, tool.id),
     comps.faqSection(page.faqs),
+    // Deliberately above the sources block rather than down with the related
+    // tools: a reader who has just seen what one platform takes is at exactly
+    // the point of wondering how that compares, and the comparison pages have
+    // no other inbound link from the marketplace calculators — siblingsFor()
+    // was already five deep for that group before they existed.
+    comps.comparisonLinks(comparisonsFor(tool.id), page.path),
     comps.sourcesBlock(feeRates?.sources, {
       effective: feeRates?.effective,
       verifiedOn: feeRates?.verifiedOn,
@@ -283,6 +386,17 @@ async function renderOneToolPage({
     tool: body,
     content,
     rail: comps.adSlot(site, 'rail'),
+    // In-section navigation. Built from the same groupTools() the header mega
+    // menu uses, so a page's sidebar and the menu that leads to it always
+    // list the same set.
+    // Same source as the header mega menu, so a section's dropdown and a
+    // page's sidebar always list exactly the same set.
+    sidebar: comps.toolSidebar({
+      group: GROUPS[page.group],
+      tools: navTools(page.group),
+      currentPath: page.path,
+    }),
+    navTools,
     inlineData: {
       calculator: page.calculator,
       defaults: page.defaults,
@@ -384,12 +498,53 @@ function buildValueRows({ values, run, field, defaults }) {
   return rows;
 }
 
+/**
+ * One synthetic rate source covering every file a comparison draws on.
+ *
+ * Every other page cites exactly one rate file, so `sourcesBlock` takes that
+ * file's `sources`, `effective`, `verifiedOn` and `version` straight off the
+ * engine result's meta. A comparison page has no such single file — quoting
+ * one of them would date the page by a file it only partly relies on.
+ *
+ * The dates collapse pessimistically. `effective` becomes the OLDEST of the
+ * set, because a comparison is only as current as its stalest input, and
+ * `verifiedOn` is null unless EVERY file behind the page has been verified —
+ * which makes the page render the "not yet verified against the live source"
+ * warning until the last of them is done, rather than inheriting a clean bill
+ * of health from whichever file happened to be checked most recently.
+ */
+function mergedSources(channelIds, rates, findChannel) {
+  const keys = [...new Set(channelIds.map((id) => findChannel(id)?.sourceKey).filter(Boolean))];
+  const files = keys.map((k) => rates[k]).filter(Boolean);
+  if (!files.length) return null;
+
+  const sources = [];
+  const seen = new Set();
+  for (const f of files) {
+    for (const s of f.sources ?? []) {
+      if (seen.has(s.url)) continue;
+      seen.add(s.url);
+      sources.push(s);
+    }
+  }
+
+  const dates = files.map((f) => f.effective).filter(Boolean).sort();
+  const allVerified = files.every((f) => f.verifiedOn);
+
+  return {
+    sources,
+    effective: dates[0] ?? null,
+    verifiedOn: allVerified ? files.map((f) => f.verifiedOn).sort()[0] : null,
+    version: keys.map((k) => `${k}@${rates[k].version}`).join(' + '),
+  };
+}
+
 async function buildEngineContext(tool, page, rates) {
   // Same helpers src/client/registry.js already uses (usd/pctLabel from
   // money.js), rather than a second hand-rolled `$…toFixed(2)` closure here.
   // Without this the server and client headline/stat formatting would
   // silently diverge the moment formatMoney becomes locale-aware.
-  const { usd, pctLabel } = await import('../src/lib/money.js');
+  const { usd, pctLabel, round2 } = await import('../src/lib/money.js');
   const money = (v) => (v === null || v === undefined ? '—' : usd(v));
   const pct = (v) => (v === null || v === undefined ? '—' : pctLabel(v, 1));
 
@@ -580,6 +735,262 @@ async function buildEngineContext(tool, page, rates) {
       };
     }
 
+    /**
+     * The four head-to-head comparison pages.
+     *
+     * One case for all four, because which channels are being compared is a
+     * property of the page (`defaults.matchup`), not of the calculator. The
+     * heavy build-time analysis — the crossovers, the probed capability
+     * matrix, the fee-cliff scan — runs here and is handed to the page's
+     * content() as plain data, so none of it has to run in the browser. The
+     * live calculator recomputes only the ranked table.
+     */
+    case 'channel-versus': {
+      const {
+        compareChannels, volumeCrossover, crossoverAsymptote, priceCrossover,
+        detectCliffs, probeTraits, versusTable, MATCHUPS, findChannel,
+      } = await import('../src/lib/calc/versus.js');
+      const { renderComparison } = await import('../src/templates/components.js');
+      const d = page.defaults;
+      const example = compareChannels(d, rates);
+      const matchup = MATCHUPS[d.matchup] ?? MATCHUPS['all-channels'];
+      const ids = matchup.channels;
+
+      // Fee schedules are cited from several rate files at once here, so the
+      // sources block gets the union rather than any one file's. Deduplicated
+      // by URL, and the effective/verified dates collapse to the OLDEST and
+      // the least-verified of the set — a comparison is only as current as its
+      // stalest input, and claiming otherwise would overstate it.
+      const rateSource = mergedSources(ids, rates, findChannel);
+
+      const rowFor = (id) => example.rows.find((r) => r.id === id) ?? null;
+      const pair = ids.length >= 2 ? [ids[0], ids[1]] : null;
+
+      return {
+        example, rates, rateSource,
+        axis: matchup.axis,
+        channelIds: ids,
+        // Where a monthly plan stops being the expensive option, at THIS order
+        // value and at the limit. Null on any comparison with no subscription
+        // in it, which is most of them.
+        crossover: pair ? volumeCrossover(rowFor(pair[0]), rowFor(pair[1]), d.orderValue) : null,
+        asymptote: pair ? crossoverAsymptote(pair[0], pair[1], d, rates) : null,
+        /**
+         * The same crossover recomputed across a spread of order values.
+         *
+         * This is the table that makes the page's central claim visible: the
+         * order count collapses as the basket grows while the REVENUE it
+         * represents barely moves. It has to be computed per row rather than
+         * scaled from the loaded result, because both channels carry a fixed
+         * per-order component that does not scale with the order value — which
+         * is precisely why the crossover revenue drifts at small baskets and
+         * flattens at large ones instead of being constant throughout.
+         */
+        crossoverLadder: pair
+          ? [10, 20, 35, 50, 100, 250, 1000].map((value) => {
+              const run = compareChannels({ ...d, orderValue: value }, rates);
+              if (!run.ok) return null;
+              const a = run.rows.find((r) => r.id === pair[0]);
+              const b = run.rows.find((r) => r.id === pair[1]);
+              const x = volumeCrossover(a, b, value);
+              if (!a || !b || !x) return null;
+              return {
+                value,
+                feeA: a.perOrderFees,
+                feeB: b.perOrderFees,
+                gap: Number((a.perOrderFees - b.perOrderFees).toFixed(2)),
+                orders: x.orders,
+                revenue: x.revenue,
+              };
+            }).filter(Boolean)
+          : null,
+        // Where the ranking flips on price, or null when one channel simply
+        // wins across the whole range — which is itself the answer on two of
+        // these pages, and a more useful one than a manufactured threshold.
+        flip: pair ? priceCrossover(pair[0], pair[1], d, rates) : null,
+        traits: probeTraits(ids, d, rates, { at: page.traitsAt ?? 100 }),
+        /**
+         * Every channel's fee at a spread of amounts, plus which one wins at
+         * each. This is the "read across a row to choose, read down a column
+         * to understand one schedule" table, and running the real engines per
+         * cell is what stops a page from carrying a second, hand-maintained
+         * copy of any fee rule.
+         */
+        feeLadder: (page.ladderValues ?? [10, 25, 50, 100, 250, 1000]).map((amount) => {
+          const run = compareChannels({ ...d, orderValue: amount, shippingCharged: 0, shippingCost: 0 }, rates);
+          if (!run.ok) return null;
+          const cells = run.rows.map((r) => ({ id: r.id, label: r.label, fee: r.perOrderFees, rate: r.effectiveRate }));
+          const best = cells.reduce((a, b) => (b.fee < a.fee ? b : a));
+          return { amount, cells, best };
+        }).filter(Boolean),
+        /**
+         * Pairwise crossovers between the processor schedules, solved in
+         * closed form by the processor engine rather than searched.
+         *
+         * scheduleCrossover() is used here in preference to this file's own
+         * priceCrossover(): it returns the TIE BAND that independent cent
+         * rounding creates on either side of the algebraic crossing point, so
+         * the page can say "cheaper up to $9.91, dearer from $10.13" instead
+         * of asserting a flip at a single cent that the arithmetic does not
+         * actually deliver.
+         */
+        processorCrossovers: await (async () => {
+          const procIds = ids.filter((id) => findChannel(id)?.kind === 'processor');
+          if (procIds.length < 2) return null;
+          const { scheduleCrossover, getProduct } = await import('../src/lib/calc/processors.js');
+          const schedule = (id) => {
+            const map = {
+              paypal: ['paypal', 'checkout'],
+              'paypal-micropayments': ['paypal', 'micropayments'],
+              stripe: ['stripe', 'online-domestic'],
+              'stripe-ach': ['stripe', 'ach'],
+            };
+            const [pid, prod] = map[id] ?? [];
+            if (!pid) return null;
+            const found = getProduct(rates.processors, pid, prod);
+            return found ? { id, label: findChannel(id).label, ...found.product } : null;
+          };
+          const schedules = procIds.map(schedule).filter(Boolean);
+          const pairs = [];
+          for (let i = 0; i < schedules.length; i += 1) {
+            for (let j = i + 1; j < schedules.length; j += 1) {
+              const cross = scheduleCrossover(schedules[i], schedules[j]);
+              if (cross) pairs.push({ a: schedules[i], b: schedules[j], ...cross });
+            }
+          }
+          return {
+            schedules,
+            pairs,
+            // Where a capped percentage stops growing: cap / rate. Above it the
+            // schedule is a flat fee and its effective rate falls towards zero.
+            caps: schedules
+              .filter((s) => s.cap && s.rate)
+              .map((s) => ({ id: s.id, label: s.label, cap: s.cap, bindsAt: Number((s.cap / s.rate).toFixed(2)) })),
+          };
+        })(),
+        /**
+         * What a capped schedule is worth against an uncapped one as the
+         * amount grows. Included only where the comparison contains both, so
+         * every other matchup gets null and the section renders nothing.
+         *
+         * The row at the binding point is inserted deliberately: it is the
+         * last amount at which the capped schedule still behaves like a
+         * percentage, and seeing the effective rate start to fall from exactly
+         * there is what makes the cap legible as a different kind of pricing
+         * rather than just a cheaper rate.
+         */
+        achLadder: ids.includes('stripe-ach') && ids.includes('stripe')
+          ? await (async () => {
+              const { getProduct } = await import('../src/lib/calc/processors.js');
+              const capped = getProduct(rates.processors, 'stripe', 'ach')?.product;
+              if (!capped?.cap || !capped.rate) return null;
+              const bindsAt = Number((capped.cap / capped.rate).toFixed(2));
+              return [500, bindsAt, 2000, 10000, 25000].map((amount) => {
+                const run = compareChannels({ ...d, orderValue: amount, shippingCharged: 0, shippingCost: 0 }, rates);
+                if (!run.ok) return null;
+                const card = run.rows.find((r) => r.id === 'stripe')?.perOrderFees ?? 0;
+                const bank = run.rows.find((r) => r.id === 'stripe-ach')?.perOrderFees ?? 0;
+                return {
+                  amount,
+                  card,
+                  ach: bank,
+                  achRate: amount > 0 ? bank / amount : 0,
+                  saved: Number((card - bank).toFixed(2)),
+                };
+              }).filter(Boolean);
+            })()
+          : null,
+        cliffs: ids
+          .map((id) => ({ id, label: findChannel(id)?.label ?? id, cliffs: detectCliffs(id, d, rates) }))
+          .filter((c) => c.cliffs.length),
+        headlineLabel: matchup.axis === 'volume' ? 'Best monthly take-home' : 'Best net per sale',
+        headline: example.best
+          ? `${example.best.label} — ${usd(matchup.axis === 'volume' ? example.best.monthlyNet : example.best.netPerOrder)}`
+          : '—',
+        total: matchup.axis === 'volume' ? example.best?.monthlyNet ?? 0 : example.best?.netPerOrder ?? 0,
+        totalLabel: matchup.axis === 'volume' ? 'Best monthly take-home' : 'Best net per sale',
+        stats: [
+          { label: 'Gap to worst', value: money(example.spread) },
+          {
+            label: matchup.axis === 'volume' ? 'Cheapest all-in rate' : 'Lowest fee rate',
+            value: pct(example.best?.effectiveRate),
+          },
+          { label: 'Channels', value: String(example.rows?.length ?? 0) },
+        ],
+        // Mirrors the 'channel-versus' entry in src/client/registry.js. The
+        // column set itself lives in versus.js and is imported by both, so
+        // only this call can drift, not the table's shape.
+        extra: (() => {
+          const { columns, bestKey } = versusTable(matchup.axis);
+          return renderComparison(example.rows, { columns, bestKey });
+        })(),
+      };
+    }
+
+    /**
+     * The per-platform resale pages — Poshmark and Mercari.
+     *
+     * Which platform is `page.defaults.platformId`, so a third page is a
+     * definition file and not another case here. The heavy analysis (the price
+     * ladder, the cliff scan, the free-shipping comparison) runs at build time
+     * and is handed to content() as data; the live calculator recomputes only
+     * the receipt.
+     */
+    case 'reseller-single': {
+      const { calculateReseller } = await import('../src/lib/calc/resellers.js');
+      const { detectCliffs } = await import('../src/lib/calc/versus.js');
+      const d = page.defaults;
+      const example = calculateReseller(d, rates.resellers);
+      const platform = rates.resellers.platforms.find((p) => p.id === d.platformId);
+
+      // Item price only, no postage — the clean per-item figures, so the
+      // effective-rate column isolates the platform's own shape.
+      const ladder = (page.ladderValues ?? [5, 10, 15, 25, 45, 100, 250, 500]).map((price) => {
+        const r = calculateReseller({ ...d, salePrice: price, shippingCharged: 0, shippingCost: 0, itemCost: 0 }, rates.resellers);
+        if (!r.ok) return null;
+        return { price, fee: r.fees.totalFees, rate: r.effectiveFeeRate, payout: r.totals.payout };
+      }).filter(Boolean);
+
+      /**
+       * "Free shipping" against postage charged separately, at the same buyer
+       * total. Only meaningful where the platform charges its fee on collected
+       * postage — anywhere else the two are trivially different and the
+       * section does not render.
+       */
+      const freeShipping = platform?.commissionIncludesShipping && d.shippingCharged > 0
+        ? (() => {
+            const buyerTotal = round2(d.salePrice + d.shippingCharged);
+            const split = calculateReseller({ ...d, salePrice: d.salePrice, shippingCharged: d.shippingCharged }, rates.resellers);
+            const bundled = calculateReseller({ ...d, salePrice: buyerTotal, shippingCharged: 0 }, rates.resellers);
+            const shape = (r, charged) => ({
+              buyerTotal: round2(r.inputs.salePrice + charged),
+              feeBase: r.feeBase,
+              fee: r.fees.totalFees,
+              net: r.totals.net,
+            });
+            return {
+              split: shape(split, d.shippingCharged),
+              bundled: shape(bundled, 0),
+            };
+          })()
+        : null;
+
+      return {
+        example, rates, rateSource: rates.resellers, platform, ladder, freeShipping,
+        cliff: detectCliffs(d.platformId, { ...d, orderValue: d.salePrice }, rates)[0] ?? null,
+        // Mirrors the 'reseller-single' entry in src/client/registry.js.
+        headlineLabel: 'You keep',
+        headline: money(example.totals.net),
+        total: example.totals.net,
+        totalLabel: 'You keep',
+        stats: [
+          { label: 'Platform takes', value: money(example.fees.totalFees) },
+          { label: 'Fee rate', value: pct(example.effectiveFeeRate) },
+          { label: 'Payout', value: money(example.totals.payout) },
+        ],
+      };
+    }
+
     case 'reseller-comparison': {
       const { compareResellers, breakEvenByPlatform } = await import('../src/lib/calc/resellers.js');
       const { renderComparison } = await import('../src/templates/components.js');
@@ -597,13 +1008,33 @@ async function buildEngineContext(tool, page, rates) {
         compareResellers({ ...d, salePrice: price, platforms: ['poshmark'] }, rates.resellers)
           .rows[0];
 
+      // Where the dead zone above the cliff actually ends, solved rather than
+      // derived from the rate.
+      //
+      // The prose here previously computed it as `threshold / (1 - rate)`,
+      // which answers a different question — the price at which 80% of the
+      // price equals $15 — and gave $18.75. The real boundary is the lowest
+      // price at which the seller nets what they netted one cent BELOW the
+      // cliff, which is $15.05. The published figure overstated the band by
+      // about seventy-five times. detectCliffs() computes it by scanning the
+      // engine, so it cannot be got wrong by algebra again.
+      const { detectCliffs } = await import('../src/lib/calc/versus.js');
+      const [poshCliff] = detectCliffs('poshmark', { ...d, orderValue: d.salePrice }, rates);
+
       return {
         example, rates, rateSource: rates.resellers,
         breakEven: breakEvenByPlatform(d, rates.resellers),
         cliff: {
           threshold: cliff,
           under: poshAt(cliff - 0.01),
-          over: poshAt(cliff + 0.49),
+          // The cent that crosses the threshold, not a price further up.
+          // This was `cliff + 0.49`, which lands ABOVE the dead band the
+          // section is about — at $15.49 the seller is genuinely better off
+          // than at $14.99, so the worked example was quietly demonstrating
+          // the opposite of its own heading. One cent is the whole point.
+          over: poshAt(cliff),
+          recoversAt: poshCliff?.recoversAt ?? null,
+          deadZone: poshCliff?.deadZone ?? null,
         },
         // Mirrors the 'reseller-comparison' entry in src/client/registry.js.
         // usd()/pctLabel() rather than local helpers so the strings the build
@@ -722,6 +1153,13 @@ async function buildEngineContext(tool, page, rates) {
         // Mirrors the 'processor-fees' entry in src/client/registry.js exactly.
         headlineLabel: 'You receive',
         headline: money(example.totals.net),
+        // The registry entry switches both of these when the page's direction
+        // toggle is set to reverse. The build only ever renders the forward
+        // default, so these are the forward branch — stated rather than left
+        // to the fallback, so that a page defaulting to reverse later cannot
+        // silently ship the wrong total row.
+        total: example.totals.net,
+        totalLabel: 'You receive',
         stats: [
           { label: 'Fee', value: money(example.totals.fees) },
           { label: 'Effective rate', value: pct(example.totals.effectiveFeeRate) },
@@ -772,6 +1210,8 @@ async function buildEngineContext(tool, page, rates) {
         // Mirrors the 'freelance-hourly-rate' entry in src/client/registry.js.
         headlineLabel: 'Your hourly rate',
         headline: `${money(example.hourlyRate)}/hr`,
+        total: example.hourlyRate,
+        totalLabel: 'Hourly rate',
         stats: [
           { label: 'Day rate', value: money(example.dayRate) },
           { label: 'Week', value: money(example.weekRate) },
@@ -821,6 +1261,10 @@ async function buildEngineContext(tool, page, rates) {
         // Mirrors the 'self-employment-tax' entry in src/client/registry.js.
         headlineLabel: 'Total tax owed',
         headline: money(example.totalTax),
+        // Negative: tax owed is money leaving, and the total row renders the
+        // sign. The registry entry does the same with -Math.abs().
+        total: -Math.abs(example.totalTax ?? 0),
+        totalLabel: 'Total tax owed',
         stats: [
           { label: 'SE tax', value: money(example.se?.total) },
           { label: 'Per quarter', value: money(example.quarterly?.perQuarter) },
@@ -939,6 +1383,8 @@ async function buildEngineContext(tool, page, rates) {
         // Mirrors the 'charge-to-receive' entry in src/client/registry.js.
         headlineLabel: 'Charge this amount',
         headline: money(example.chargeAmount),
+        total: example.chargeAmount,
+        totalLabel: 'Invoice this',
         stats: [
           { label: 'Fee', value: money(example.fee) },
           { label: 'You receive', value: money(example.actualNet) },
@@ -1001,6 +1447,8 @@ async function buildEngineContext(tool, page, rates) {
         // Mirrors the 'invoice-take-home' entry in src/client/registry.js.
         headlineLabel: 'You keep',
         headline: money(example.takeHome),
+        total: example.takeHome,
+        totalLabel: 'You keep',
         stats: [
           { label: 'Set aside', value: money(example.invoiceTax) },
           { label: 'Marginal rate', value: pct(example.marginalRate) },
@@ -1048,6 +1496,8 @@ async function buildEngineContext(tool, page, rates) {
         // Mirrors the 'margin-markup' entry in src/client/registry.js.
         headlineLabel: 'Profit per unit',
         headline: money(example.profit),
+        total: example.profit,
+        totalLabel: 'Profit per unit',
         stats: [
           { label: 'Margin', value: pct(example.margin) },
           { label: 'Markup', value: pct(example.markup) },
@@ -1119,32 +1569,39 @@ async function slicerRows(amount, rates) {
   return rows;
 }
 
+/**
+ * The hero calculator.
+ *
+ * Every row used to carry five things competing for the eye: a brand-tinted
+ * icon tile, the platform name, the fee in red, a two-tone kept/taken bar, and
+ * the payout in green. Five rows of that is twenty-five coloured elements, and
+ * the bars were the worst of them — they showed, a third time, what the two
+ * numbers beside them already said, at a resolution where 96% and 86% look
+ * identical.
+ *
+ * What is left is the shape of the answer: a name, what it costs, what
+ * reaches you. The ranking is carried by the order of the rows, and mint
+ * appears exactly once — on the winner — with a sentence underneath naming it,
+ * so the answer is readable without decoding a colour at all.
+ */
 function renderSlicer(rows, amount, esc, ICONS) {
   const money = (n) => `$${n.toFixed(2)}`;
   const presets = [25, 50, 100, 250, 500, 1000];
+  const best = rows[0];
 
   const rowHtml = rows
     .map((r, i) => `<a class="slicer-row" href="${r.path}"${i === 0 ? ' data-best' : ''} data-slicer-row="${esc(r.id)}">
       <span class="slicer-glyph" aria-hidden="true"><span class="mono-letter">${esc(r.letter)}</span></span>
-      <span class="slicer-meta">
-        <span class="slicer-name">${esc(r.name)} <span class="slicer-fee" data-slicer-fee>&minus;${money(r.fee)}</span>${r.note ? `<span class="slicer-note">${esc(r.note)}</span>` : ''}</span>
-        <span class="slicer-bar" aria-hidden="true">
-          <span class="keep" data-slicer-keep style="width:${r.keepPct.toFixed(1)}%"></span>
-          <span class="take" data-slicer-take style="width:${(100 - r.keepPct).toFixed(1)}%"></span>
-        </span>
-      </span>
+      <span class="slicer-name">${esc(r.name)}</span>
+      <span class="slicer-fee" data-slicer-fee>&minus;${money(r.fee)}</span>
       <span class="slicer-net" data-slicer-net>${money(r.net)}</span>
+      ${r.note ? `<span class="slicer-note">${esc(r.note)}</span>` : ''}
     </a>`)
     .join('');
 
   return `<div class="slicer" data-slicer data-slicer-amount="${amount}">
-  <div class="slicer-head">
-    <h2 class="slicer-title">${ICONS.slice} Live fee slicer</h2>
-    <span class="slicer-live">Live</span>
-  </div>
-
   <div class="slicer-input">
-    <label for="slicer-amount">Sale amount</label>
+    <label for="slicer-amount">Sell something for</label>
     <div class="slicer-amount">
       <span class="cur" aria-hidden="true">$</span>
       <input id="slicer-amount" type="number" min="1" step="1" value="${amount}"
@@ -1157,15 +1614,19 @@ function renderSlicer(rows, amount, esc, ICONS) {
 
   <div class="slicer-rows" data-slicer-rows>${rowHtml}</div>
 
+  <p class="slicer-verdict" data-slicer-verdict>You keep the most with
+    <strong data-slicer-winner>${esc(best.name)}</strong>.</p>
+
   <p class="slicer-foot" id="slicer-note">Platform fees only — your own product and postage costs are not included.
   Amazon FBA depends on size and weight, so it has <a href="/amazon-fba-calculator/">its own calculator</a>.</p>
 </div>`;
 }
 
-async function renderHubPages({ site, rates, css, TOOLS, GROUPS, urls }) {
+async function renderHubPages({ site, rates, css, TOOLS, GROUPS, urls, navTools }) {
   css = css.hub;
   const { layout } = await import('../src/templates/layout.js');
   const { esc, adSlot, toolCard, filterPills } = await import('../src/templates/components.js');
+  const { groupIcon } = await import('../src/templates/icons.js');
   const { ICONS } = await import('../src/templates/icons.js');
   const { CARD_CHIPS } = await import('../src/content/tools.js');
   const today = new Date().toISOString().slice(0, 10);
@@ -1185,12 +1646,11 @@ async function renderHubPages({ site, rates, css, TOOLS, GROUPS, urls }) {
     };
     const row = slicerByPlatform[map[t.id]];
     if (!row) return null;
-    return {
-      label: 'Keeps of $100',
-      value: `$${row.net.toFixed(2)}`,
-      keepPct: row.keepPct,
-      barLabel: `Keeps ${row.keepPct.toFixed(0)} percent of a $100 sale`,
-    };
+    // Figure first, then the sentence that gives it meaning. The percentage
+    // and the bar that used to sit beside it are gone: they restated the same
+    // ratio a second and third time, and the dollar figure is the one form of
+    // it a seller can act on.
+    return { value: `$${row.net.toFixed(2)}`, label: 'of a $100 sale' };
   };
 
   const card = (t) => toolCard(t, { chips: CARD_CHIPS[t.id] ?? [], stat: statFor(t) });
@@ -1199,20 +1659,35 @@ async function renderHubPages({ site, rates, css, TOOLS, GROUPS, urls }) {
   // --- home ---
   const rows = await slicerRows(100, rates);
 
+  /**
+   * The hero.
+   *
+   * Three things that used to be here are gone, and their absence is the
+   * design:
+   *
+   *   - The eyebrow pill. A bordered, tinted, mint capsule above the headline,
+   *     competing with the headline.
+   *   - The three checkmarked hero points. They said "every rate cited / the
+   *     arithmetic is shown / runs in your browser" — which is word for word
+   *     what the trust strip immediately below them says. The page made the
+   *     same three claims twice, forty pixels apart, and the second set had
+   *     mint icons on it.
+   *   - The gradient on "actually keep". One solid colour, because the
+   *     headline is already the largest thing on the page and did not need a
+   *     second mechanism to be noticed.
+   *
+   * What is left is a sentence, a line of context, one action, and the
+   * calculator — which is the product.
+   */
   const homeBody = `<section class="hero-section">
   <div class="wrap hero-grid">
     <div class="hero-copy">
-      <span class="hero-eyebrow">${ICONS.bolt} Every fee, cited to its source</span>
-      <h1>What do you <span class="grad">actually keep?</span></h1>
+      <p class="hero-eyebrow">Every fee, cited and dated</p>
+      <h1>What do you actually keep?</h1>
       <p class="hero-lede">${esc(site.description)}</p>
-      <ul class="hero-points">
-        <li>${ICONS.check}<span><strong>Every rate cited and dated</strong>Not a blog post's guess at what Etsy charges.</span></li>
-        <li>${ICONS.check}<span><strong>The arithmetic is shown</strong>Every line item, so you can check it against your own payout.</span></li>
-        <li>${ICONS.check}<span><strong>Runs in your browser</strong>No signup, no account, nothing you type is sent anywhere.</span></li>
-      </ul>
       <div class="hero-actions">
         <a class="btn btn-primary" href="/tools/">Browse all calculators ${ICONS.arrow}</a>
-        <a class="btn btn-ghost" href="/about/">How these numbers are made</a>
+        <a class="hero-link" href="/about/">How these numbers are made</a>
       </div>
     </div>
     ${renderSlicer(rows, 100, esc, ICONS)}
@@ -1222,9 +1697,9 @@ async function renderHubPages({ site, rates, css, TOOLS, GROUPS, urls }) {
 <section class="trust-strip">
   <div class="wrap">
     <ul class="trust-list">
-      <li>${ICONS.source}<span><strong>Primary sources only</strong><span>Rates read off each platform's own fee page, with the date we checked.</span></span></li>
-      <li>${ICONS.calc}<span><strong>Shown, not asserted</strong><span>Every result breaks down line by line, with the formula written out.</span></span></li>
-      <li>${ICONS.shield}<span><strong>Nothing leaves your device</strong><span>The maths runs client-side. No accounts, no tracking, no uploads.</span></span></li>
+      <li><strong>Primary sources only</strong><span>Rates read off each platform's own fee page, with the date we checked.</span></li>
+      <li><strong>Shown, not asserted</strong><span>Every result breaks down line by line, with the formula written out.</span></li>
+      <li><strong>Nothing leaves your device</strong><span>The maths runs client-side. No accounts, no tracking, no uploads.</span></li>
     </ul>
   </div>
 </section>
@@ -1232,7 +1707,7 @@ async function renderHubPages({ site, rates, css, TOOLS, GROUPS, urls }) {
 <div class="wrap directory">
   <div class="directory-head">
     <h2>Pick a calculator</h2>
-    <p>${esc(site.tagline)} Filter by what you're working out.</p>
+    <p>${esc(site.tagline)}</p>
   </div>
   ${filterPills(GROUPS, TOOLS)}
   <ul class="tool-grid" data-tool-grid>${sorted(TOOLS).map(card).join('')}</ul>
@@ -1250,7 +1725,7 @@ async function renderHubPages({ site, rates, css, TOOLS, GROUPS, urls }) {
       updated: today, published: '2026-08-01',
     },
     trail: [{ label: 'Home', href: '/' }],
-    body: homeBody, css,
+    body: homeBody, css, navTools,
   }));
   urls.push({ loc: '/', lastmod: today, priority: '1.0', changefreq: 'weekly' });
   count += 1;
@@ -1276,7 +1751,7 @@ async function renderHubPages({ site, rates, css, TOOLS, GROUPS, urls }) {
       h1: 'All calculators', updated: today, published: '2026-08-01',
     },
     trail: [{ label: 'Home', href: '/' }, { label: 'Tools', href: '/tools/' }],
-    body: allBody, css,
+    body: allBody, css, navTools,
   }));
   urls.push({ loc: '/tools/', lastmod: today, priority: '0.8', changefreq: 'weekly' });
   count += 1;
@@ -1286,11 +1761,18 @@ async function renderHubPages({ site, rates, css, TOOLS, GROUPS, urls }) {
     if (TOOLS.some((t) => t.path === g.path)) continue;
 
     const items = sorted(TOOLS.filter((t) => t.group === g.id));
-    const body = `<div class="wrap directory">
-  <div class="directory-head">
+    // A banner in the section's own colour, so arriving here confirms which
+    // section you are in — the same amber/indigo/teal/plum that marked the
+    // nav entry, the mega panel and the cards you clicked through.
+    const body = `<div class="group-head" data-group="${esc(g.id)}">
+  <div class="wrap">
+    <p class="group-eyebrow"><span class="group-glyph" aria-hidden="true">${groupIcon(g.id)}</span> Calculators</p>
     <h1>${esc(g.label)}</h1>
     <p>${esc(g.blurb)}</p>
   </div>
+</div>
+
+<div class="wrap directory">
   <ul class="tool-grid">${items.map(card).join('')}</ul>
   ${adSlot(site, 'leaderboard')}
 </div>`;
@@ -1304,7 +1786,7 @@ async function renderHubPages({ site, rates, css, TOOLS, GROUPS, urls }) {
         h1: g.label, updated: today, published: '2026-08-01',
       },
       trail: [{ label: 'Home', href: '/' }, { label: g.label, href: g.path }],
-      body, css,
+      body, css, navTools,
     }));
     urls.push({ loc: g.path, lastmod: today, priority: '0.7', changefreq: 'monthly' });
     count += 1;
@@ -1315,7 +1797,7 @@ async function renderHubPages({ site, rates, css, TOOLS, GROUPS, urls }) {
 
 /* -------------------------------------------------------- boilerplate ----- */
 
-async function renderStaticPages({ site, css, urls }) {
+async function renderStaticPages({ site, css, urls, navTools }) {
   css = css.plain;
   const { layout } = await import('../src/templates/layout.js');
   const { pages } = await import('../src/content/legal.js');
@@ -1331,7 +1813,7 @@ async function renderStaticPages({ site, css, urls }) {
     await writePage(page.path, layout({
       site, page,
       trail: [{ label: 'Home', href: '/' }, { label: page.h1, href: page.path }],
-      body, css,
+      body, css, navTools,
     }));
     urls.push({ loc: page.path, lastmod: page.updated, priority: '0.3', changefreq: 'yearly' });
     count += 1;
