@@ -83,7 +83,122 @@ server. That is also why the tools keep working if you lose your connection afte
 <h2>Corrections</h2>
 <p>If a number here disagrees with what a platform actually charged you, the platform is right and this site
 is wrong. Use the report button on the <a href="/contact/">contact page</a> with the discrepancy and it
-will be fixed and re-dated.</p>
+will be fixed and re-dated. The full process — what gets checked, what changes, and what happens to the
+date on the page — is set out in the <a href="/methodology/">methodology</a>.</p>
+`,
+    },
+
+    {
+      path: '/methodology/',
+      slug: 'methodology',
+      pageType: 'WebPage',
+      h1: 'How these numbers are made',
+      title: `Methodology — How ${site.name} Sources and Verifies Every Rate`,
+      // No quotation marks in here: they escape to &quot; and the audit counts
+      // the escaped form, which put an otherwise fine description one char over.
+      description: `Where each fee and tax rate comes from, what the build refuses to publish, what verification means here, and what happens when a number is wrong.`,
+      updated: '2026-09-12',
+      published: '2026-09-12',
+      body: `
+<p><strong>Every rate on this site is read from the organisation that charges it, stored with the URL it came
+from and the date it was read, and checked by the build before it can ship.</strong> This page sets out that
+process in full, including the parts of it that are weaker than you might assume.</p>
+
+<h2>Where does each rate come from?</h2>
+
+<p>Primary sources only. A marketplace fee comes from that marketplace's own published fee page or rate card;
+a tax figure comes from the revenue authority that sets it. Nothing here is copied from another calculator,
+a summary article, or a competitor's page — not because those are always wrong, but because a figure with no
+traceable origin cannot be re-checked when it changes, and rates change constantly.</p>
+
+<p>Each rate file records, for every source it draws on, a label, the exact URL, and the date that URL was
+read. That third field is the one most sites omit. A fee schedule without a retrieval date is a claim about
+the present tense that nobody can date, which makes it impossible to tell a current figure from a stale one.</p>
+
+<h2>What the build refuses to publish</h2>
+
+<p>The provenance rules are enforced by the build rather than by intention. Before the site is generated,
+every rate file is checked for three things:</p>
+
+<ul>
+<li>a <strong>version</strong>, so a change to a schedule is a distinct thing that can be pointed at;</li>
+<li>an <strong>effective date</strong> — the date the schedule itself came into force, which is not the same
+as the date it was read;</li>
+<li>at least one <strong>source</strong>, each carrying both a label and a working URL.</li>
+</ul>
+
+<p>A file missing any of these does not produce a warning. It fails the build, and the site does not
+generate. This is deliberate: a check that can be ignored under time pressure is a check that will be, and
+the failure mode it guards against — a plausible-looking number with no origin — is invisible once shipped.</p>
+
+<h2>What "verified" means here, and what it does not</h2>
+
+<p>Passing the provenance check is not the same as being confirmed correct. Those are tracked separately, and
+each rate file carries one of three states:</p>
+
+<ul>
+<li><strong>Needs verification</strong> — the figures are entered and sourced, but no one has yet sat down
+with the primary source and confirmed them line by line.</li>
+<li><strong>Partially verified</strong> — some tables in the file were confirmed against the source and
+others were not.</li>
+<li><strong>Verified</strong>, carrying the date it was confirmed.</li>
+</ul>
+
+<p>Partially verified counts as unverified. A file where the commission table was checked but the fulfilment
+tables were not still contains an unchecked number, and treating it as done is precisely how that number
+survives to be wrong later. Only a full confirmation with a date clears a file from the internal checklist.</p>
+
+<p>This distinction is the honest limit of the site. "Sourced" means the number can be traced. "Verified"
+means it was read back against the source on a stated day. The two are not interchangeable, and anywhere a
+figure is still pending confirmation the page carrying it says so rather than presenting it as settled.</p>
+
+<h2>Why a correct rate can still go stale</h2>
+
+<p>Platforms change their fees, sometimes with little notice and sometimes without updating every page that
+documents them. A retrieval date is therefore not a guarantee that a figure is current — it is a statement of
+the last moment anyone could show that it was. The gap between that date and today is a real source of error,
+and it is published on every page for exactly that reason.</p>
+
+<p>This is also why the calculators state the fee base and the arithmetic rather than only the result. If a
+rate has moved since it was last read, a visitor who can see the formula can substitute the new number and
+still get a correct answer. A page that shows only its output leaves them with nothing.</p>
+
+<h2>What to do when a number here is wrong</h2>
+
+<p><strong>If a figure on this site disagrees with what a platform actually charged you, the platform is
+right and this site is wrong.</strong> That is not a disclaimer — it is the operating assumption, and reports
+are handled on that basis.</p>
+
+<p>Use the report button on the <a href="/contact/">contact page</a>. The single most useful thing to include
+is the discrepancy itself: what the calculator said, what you were actually charged, and the sale price or
+invoice amount that produced it. A screenshot of the platform's own fee breakdown settles almost every case
+immediately.</p>
+
+<p>What happens next:</p>
+
+<ul>
+<li>The figure is checked against the primary source, not against the report. A report is what prompts the
+check; the source is what decides it.</li>
+<li>If the source has changed, the rate file is updated, its version incremented, its effective date moved to
+the date the new schedule took force, and its verification state reset — a corrected file is not automatically
+a confirmed one.</li>
+<li>If the source has not changed, the error is in the arithmetic rather than the data, which is a code fix
+and gets a test that reproduces the wrong answer first.</li>
+<li>Either way the page's last-updated date moves, so the change is visible rather than silent.</li>
+<li>If a figure cannot be confirmed either way — a source behind a login, a regional page that will not load,
+a schedule that contradicts itself — it is marked as unconfirmed rather than guessed at.</li>
+</ul>
+
+<p>There is no support desk and no guaranteed response time here. What there is instead is a commitment that
+a reported discrepancy is checked against the primary source rather than dismissed, and that when this site
+is wrong the correction is dated in public rather than edited away quietly.</p>
+
+<h2>What these calculators deliberately do not do</h2>
+
+<p>They estimate. They are not a quote, not a bill, and not a substitute for the figures a platform or a
+revenue authority gives you directly. Every calculator carries its own list of what it does not model —
+those lists are specific on purpose, so you can tell whether your situation is one of the cases where the
+answer will be wrong. The <a href="/disclaimer/">disclaimer</a> sets out the limits in full.</p>
 `,
     },
 

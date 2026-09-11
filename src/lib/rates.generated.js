@@ -4,7 +4,7 @@
  * Regenerate with: npm run build  (or node build/gen-rates.mjs)
  *
  * Rate data version: 2026.1
- * Generated: 2026-09-11T17:33:19.625Z
+ * Generated: 2026-09-11T18:39:06.520Z
  */
 
 export const byLocale = {
@@ -4021,6 +4021,10 @@ export const site = {
     {
       "label": "About",
       "href": "/about/"
+    },
+    {
+      "label": "Methodology",
+      "href": "/methodology/"
     },
     {
       "label": "Contact",
