@@ -14,8 +14,9 @@
     "test": "node --test \"test/*.test.js\"",
     "verify:rates": "node build/verify-rates.mjs",
     "audit": "node build/audit.mjs",
+    "diagnose": "node build/diagnose.mjs",
     "serve": "npx --yes serve dist -l 4321",
-    "check": "npm run verify:rates && npm run build && npm test && npm run audit"
+    "check": "npm run verify:rates && npm run build && npm test && npm run audit && npm run diagnose"
   },
   "dependencies": {},
   "devDependencies": {}
