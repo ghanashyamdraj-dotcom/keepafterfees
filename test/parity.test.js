@@ -188,8 +188,29 @@ test('server and client copies of the shared renderers have not drifted', async 
  * them. Without this test a spoke could ship the hub's numbers — or every
  * spoke could ship California's — and nothing would fail.
  */
-test('state spokes each compute their own state, and the HTML agrees', { skip: !existsSync(dist) && 'run `npm run build` first' }, async () => {
+test('state spokes each compute their own state, and the HTML agrees', { skip: !existsSync(dist) && 'run `npm run build` first' }, async (t) => {
   const { PAYCHECK_STATES } = await import('../src/content/tools.js');
+
+  /**
+   * PAYCHECK_STATES was emptied on 2026-09-11 — the five spokes were retired as
+   * near-duplicates (see the comment on that array). With no spokes there is
+   * nothing here to verify, so this skips rather than fails.
+   *
+   * Everything below is kept rather than deleted. The array is designed to be
+   * refilled with genuinely differentiated state pages, and these assertions
+   * are exactly what should run when it is.
+   *
+   * Note the last assertion in this test: it required Texas and Florida to
+   * render IDENTICALLY. The duplication that triggered the AdSense violation
+   * was not an accident the tests missed — it was a property the tests
+   * enforced. Anyone refilling the array should treat that line as the
+   * warning it turned out to be.
+   */
+  if (PAYCHECK_STATES.length === 0) {
+    t.skip('PAYCHECK_STATES is empty — no state spokes are generated');
+    return;
+  }
+
   const seen = new Map();
 
   for (const tool of TOOLS.filter((t) => t.status === 'live' && t.hasStateSpokes)) {

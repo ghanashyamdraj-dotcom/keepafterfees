@@ -1740,6 +1740,63 @@ async function renderHubPages({ site, rates, css, TOOLS, GROUPS, urls, navTools 
   <ul class="tool-grid" data-tool-grid>${sorted(TOOLS).map(card).join('')}</ul>
   <p class="directory-empty" hidden data-filter-empty>No calculators in that category yet.</p>
   ${adSlot(site, 'leaderboard')}
+</div>
+
+${/* Same reason and same placement as the group hubs below. This page measured
+      861 words of which 4.3% were unique to it — the lowest on the site —
+      because a directory is structurally almost all navigation. */ ''}
+<div class="wrap wrap--narrow prose group-prose">
+<h2>How these calculators differ from a percentage in a spreadsheet</h2>
+
+<p>Every tool here runs a real fee schedule rather than an average, and that
+distinction does most of the work. A spreadsheet multiplying a sale price by a
+platform's headline rate will be close on a typical order and wrong in the three
+places that matter most: where the fee is charged on a base that includes the
+postage you collected, where a fixed per-order amount dominates a small sale,
+and where a tiered schedule steps at a threshold instead of sloping through
+it.</p>
+
+<p>The engines behind these pages model those cases explicitly. Where a schedule
+has a discontinuity, the page names the price it happens at rather than drawing
+a smooth line through it. Where a fee applies to shipping as well as the item,
+that appears in the stated fee base rather than being folded into an effective
+percentage.</p>
+
+<h2>Where the numbers come from, and how you can check them</h2>
+
+<p>Rates are read from each platform's own published fee page, or from the
+relevant revenue authority for the tax tools, and every page carries a "Sources
+and dates" section naming what was used and when it was last checked. That date
+is the honest limit of the figure. A schedule can change the day after it is
+verified, and a calculator that will not tell you when it last looked is asking
+to be trusted further than it has earned.</p>
+
+<p>Each page also lists what it does <em>not</em> model. Those are not
+disclaimers for their own sake — they are the specific cases where the answer
+will be wrong, written down so you can tell whether yours is one of them.</p>
+
+<h2>What happens to the numbers you type</h2>
+
+<p>They stay on your device. Every calculation runs in JavaScript in your own
+browser: there is no account, no form submission, and no figure you enter is
+transmitted or stored anywhere. The page fetches its rate data once when it
+loads and then does all of its arithmetic locally, so changing an input sends no
+request at all.</p>
+
+<p>To be precise about what the page does load: these calculators are funded by
+advertising, so an ad script loads alongside the page and sets cookies of its
+own. That is the one third-party request on the site, it is unrelated to the
+calculator, and it never receives the values you enter. The
+<a href="/privacy/">privacy policy</a> sets out exactly what it does.</p>
+
+<h2>Which calculator should I start with?</h2>
+
+<p>If you already know the platform, use its own calculator — it models that
+schedule in full and will be the most precise. If you are choosing between
+platforms, start with a comparison page, because the answer frequently depends
+on your price point rather than being fixed. If you are self-employed and the
+question is what you owe rather than what a platform takes, start in the
+freelance section. Otherwise the filter above sorts every tool by category.</p>
 </div>`;
 
   await writePage('/tools/', layout({
@@ -1775,7 +1832,24 @@ async function renderHubPages({ site, rates, css, TOOLS, GROUPS, urls, navTools 
 <div class="wrap directory">
   <ul class="tool-grid">${items.map(card).join('')}</ul>
   ${adSlot(site, 'leaderboard')}
-</div>`;
+</div>
+${
+  /**
+   * Editorial body, below the cards.
+   *
+   * These hubs were card grids and nothing else, which measured at 8–10% of
+   * their text being unique to them — the rest was header, nav and footer. A
+   * page that is only a menu is a thin page whichever way it is scored, and
+   * four of them was a material part of the "Low value content" violation
+   * AdSense raised on 2026-09-11.
+   *
+   * Placed after the grid rather than before it: someone arriving here wants
+   * the calculator list first, and pushing it below a wall of prose to serve
+   * a crawler would be optimising against the visitor. The text is here for
+   * the person who does not yet know which tool answers their question.
+   */
+  g.body ? `<div class="wrap wrap--narrow prose group-prose">${g.body}</div>` : ''
+}`;
 
     await writePage(g.path, layout({
       site,
@@ -1958,6 +2032,47 @@ async function writeAssets(site) {
       `google.com, ${pubId}, DIRECT, f08c47fec0942fa0\n`,
       'utf8'
     );
+  }
+
+  /**
+   * _redirects — retired URLs, so a removed page becomes a 301 rather than a
+   * 404. Natively supported by Workers Static Assets, and it has to live in
+   * dist/ like _headers does, which is why it is generated rather than kept as
+   * a file (dist/ is wiped every build).
+   *
+   * This list is a record of what USED to exist, so it is written out rather
+   * than derived from PAYCHECK_STATES — that array is now empty, and deriving
+   * from it would emit nothing. Both slash forms are listed because the pages
+   * were canonically trailing-slash but were reachable either way.
+   */
+  const RETIRED = [
+    // Five per-state paycheck spokes, removed 2026-09-11 as near-duplicates.
+    // See PAYCHECK_STATES in src/content/tools.js.
+    ['/paycheck-calculator/california', '/paycheck-calculator/'],
+    ['/paycheck-calculator/texas', '/paycheck-calculator/'],
+    ['/paycheck-calculator/new-york', '/paycheck-calculator/'],
+    ['/paycheck-calculator/florida', '/paycheck-calculator/'],
+    ['/paycheck-calculator/illinois', '/paycheck-calculator/'],
+  ];
+  await writeFile(
+    join(dist, '_redirects'),
+    RETIRED.flatMap(([from, to]) => [`${from} ${to} 301`, `${from}/ ${to} 301`]).join('\n') + '\n',
+    'utf8'
+  );
+
+  /**
+   * The social card. Every page's og:image pointed at /og/<slug>.png and the
+   * build wrote no /og/ directory at all — 36 broken references in the output
+   * and a 404 on every link preview the site produced. See build/og-image.mjs
+   * for why this is generated rather than designed in an image editor.
+   *
+   * One card for the whole site, not one per page: a per-page card only earns
+   * its keep if it carries per-page text, and text needs font data this build
+   * does not have. A correct shared card beats 36 broken specific ones.
+   */
+  {
+    const { renderOgCard } = await import('./og-image.mjs');
+    await writeFile(join(dist, 'og-card.png'), renderOgCard());
   }
 
   // Favicon: the brand mark on the obsidian ground, inline SVG so it costs one

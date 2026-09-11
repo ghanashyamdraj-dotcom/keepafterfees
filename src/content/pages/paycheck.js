@@ -310,7 +310,10 @@ ${money2(example.annual.gross - example.annual.takeHome - example.annual.trad401
 <table>
 <thead><tr><th scope="col">State</th><th scope="col">State tax + payroll</th><th scope="col">Take-home per year</th><th scope="col">Effective rate</th></tr></thead>
 <tbody>
-${stateComparison.map((s, i) => `<tr${i === 0 ? ' data-best' : ''}><td><a href="/paycheck-calculator/${s.slug}/">${s.name}</a></td><td>${money0(s.stateTaxAnnual)}</td><td>${money0(s.takeHomeAnnual)}</td><td>${(s.effectiveRate * 100).toFixed(1)}%</td></tr>`).join('\n')}
+${/* State names are plain text, not links. The per-state spoke pages they used
+      to point at were retired on 2026-09-11 — see PAYCHECK_STATES in
+      tools.js for why. Linking them again means recreating those pages. */ ''}
+${stateComparison.map((s, i) => `<tr${i === 0 ? ' data-best' : ''}><td>${s.name}</td><td>${money0(s.stateTaxAnnual)}</td><td>${money0(s.takeHomeAnnual)}</td><td>${(s.effectiveRate * 100).toFixed(1)}%</td></tr>`).join('\n')}
 </tbody>
 </table>
 </div>

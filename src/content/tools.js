@@ -19,18 +19,177 @@ export const GROUPS = {
     label: 'Marketplace fees',
     path: '/marketplace-fees/',
     blurb: 'What Amazon, Etsy, eBay, and Shopify actually take from each sale.',
+    body: `
+<h2>Why two platforms charging the same percentage do not cost the same</h2>
+
+<p>Marketplace fees get quoted as a single percentage often enough that sellers
+compare them as single percentages. That comparison is usually wrong, and it is
+wrong in four specific ways. Every calculator in this section exists because one
+of them applies.</p>
+
+<h3>What the percentage is charged on</h3>
+
+<p>The fee base matters more than the rate. Several marketplaces apply their
+commission to the postage you charge as well as the item price. A seller who
+shifts cost out of the item and into shipping pays the same commission either
+way, and a seller offering free shipping pays commission on money they never
+counted as revenue. Two platforms at an identical headline rate diverge the
+moment one includes postage in the base and the other does not. Each calculator
+here states its own fee base, because it is the input that most often explains
+the gap between what a seller expected and what landed.</p>
+
+<h3>Whether processing is bundled or charged separately</h3>
+
+<p>Some marketplaces quote one number that already contains card processing.
+Others quote a commission and then deduct processing on top, which adds a
+percentage plus a fixed amount per order. The fixed component is invisible at
+high order values and dominant at low ones — it is the reason a platform that
+looks cheapest on a $200 sale can be the most expensive on a $12 one.</p>
+
+<h3>Fixed fees, tiers, and cliffs</h3>
+
+<p>Percentage fees scale smoothly. Listing fees, per-order fees and flat-rate
+commissions below a threshold do not. A platform that charges a flat fee under
+some price and a percentage above it has a discontinuity at that price, and just
+below it the seller keeps less in absolute terms than a seller just above. Our
+reseller comparison marks these cliffs explicitly rather than drawing a smooth
+curve through them, because the curve would be a lie at exactly the price points
+low-value resellers actually list at.</p>
+
+<h3>Fulfilment priced on the box, not the sale</h3>
+
+<p>Fulfilment fees do not care what an item sold for. They are priced on
+dimensions and weight, which means they are a near-fixed cost per unit against a
+variable revenue line. The same product in the same box costs the same to ship
+whether it sells for $15 or $45 — so fulfilment is a margin question, not a fee
+question, and a size tier boundary can cost more than the commission does. The
+Amazon calculators model the tier the box actually falls into rather than
+applying an average.</p>
+
+<h2>Which calculator answers which question</h2>
+
+<p>Use a single-platform calculator when you already know where you are selling
+and want the arithmetic for one sale. Use a comparison when the platform is the
+decision — those pages run the same item through every engine and report where
+each one wins, including the revenue point at which the answer changes. Use the
+margin calculator when the fee is settled and the question is what price
+supports the margin you need.</p>`,
   },
   processor: {
     id: 'processor',
     label: 'Payment processors',
     path: '/payment-processor-fees/',
     blurb: 'What PayPal, Stripe, and Square deduct before the money reaches you.',
+    body: `
+<h2>Why is the processor fee on a small payment so much higher than the rate?</h2>
+
+<p>Because almost every processor charges a percentage <em>plus</em> a fixed
+amount per transaction, and the fixed amount does not shrink with the payment.
+A rate quoted as "2.9% + 30&cent;" is 2.9% only in the limit. On a $100 payment
+the effective rate is about 3.2%. On a $10 payment it is about 5.9%. On a $3
+payment it is over 12%. The headline rate is the number you approach from above,
+never the number you pay.</p>
+
+<p>This single mechanism explains most of the surprise in processor pricing, and
+it has a practical consequence: batching matters. One $200 invoice costs less to
+collect than ten $20 invoices, and the gap is the fixed fee times nine. If you
+can consolidate billing, that is usually worth more than switching processor.</p>
+
+<h2>What else comes out that is not in the headline rate?</h2>
+
+<p>The advertised rate covers a domestic card in your own currency, presented
+online, that is not disputed. Step outside any of those conditions and there is
+usually a separate line:</p>
+
+<ul>
+<li><strong>Cross-border.</strong> A card issued in another country typically
+carries an added percentage, applied on top of the standard rate rather than
+instead of it.</li>
+<li><strong>Currency conversion.</strong> Charged separately from the
+cross-border fee, so an international sale in a foreign currency can attract
+both. This is the line most often missed when a seller compares a domestic
+quote against an international reality.</li>
+<li><strong>Chargebacks and disputes.</strong> A flat fee per dispute,
+frequently retained even when the dispute is resolved in your favour.</li>
+<li><strong>Payout and account fees.</strong> Instant payouts, and in some cases
+currency payouts to a foreign bank account, are priced separately from
+accepting the payment.</li>
+</ul>
+
+<h2>How do I charge enough to receive a specific amount?</h2>
+
+<p>You cannot add the fee percentage to the price and arrive at the right
+number. Adding 2.9% to $100 gives $102.90, and the fee is then charged on
+$102.90 rather than on $100 — so you land short. The correct operation is
+division, not addition: the gross needed is the target plus the fixed fee, all
+divided by one minus the rate. The charge-to-receive calculator performs exactly
+that inversion, which is why it exists as its own tool rather than as a note on
+another page.</p>
+
+<h2>Which of these tools should I use?</h2>
+
+<p>Use a single-processor calculator to see the deduction on a payment you are
+about to take. Use the comparison when the processor itself is the open
+question, and pay attention to where the lines cross rather than which is
+cheaper on average — at typical small-ticket values the ranking can invert.
+Use charge-to-receive whenever the amount you need to <em>end up with</em> is
+fixed, which is the usual case for invoicing.</p>`,
   },
   freelance: {
     id: 'freelance',
     label: 'Freelance & contractor',
     path: '/freelance-tools/',
     blurb: 'Rates, quotes, quarterly tax, and what an invoice really leaves you.',
+    body: `
+<h2>Why is a freelance hourly rate not comparable to a salaried one?</h2>
+
+<p>Because an hourly rate is charged on billable hours only, while a salary is
+paid on all of them. A freelancer who bills 25 hours in a 40-hour week is
+earning their rate on roughly 60% of the time they work — the rest goes to
+quoting, invoicing, admin, and finding the next piece of work. Before any tax
+enters the picture, the effective rate is already well below the quoted one.</p>
+
+<p>Then three costs that an employer normally absorbs move onto the freelancer:
+the employer half of payroll tax, paid holiday and sick leave, and benefits such
+as health cover and retirement contributions. The common heuristic of doubling a
+target salary to reach an hourly rate is a rough attempt to price all of this at
+once. It is in the right region for many situations and badly wrong for some,
+which is why the hourly-rate calculator asks for the specific inputs rather than
+applying a multiplier.</p>
+
+<h2>What is self-employment tax and why is it larger than expected?</h2>
+
+<p>Self-employment tax is both halves of Social Security and Medicare. An
+employee pays one half and never sees the other, because the employer remits it.
+Someone self-employed is both parties and owes both halves — so the rate roughly
+doubles relative to the number on a payslip. It is assessed on net business
+profit rather than on gross receipts, and it sits alongside income tax rather
+than replacing it.</p>
+
+<p>Two things soften it, and both are frequently missed. A portion of the tax is
+itself deductible when computing income tax, and business expenses reduce the
+profit the tax is assessed on before the rate is applied. The self-employment
+tax calculator applies both rather than quoting the headline rate against gross
+income, which would overstate the bill considerably.</p>
+
+<h2>Why do quarterly payments catch people out?</h2>
+
+<p>Because nothing withholds them. An employee's tax arrives in instalments they
+never have to schedule; a freelancer's does not arrive until they send it.
+Income earned in one quarter is generally due shortly after that quarter closes,
+not at the end of the year — so a profitable first quarter creates a payment
+obligation months before any annual return exists. The money has usually been
+spent by then. Estimating the liability as income is earned, rather than
+reconstructing it later, is the entire point of doing this arithmetic early.</p>
+
+<h2>Which of these tools should I use?</h2>
+
+<p>Use the hourly-rate calculator when setting or revising what you charge, and
+the day-rate calculator when a client wants a daily figure rather than an hourly
+one — the conversion is not simply eight hours. Use the self-employment tax
+calculator to estimate what to set aside as you earn. Use invoice take-home when
+a specific invoice has landed and the question is what part of it is actually
+yours.</p>`,
   },
   paycheck: {
     id: 'paycheck',
@@ -446,8 +605,30 @@ export const TOOLS = [
   },
 ];
 
-/** State spokes for the paycheck cluster. Start with five, expand later. */
-export const PAYCHECK_STATES = ['CA', 'TX', 'NY', 'FL', 'IL'];
+/**
+ * State spokes for the paycheck cluster. DELIBERATELY EMPTY — do not refill
+ * this without reading the rest of this comment.
+ *
+ * It held ['CA', 'TX', 'NY', 'FL', 'IL'] until 2026-09-11, which generated five
+ * ~2,200-word pages at /paycheck-calculator/<state>/. Measured against each
+ * other they were 80–92% identical text: the Florida and Texas pages ran to 438
+ * lines each and differed on 42, every one of them the state name substituted.
+ * Neither state levies income tax, so the arithmetic was byte-identical and the
+ * ranking sentence rendered as "Texas ranks 2 of 5, $0 a year behind Florida".
+ *
+ * That is Google's definition of a doorway page — near-duplicate pages spun up
+ * to catch keyword variants — and it is the most likely trigger for the
+ * "Low value content" policy violation AdSense raised against the site.
+ *
+ * The spoke machinery below (`hasStateSpokes`, `def.spoke()`, the spoke loop in
+ * build.mjs) is left intact and dormant, because per-state pages are a good
+ * idea IF each one carries content only that state can justify — NYC's local
+ * income tax, California's SDI, Illinois' flat rate. Refill this array only
+ * alongside that content, and never with a state whose only distinguishing
+ * fact is its name. The five-state comparison table on the hub page already
+ * covers the comparison itself, and keeps doing so with this empty.
+ */
+export const PAYCHECK_STATES = [];
 
 /**
  * Directory card metadata chips.

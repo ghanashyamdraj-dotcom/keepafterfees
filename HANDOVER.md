@@ -14,12 +14,24 @@ npm run audit    # build-spec compliance, 26 checks
 npm run check    # full pipeline (verify:rates + build + test + audit)
 ```
 
-Current state: **86/86 tests, 26/26 audit checks, 36 pages.**
+Current state: **85 passing + 1 skipped of 86 tests, 26/26 audit checks, 31
+pages, 0 broken internal links.** Everything is committed, pushed and live.
 
-> **NOTHING IN THIS SESSION IS COMMITTED.** The working tree holds six new
-> pages, two new engines, four bug fixes, a full visual redesign, and the
-> removal of the maintainer's name. Review, then commit — a push to `main`
-> auto-deploys to production within ~1–2 minutes.
+> **AdSense, 2026-09-11 — superseded the ads.txt issue.** The dashboard moved
+> from "Getting ready" to **"Needs attention"** with a **Low value content**
+> policy violation. Site ownership is verified; ads.txt was never the blocker
+> and `ADS-TXT-HANDOVER.md` is now historical only.
+>
+> Measured cause: five per-state paycheck spokes were 80–92% textually
+> identical to each other (Florida vs Texas: 438 lines, 42 differing, every one
+> the state name), and four hub pages carried 4–10% unique text. Both are
+> fixed — see §1.5. **A review has not yet been requested.** Do not tick
+> "I confirm that I have fixed the issues" without first confirming the fixes
+> are live in production.
+>
+> Still open: off-site corroboration is zero and `organization.sameAs` is
+> empty **by decision** — the build warns about it on every run and that
+> warning is expected, not a regression.
 
 Gotcha: never run `dev` and `build` at the same time — they race on `dist/`. Line endings are normalized via `.gitattributes` (LF everywhere) — don't remove it or every file diffs on the next Windows commit.
 
